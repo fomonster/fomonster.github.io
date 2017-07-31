@@ -1,5 +1,269 @@
+
+<!DOCTYPE html>
 <html>
-<body>
-a
-</body>
+  <head>
+    <title>WebGL Basics part 4</title>
+
+    <script type='text/javascript'>
+
+
+function initGeometryA()
+{
+  var vertices = new Float32Array([
+                    -1, 0, -1,  0, -1, -1, 1, 0, -1,
+                     1, 0, -1, 0, 1, -1, -1, 0, -1,
+                    -1, 0, 1,  0, -1, 1, 1, 0, 1,
+                     1, 0, 1, 0, 1, 1, -1, 0, 1,
+                     1, -1, 0, 1,  0, -1, 1, 1, 0, 
+                     1, 1, 0, 1, 0, 1,  1, -1, 0,
+                     -1, -1, 0, -1,  0, -1, -1, 1, 0, 
+                     -1, 1, 0, -1, 0, 1, -1, -1, 0,
+                     -1,-1,  0, 0, -1,   -1,  1,-1,  0, 
+                      1, -1,  0, 0,-1,  1,  -1, -1, 0,
+                     -1,1,  0, 0, 1,   -1,  1,1,  0, 
+                      1, 1,  0, 0,1,  1,  -1, 1, 0,
+
+                      -1, 0, 1, 0, -1, 1, -1, -1, 0,
+                      1, 0, 1, 0, 1, 1, 1, 1, 0,
+                      -1, 0, 1, 0, 1, 1, -1, 1, 0,
+                      1, 0, 1, 0, -1, 1, 1, -1, 0,
+                      -1, 0, -1, 0, -1, -1, -1, -1, 0,
+                      1, 0, -1, 0,  1, -1, 1, 1, 0,
+                      -1, 0, -1, 0, 1, -1, -1, 1, 0,
+                      1, 0, -1, 0, -1, -1, 1, -1, 0,
+                     ]);
+
+  // Initializes the vertex buffer and sets it as current one
+  var vbuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, vbuffer);
+
+  // Puts vertices to buffer and links it to attribute variable 'ppos'
+  gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+	return vbuffer;	
+}
+
+function initGeometryB()
+{
+
+  var vertices = new Float32Array([
+                    -1, 0, -1,  0, -1, -1, 
+                     0, -1, -1, 1, 0, -1,
+                     1, 0, -1, 0, 1, -1,
+                     0, 1, -1, -1, 0, -1,
+                    -1, 0, 1,  0, -1, 1, 
+                     0, -1, 1, 1, 0, 1,
+                     1, 0, 1, 0, 1, 1,
+                     0, 1, 1, -1, 0, 1,
+                     1, -1, 0, 1,  0, -1, 
+                     1, 0, -1, 1, 1, 0, 
+                     1, 1, 0, 1, 0, 1, 
+                     1, 0, 1, 1, -1, 0,
+                     -1, -1, 0, -1,  0, -1, 
+                     -1, 0, -1, -1, 1, 0, 
+                     -1, 1, 0, -1, 0, 1, 
+                     -1, 0, 1, -1, -1, 0,
+                     -1,-1,  0, 0, -1,   -1, 
+                      0,-1,  -1, 1,-1,  0, 
+                      1, -1,  0, 0,-1,  1, 
+                     0,-1,  1, -1, -1, 0,
+                     -1,1,  0, 0, 1,   -1, 
+                      0,1,  -1, 1,1,  0, 
+                      1, 1,  0, 0,1,  1, 
+                     0,1,  1, -1, 1, 0,
+                     -0.3, 0.1, -1, 0.3, 0.1, -1,
+                     -0.3, -0.1, -1, 0.3, -0.1, -1,
+                     0.3, 0.1, -1, 0.3, -0.1, -1,
+                     -0.3, 0.1, -1, -0.3, -0.1, -1,
+                     ]);
+
+  // Initializes the vertex buffer and sets it as current one
+  var vbuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, vbuffer);
+
+  // Puts vertices to buffer and links it to attribute variable 'ppos'
+  gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+ 
+
+  return vbuffer;
+}
+
+function uniformMatrix(program, name, mat)
+{
+    var amvp = gl.getUniformLocation(program, name);
+    if(amvp == -1)
+    {alert('Error during uniform address retrieval');running=false;return;}
+    gl.uniformMatrix4fv(amvp, false, mat);
+}
+
+function uniformVector(program, name, vec)
+{
+    var amvp = gl.getUniformLocation(program, name);
+    if(amvp == -1)
+    {alert('Error during uniform address retrieval');running=false;return;}
+    gl.uniform4fv(amvp, vec);
+}
+
+
+function initShader(vertexShaderCode, fragmentShaderCode)
+{
+	// Creates fragment shader 
+  	var fshader = gl.createShader(gl.FRAGMENT_SHADER);
+  	gl.shaderSource(fshader, fragmentShaderCode);
+  	gl.compileShader(fshader);
+  	if (!gl.getShaderParameter(fshader, gl.COMPILE_STATUS)) 
+  	{alert('Error during fragment shader compilation:\n' + gl.getShaderInfoLog(fshader)); return null;}
+
+  	// Creates vertex shader 
+  	var vshader = gl.createShader(gl.VERTEX_SHADER);
+  	gl.shaderSource(vshader, vertexShaderCode);
+  	gl.compileShader(vshader);
+  	if (!gl.getShaderParameter(vshader, gl.COMPILE_STATUS)) 
+  	{alert('Error during vertex shader compilation:\n' + gl.getShaderInfoLog(vshader)); return null;}
+
+  	// Creates program and links shaders to it
+  	program = gl.createProgram();
+  	gl.attachShader(program, fshader);
+  	gl.attachShader(program, vshader);
+  	gl.linkProgram(program);
+  	if (!gl.getProgramParameter(program, gl.LINK_STATUS)) 
+  	{alert('Error during program linking:\n' + gl.getProgramInfoLog(program));return null;}
+
+  	// Validates and uses program in the GL context
+  	gl.validateProgram(program);
+  	if (!gl.getProgramParameter(program, gl.VALIDATE_STATUS)) 
+  	{alert('Error during program validation:\n' + gl.getProgramInfoLog(program));return null;}
+
+	return program;
+}
+
+
+//-----------------------
+
+
+// GLSL ES code to be compiled as fragment shader
+fragmentShaderCode=
+'precision mediump float;'+
+'uniform vec4 vColor;'+
+'void main(void) {'+
+'  gl_FragColor = vec4(vColor.x, vColor.y, vColor.z, vColor.w);'+
+'}';
+
+// GLSL ES code to be compiled as vertex shader
+vertexShaderCode=
+'attribute vec3 ppos;'+
+'uniform mat4 mvp;'+
+'void main(void) {'+
+'  gl_Position = mvp * vec4(ppos.x, ppos.y, ppos.z, 1.0);'+
+'}';
+
+
+var gl = null; // GL context
+var program; // The program object used in the GL context
+var bufferA;
+var bufferB;
+var running = true; // True when the canvas is periodically refreshed
+var ax = 0;
+var ay = 0;
+var az = 0;
+
+// Function called by onload handler
+function start()
+{
+  // Gets canvas from the HTML page
+  var canvas = document.getElementById('glcanvas');
+
+  // Creates GL context
+  try {gl = canvas.getContext('experimental-webgl');}
+  catch(e) {alert('Exception catched in getContext: '+e.toString());return;}
+  
+  // If no exception but context creation failed, alerts user
+  if(!gl) {alert('Unable to create Web GL context');return;}
+  
+  
+
+  if ( !program ) program = initShader(vertexShaderCode, fragmentShaderCode);
+  if ( !bufferA ) bufferA = initGeometryA();
+  if ( !bufferB ) bufferB = initGeometryB();
+  
+
+  // draw
+  setInterval("draw();", 40);  
+}
+
+// Function called periodically to draw the scene
+function draw()
+{
+  	// Tests if canvas should be refreshed
+  	if(!running || !gl)
+    	return;
+    
+  	// Convert values to radians
+  	ax += 2*Math.PI/360;
+  	ay += 2*Math.PI/360;
+  	az += 2*Math.PI/360;
+
+  	// Sets clear color to non-transparent dark blue and clears context
+  	gl.clearColor(0.0, 0.0, 0.0, 1.0);
+  	gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.enable(gl.DEPTH_TEST);
+    gl.depthFunc(gl.LESS);
+
+    // ------ 
+    gl.useProgram(program);
+    gl.bindBuffer(gl.ARRAY_BUFFER, bufferA);
+    uniformMatrix(program, "mvp",getTransformationMatrix(ax, ay, az));
+    uniformVector(program, "vColor", [0.1,0.1,0.1,1]);
+    
+    var vattrib = gl.getAttribLocation(program, 'ppos');
+    if(vattrib == -1) {alert('Error during attribute address retrieval');return;} 
+    gl.enableVertexAttribArray(vattrib);
+    gl.vertexAttribPointer(vattrib, 3, gl.FLOAT, false, 0, 0);
+  	
+  	gl.drawArrays(gl.TRIANGLES, 0, (20*9)/3); // length/3
+
+    // ------ 
+    gl.useProgram(program);
+    gl.bindBuffer(gl.ARRAY_BUFFER, bufferB);
+    uniformMatrix(program, "mvp",getTransformationMatrix(ax, ay, az));
+    uniformVector(program, "vColor", [1,1,1,1]);
+    
+    var vattrib = gl.getAttribLocation(program, 'ppos');
+    if(vattrib == -1) {alert('Error during attribute address retrieval');return;} 
+    gl.enableVertexAttribArray(vattrib);
+    gl.vertexAttribPointer(vattrib, 3, gl.FLOAT, false, 0, 0);
+    
+    gl.drawArrays(gl.LINES, 0, 28*6/3); // length/3
+
+  	gl.flush();
+}
+
+// Gets a transformation matrix given the rotation angles
+function getTransformationMatrix(rx, ry, rz)
+{
+  // Pre-computes trigonometric values (mainly for better readability)
+  var cx = Math.cos(rx), sx = Math.sin(rx);
+  var cy = Math.cos(ry), sy = Math.sin(ry);
+  var cz = Math.cos(rz), sz = Math.sin(rz);
+  var scx = 0.3;
+  var scy = 0.3;
+  var scz = 0.3;
+  // Returns matrix
+  return new Float32Array([scx *cy*cz, scx *(sx*sy*cz-cx*sz), scx *(sx*sz+cx*sy*cz), 0,
+                           scy *cy*sz, scy * (sx*sy*sz+cx*cz), scy *(cx*sy*sz-sx*cz), 0,
+                           -scz *sy,   scz *sx*cy,            scz * cx*cy,            0,
+                           0,     0,                0,                1]);
+}
+
+    </script>
+  </head>
+
+  <body onload='start();'>
+
+    <canvas id='glcanvas' width=800 height=600 onclick='running = !running;'>
+       Your browser may not support HTML5
+    </canvas>
+
+  </body>
 </html>
+
