@@ -5,10 +5,23 @@
 exports.__esModule = true;
 var Widget = (function () {
     function Widget() {
-        this.screen = null;
-        this.needDelete = false;
+        /**
+         *
+         */
         this.name = "";
-        this.active = true;
+        this.isDialog = false;
+        this.widgetState = 0;
+        this.needDispose = false;
+        this.needHide = false;
+        this.needShow = false;
+        this.needRemove = false;
+        this.needDelete = false;
+        this.isDialog = false;
+        this.widgetState = Widget.STATE_INVISIBLE;
+        this.needDispose = false;
+        this.needHide = false;
+        this.needShow = false;
+        this.needRemove = false;
         this.needDelete = false;
     }
     Widget.prototype.preInit = function () {
@@ -16,38 +29,78 @@ var Widget = (function () {
     };
     Widget.prototype.init = function () {
         window.console.log("init " + this.name);
+        this.switchState();
     };
     Widget.prototype.postInit = function () {
         window.console.log("postInit " + this.name);
+        this.switchState();
     };
-    Widget.prototype.preDone = function () {
-        window.console.log("preDone " + this.name);
+    Widget.prototype.preRelease = function () {
+        window.console.log("preRelease " + this.name);
+        this.switchState();
     };
-    Widget.prototype.done = function () {
+    Widget.prototype.release = function () {
         window.console.log("release " + this.name);
+        this.switchState();
     };
-    Widget.prototype.postDone = function () {
+    Widget.prototype.postRelease = function () {
         window.console.log("postRelease " + this.name);
     };
     Widget.prototype.update = function (deltaTime) {
+        if (this.needShow && this.widgetState == Widget.STATE_INVISIBLE) {
+            var isCanShow = true;
+            for (var i = 0; i < Widget.widgets.length; i++) {
+                if (Widget.widgets[i].widgetState != Widget.STATE_INVISIBLE && !Widget.widgets[i].isDialog) {
+                    isCanShow = false;
+                    break;
+                }
+            }
+            //
+            if (isCanShow || this.isDialog) {
+                this.widgetState = Widget.STATE_SHOW;
+                this.init();
+            }
+        }
+        else if ((this.needHide || this.needRemove) && this.widgetState == Widget.STATE_VISIBLE) {
+            this.widgetState = Widget.STATE_HIDE;
+            this.preRelease();
+        }
+        else if (this.needRemove && this.widgetState == Widget.STATE_INVISIBLE) {
+            this.widgetState = Widget.STATE_REMOVED;
+            this.needDelete = true;
+        }
     };
-    Widget.prototype.show = function () {
-        window.console.log("show " + this.name);
+    Widget.prototype.switchState = function () {
+        if (this.widgetState == Widget.STATE_SHOW) {
+            this.widgetState = Widget.STATE_VISIBLE;
+            this.postInit();
+            this.needShow = false;
+        }
+        else if (this.widgetState == Widget.STATE_HIDE) {
+            this.widgetState = Widget.STATE_INVISIBLE;
+            this.release();
+            this.needHide = false;
+        }
     };
-    Widget.prototype.hide = function () {
-        if (this.needDelete)
-            return;
-        window.console.log("hide " + this.name);
-        this.needDelete = true;
-        this.preDone();
+    Widget.prototype.open = function () {
+        console.log("open " + this.name);
+        if (this.widgetState == Widget.STATE_INVISIBLE) {
+            this.widgetState = Widget.STATE_SHOW;
+            this.preInit();
+            this.needShow = true;
+            this.needRemove = false;
+        }
     };
-    Widget.prototype.doShow = function () {
-        window.console.log("doShow " + this.name);
-        this.postInit();
+    Widget.prototype.close = function () {
+        window.console.log("close " + this.name);
+        if (this.widgetState == Widget.STATE_VISIBLE) {
+            this.widgetState = Widget.STATE_HIDE;
+            this.preRelease();
+            this.needShow = false;
+            this.needRemove = true;
+        }
     };
-    Widget.prototype.doHide = function () {
-        window.console.log("doHide " + this.name);
-        this.preDone();
+    Widget.prototype.resize = function () {
     };
     Widget.prototype.hitTest = function (x, y) {
         return false;
@@ -65,97 +118,152 @@ var Widget = (function () {
     /**
      *
      */
-    Widget.init = function (_container) {
-        Widget.container = _container;
-        Widget.list.splice(0, Widget.list.length);
-    };
-    Widget.done = function () {
-        for (var i = Widget.list.length - 1; i >= 0; i--) {
-            var window = Widget.list[i];
-            window.preDone();
-            //if ( Widget.container.contains(window) ) {
-            //    Widget.container.removeChild(window);
-            //}
-            window.done();
-            window = null;
-        }
-        Widget.list.splice(0, Widget.list.length);
+    Widget.initWidgets = function () {
     };
     /**
      *
      */
-    Widget.update = function (deltaTime) {
-        for (var i = Widget.list.length - 1; i >= 0; i--) {
-            var window = Widget.list[i];
-            if (window.needDelete) {
-                //if ( Widget.container.contains(window) ) {
-                //    Widget.container.removeChild(window);
-                //}
-                window.done();
-                Widget.list.splice(i, 1);
-            }
-            else {
-                window.update(deltaTime);
-            }
+    Widget.doneWidgets = function () {
+        for (var i = Widget.widgets.length - 1; i >= 0; i--) {
+            var widget = Widget.widgets[i];
+            if (widget.widgetState == Widget.STATE_VISIBLE)
+                widget.preRelease();
+            if (widget.widgetState == Widget.STATE_HIDE)
+                widget.release();
+            widget.postRelease();
+            widget = null;
         }
+        Widget.widgets.splice(0, Widget.widgets.length);
     };
     /**
      *
-     * @param name
-     * @param newWindow
      */
-    Widget.add = function (name, newWindow) {
-        newWindow.screen = Widget.container;
-        newWindow.name = name;
-        for (var i = Widget.list.length - 1; i >= 0; i--) {
-            var window = Widget.list[i];
-            if (window.name == name) {
-                window.preDone();
-                window.doHide();
-                window = null;
+    Widget.addWidget = function (name, widget) {
+        if (widget == null)
+            return;
+        widget.name = name;
+        for (var i = 0; i < Widget.widgets.length; i++) {
+            if (Widget.widgets[i].name == name) {
+                return;
             }
         }
-        Widget.list.push(newWindow);
-        newWindow.init();
-        newWindow.doShow();
-        //Widget.container.addChild(newWindow);
+        Widget.widgets.push(widget);
+        widget.preInit();
     };
-    Widget.get = function (name) {
-        for (var i = Widget.list.length - 1; i >= 0; i--) {
-            var window = Widget.list[i];
-            if (window.name == name) {
-                return window;
+    /**
+     *
+     */
+    Widget.getWidget = function (name) {
+        for (var i = Widget.widgets.length - 1; i >= 0; i--) {
+            var widget = Widget.widgets[i];
+            if (widget.name == name) {
+                return widget;
             }
         }
         return null;
     };
+    /**
+     *
+     */
+    Widget.showWidget = function (name) {
+        for (var i = Widget.widgets.length - 1; i >= 0; i--) {
+            var widget = Widget.widgets[i];
+            if (widget.name == name) {
+                //widget.params = params;
+                widget.needShow = true;
+                widget.needHide = false;
+            }
+        }
+    };
+    /**
+     *
+     */
+    Widget.hideWidget = function (name) {
+        for (var i = Widget.widgets.length - 1; i >= 0; i--) {
+            var widget = Widget.widgets[i];
+            if (widget.name == name) {
+                widget.needShow = false;
+                widget.needHide = true;
+            }
+        }
+    };
+    /**
+     *
+     */
+    Widget.removeWidget = function (name) {
+        for (var i = Widget.widgets.length - 1; i >= 0; i--) {
+            var widget = Widget.widgets[i];
+            if (widget.name == name) {
+                widget.needRemove = true;
+                widget.needShow = false;
+                widget.needHide = false;
+            }
+        }
+    };
+    /**
+     *
+     */
+    Widget.resizeWidget = function () {
+        for (var i = Widget.widgets.length - 1; i >= 0; i--) {
+            var widget = Widget.widgets[i];
+            widget.resize();
+        }
+    };
+    /**
+     *
+     */
+    Widget.updateWidgets = function (deltaTime) {
+        for (var i = Widget.widgets.length - 1; i >= 0; i--) {
+            var widget = Widget.widgets[i];
+            if (widget.needDelete) {
+                widget.postRelease();
+                Widget.widgets.splice(i, 1);
+            }
+            else {
+                widget.update(deltaTime);
+            }
+        }
+    };
+    /**
+     *
+     */
+    Widget.isDialogs = function () {
+        for (var i = Widget.widgets.length - 1; i >= 0; i--) {
+            if (Widget.widgets[i].isDialog)
+                return true;
+        }
+        return false;
+    };
+    /**
+     *
+     */
     Widget.onMouseDown = function (x, y) {
-        for (var i = Widget.list.length - 1; i >= 0; i--) {
-            var window = Widget.list[i];
-            if (window.hitTest(x, y)) {
-                window.onMouseDown(x, y);
-                window.active = true;
+        for (var i = Widget.widgets.length - 1; i >= 0; i--) {
+            var widget = Widget.widgets[i];
+            if (widget.hitTest(x, y)) {
+                widget.onMouseDown(x, y);
+                //widget.active = true;
                 break;
             }
         }
     };
     Widget.onMouseUp = function (x, y) {
-        var window = null;
-        for (var i = Widget.list.length - 1; i >= 0; i--) {
-            window = Widget.list[i];
-            if (window.active) {
-                break;
-            }
+        var widget = null;
+        for (var i = Widget.widgets.length - 1; i >= 0; i--) {
+            widget = Widget.widgets[i];
+            //if (window.active) {
+            //   break;
+            //}
         }
         //
-        if (window == null)
+        if (widget == null)
             return;
-        window.onMouseUp(x, y);
-        window.active = false;
+        widget.onMouseUp(x, y);
+        //window.active = false;
     };
     Widget.onMouseMove = function (x, y) {
-        var window = null;
-        for (var i = Widget.list.length - 1; i >= 0; i--) {
+        /*var window:Widget = null;
+        for (var i:number = Widget.list.length - 1; i >= 0; i--) {
             window = Widget.list[i];
             if (window.active) {
                 break;
@@ -163,41 +271,40 @@ var Widget = (function () {
         }
         //
         if (window == null) {
-            for (var i = Widget.list.length - 1; i >= 0; i--) {
+            for (var i:number = Widget.list.length - 1; i >= 0; i--) {
                 window = Widget.list[i];
                 if (window.hitTest(x, y)) {
                     window.onMouseMove(x, y);
                     break;
                 }
             }
-        }
-        else {
+        } else {
             window.onMouseMove(x, y);
             window.active = false;
-        }
+        }*/
     };
     Widget.onMouseOut = function () {
         this.over = false;
-        for (var i = Widget.list.length - 1; i >= 0; i--) {
-            var window = Widget.list[i];
+        /*for (var i:number = Widget.list.length - 1; i >= 0; i--) {
+            var window:Widget = Widget.list[i];
             window.onMouseOut();
-        }
+        }*/
     };
     Widget.onMouseIn = function () {
         this.over = true;
-        for (var i = Widget.list.length - 1; i >= 0; i--) {
-            var window = Widget.list[i];
+        /*for (var i:number = Widget.list.length - 1; i >= 0; i--) {
+            var window:Widget = Widget.list[i];
             window.onMouseIn();
-        }
+        }*/
     };
     return Widget;
 }());
-/**
- *
- */
-Widget.list = new Array();
-Widget.container = null;
-Widget.oldTime = 0;
+Widget.STATE_INVISIBLE = 0;
+Widget.STATE_SHOW = 1;
+Widget.STATE_VISIBLE = 2;
+Widget.STATE_HIDE = 3;
+Widget.STATE_REMOVED = 4;
+Widget.widgets = new Array();
 Widget.over = false;
 exports.Widget = Widget;
 //# sourceMappingURL=Widget.js.map

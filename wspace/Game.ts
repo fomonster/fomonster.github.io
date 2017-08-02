@@ -1,11 +1,11 @@
-//import THREE = require('three.js');
 import * as THREE from 'three.js';
 import * as PIXI from 'pixi.js';
 import {Widget} from "./Visual/Widget";
-//import {LoaderWidget} from "./Logic/Widgets/LoaderWidget";
 import {Particles} from "./Visual/Particles"
 
-export class Game {
+
+export class Game
+{
 
     public static baseWidth:number = 1024;
     public static baseHeight:number = 768;
@@ -54,53 +54,12 @@ export class Game {
 
         Game.init2DRender();
 
-
-        //-------------------------------------------------------------------------------------
-        // 3D Scene
-        //-------------------------------------------------------------------------------------
-
-        var geometry = new THREE.BoxGeometry( 100, 100, 300 );
-        var material = new THREE.MeshNormalMaterial();
-        var cube = new THREE.Mesh( geometry, material );
-        cube.position.z = 0;
-        cube.rotation.z = -45;
-        Game.scene.add( cube );
-
-
-        var mesh:THREE.Mesh = new THREE.Mesh(
-            new THREE.SphereBufferGeometry( 100, 16, 8 ),
-            new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: true } )
-        );
-        Game.scene.add( mesh );
-
         Game.lastTime = Date.now() * 0.0001;
 
-        //-------------------------------------------------------------------------------------
-        // 2D Scene
-        //-------------------------------------------------------------------------------------
-
-        var graphics = new PIXI.Graphics();
-        graphics.beginFill( 0xe60630 );
-        graphics.moveTo( 0,0  );
-        graphics.lineTo( 100, 0);
-        graphics.lineTo( 100, 100 );
-        graphics.lineTo( 0, 100 );
-        graphics.endFill();
-        Game.screen.addChild( graphics );
-        Game.graphicsA = graphics;
-
-        graphics = new PIXI.Graphics();
-        graphics.beginFill( 0x06e630 );
-        graphics.moveTo( 0,0  );
-        graphics.lineTo( 100, 0);
-        graphics.lineTo( 100, 100 );
-        graphics.lineTo( 0, 100 );
-        graphics.endFill();
-        Game.screen.addChild( graphics );
-        Game.graphicsB = graphics;
+        Widget.initWidgets();
 
         //-------------------------------------------------------------------------------------
-        // Animation
+        // Render + Update
         //-------------------------------------------------------------------------------------
 
         const handler = () => {
@@ -147,11 +106,10 @@ export class Game {
         });
 
         Game.resize();
-
     }
 
     public static done():void {
-        Widget.done();
+        Widget.doneWidgets();
     }
 
     public static init3DRender()
@@ -167,6 +125,7 @@ export class Game {
 
         Game.scene = new THREE.Scene();
 
+        alert( "wow 1"+Game.scene );
     }
 
     public static init2DRender()
@@ -182,6 +141,7 @@ export class Game {
 
         Game.screen = new PIXI.Container();
         Game.stage.addChild(Game.screen);
+
     }
 
     public static update(deltaTime)
@@ -201,7 +161,7 @@ export class Game {
         Game.camera.lookAt(Game.scene.position);
 
         Particles.update(deltaTime);
-        Widget.update(deltaTime);
+        Widget.updateWidgets(deltaTime);
 
         Game.render();
     }
@@ -273,6 +233,8 @@ export class Game {
             Game.graphicsB.x = Game.screenWidth + Game.screenLeft - 100;
             Game.graphicsB.y = Game.screenHeight + Game.screenTop - 100;
         }
+
+        Widget.resizeWidget();
     }
 
 }

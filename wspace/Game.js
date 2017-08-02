@@ -1,10 +1,8 @@
 "use strict";
 exports.__esModule = true;
-//import THREE = require('three.js');
 var THREE = require("three.js");
 var PIXI = require("pixi.js");
 var Widget_1 = require("./Visual/Widget");
-//import {LoaderWidget} from "./Logic/Widgets/LoaderWidget";
 var Particles_1 = require("./Visual/Particles");
 var Game = (function () {
     function Game() {
@@ -16,41 +14,10 @@ var Game = (function () {
         Game.container = container;
         Game.init3DRender();
         Game.init2DRender();
-        //-------------------------------------------------------------------------------------
-        // 3D Scene
-        //-------------------------------------------------------------------------------------
-        var geometry = new THREE.BoxGeometry(100, 100, 300);
-        var material = new THREE.MeshNormalMaterial();
-        var cube = new THREE.Mesh(geometry, material);
-        cube.position.z = 0;
-        cube.rotation.z = -45;
-        Game.scene.add(cube);
-        var mesh = new THREE.Mesh(new THREE.SphereBufferGeometry(100, 16, 8), new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true }));
-        Game.scene.add(mesh);
         Game.lastTime = Date.now() * 0.0001;
+        Widget_1.Widget.initWidgets();
         //-------------------------------------------------------------------------------------
-        // 2D Scene
-        //-------------------------------------------------------------------------------------
-        var graphics = new PIXI.Graphics();
-        graphics.beginFill(0xe60630);
-        graphics.moveTo(0, 0);
-        graphics.lineTo(100, 0);
-        graphics.lineTo(100, 100);
-        graphics.lineTo(0, 100);
-        graphics.endFill();
-        Game.screen.addChild(graphics);
-        Game.graphicsA = graphics;
-        graphics = new PIXI.Graphics();
-        graphics.beginFill(0x06e630);
-        graphics.moveTo(0, 0);
-        graphics.lineTo(100, 0);
-        graphics.lineTo(100, 100);
-        graphics.lineTo(0, 100);
-        graphics.endFill();
-        Game.screen.addChild(graphics);
-        Game.graphicsB = graphics;
-        //-------------------------------------------------------------------------------------
-        // Animation
+        // Render + Update
         //-------------------------------------------------------------------------------------
         var handler = function () {
             var time = Date.now() * 0.0001;
@@ -89,7 +56,7 @@ var Game = (function () {
         Game.resize();
     };
     Game.done = function () {
-        Widget_1.Widget.done();
+        Widget_1.Widget.doneWidgets();
     };
     Game.init3DRender = function () {
         Game.renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -99,6 +66,7 @@ var Game = (function () {
         Game.container.appendChild(Game.renderer.domElement);
         Game.camera = new THREE.PerspectiveCamera(20, window.innerWidth / window.innerHeight, 1, 30000);
         Game.scene = new THREE.Scene();
+        alert("wow 1" + Game.scene);
     };
     Game.init2DRender = function () {
         Game.stage = new PIXI.Stage(0xffffff);
@@ -122,7 +90,7 @@ var Game = (function () {
         //Game.camera.position.y += (- mouseY - camera.position.y) * 0.05;
         Game.camera.lookAt(Game.scene.position);
         Particles_1.Particles.update(deltaTime);
-        Widget_1.Widget.update(deltaTime);
+        Widget_1.Widget.updateWidgets(deltaTime);
         Game.render();
     };
     Game.render = function () {
@@ -181,6 +149,7 @@ var Game = (function () {
             Game.graphicsB.x = Game.screenWidth + Game.screenLeft - 100;
             Game.graphicsB.y = Game.screenHeight + Game.screenTop - 100;
         }
+        Widget_1.Widget.resizeWidget();
     };
     return Game;
 }());
