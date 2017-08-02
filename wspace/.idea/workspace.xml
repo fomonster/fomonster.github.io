@@ -1,0 +1,534 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="517c6efc-afad-4cc6-b549-a781f5eccf57" name="Default" comment="" />
+    <ignored path="prototype.iws" />
+    <ignored path=".idea/workspace.xml" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CreatePatchCommitExecutor">
+    <option name="PATCH_PATH" value="" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
+  <component name="FavoritesManager">
+    <favorites_list name="prototype" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/index.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="918">
+              <caret line="54" column="0" lean-forward="false" selection-start-line="54" selection-start-column="0" selection-end-line="54" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Game.ts" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Game.ts">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="51">
+              <caret line="225" column="49" lean-forward="false" selection-start-line="225" selection-start-column="49" selection-end-line="225" selection-end-column="49" />
+              <folding>
+                <element signature="e#38#72#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Particle.ts" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Visual/Particle.ts">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="255">
+              <caret line="15" column="22" lean-forward="false" selection-start-line="15" selection-start-column="22" selection-end-line="15" selection-end-column="22" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Widget.ts" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Visual/Widget.ts">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="4216">
+              <caret line="250" column="9" lean-forward="false" selection-start-line="250" selection-start-column="9" selection-end-line="250" selection-end-column="9" />
+              <folding>
+                <element signature="n#!!doc" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="TypeScript File" />
+      </list>
+    </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>onMouseIn</find>
+      <find>GAME_STATE_DROP</find>
+      <find>consloe</find>
+      <find>console</find>
+      <find>text</find>
+      <find>setText</find>
+      <find>basicText</find>
+      <find>End</find>
+      <find>audio</find>
+      <find>movementX</find>
+      <find>particle</find>
+      <find>ParticleSimple</find>
+      <find>applyImpulse</find>
+      <find>onMouseOut</find>
+      <find>dragon</find>
+      <find>startPosY</find>
+      <find>mouseUp</find>
+      <find>ысфду</find>
+      <find>scale</find>
+      <find>marginRightGen</find>
+      <find>minXGen</find>
+      <find>particles</find>
+      <find>App.</find>
+      <find>this.</find>
+    </findStrings>
+    <replaceStrings>
+      <replace>Game.</replace>
+    </replaceStrings>
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/pixi-typescript-4.x/pixi.js.d.ts" />
+        <option value="$PROJECT_DIR$/src/App.js" />
+        <option value="$PROJECT_DIR$/src/App.ts" />
+        <option value="$PROJECT_DIR$/src/smoothie.js" />
+        <option value="$PROJECT_DIR$/src/SS/GUI.ts" />
+        <option value="$PROJECT_DIR$/src/SS/GUIWidget.ts" />
+        <option value="$PROJECT_DIR$/src/SS/Widget.ts" />
+        <option value="$PROJECT_DIR$/src/Logic/Display/Loader.ts" />
+        <option value="$PROJECT_DIR$/src/Logic/Display/FlyGame.ts" />
+        <option value="$PROJECT_DIR$/src/Logic/Widgets/Loader.ts" />
+        <option value="$PROJECT_DIR$/src/Logic/Visual/Background.ts" />
+        <option value="$PROJECT_DIR$/src/Logic/Visual/GameStar.ts" />
+        <option value="$PROJECT_DIR$/src/Logic/Visual/GameProgress.ts" />
+        <option value="$PROJECT_DIR$/src/Visual/Particles.ts" />
+        <option value="$PROJECT_DIR$/src/Logic/Visual/GameGround.ts" />
+        <option value="$PROJECT_DIR$/src/Logic/Visual/GameBuildings.ts" />
+        <option value="$PROJECT_DIR$/src/Logic/Visual/GameBackground.ts" />
+        <option value="$PROJECT_DIR$/src/Visual/Particle.ts" />
+        <option value="$PROJECT_DIR$/src/Game.ts" />
+        <option value="$PROJECT_DIR$/src/Logic/Widgets/LoaderWidget.ts" />
+        <option value="$PROJECT_DIR$/src/Logic/Visual/ParticleSimple.ts" />
+        <option value="$PROJECT_DIR$/src/Logic/Visual/GameDragon.ts" />
+        <option value="$PROJECT_DIR$/src/Logic/Widgets/FlyGameWidget.ts" />
+        <option value="$PROJECT_DIR$/src/Logic/Visual/GameStars.ts" />
+        <option value="$PROJECT_DIR$/src/Visual/Widget.ts" />
+        <option value="$PROJECT_DIR$/three.js" />
+        <option value="$PROJECT_DIR$/index.html" />
+        <option value="$PROJECT_DIR$/App.ts" />
+        <option value="$PROJECT_DIR$/Game.ts" />
+      </list>
+    </option>
+  </component>
+  <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsGulpfileManager">
+    <detection-done>true</detection-done>
+    <sorting>DEFINITION_ORDER</sorting>
+  </component>
+  <component name="ProjectFrameBounds">
+    <option name="x" value="-8" />
+    <option name="y" value="-8" />
+    <option name="width" value="1936" />
+    <option name="height" value="1056" />
+  </component>
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
+      <autoscrollFromSource />
+      <sortByType />
+      <manualOrder />
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="wspace" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="wspace" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="wspace" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="wspace" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Visual" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+      <pane id="Scratches" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="HbShouldOpenHtmlAsHb" value="" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="editor.config.accepted" value="true" />
+    <property name="js-jscs-nodeInterpreter" value="C:\Dev\nodejs\node.exe" />
+    <property name="settings.editor.selected.configurable" value="settings.typescriptcompiler" />
+    <property name="nodejs_interpreter_path" value="C:/Dev/nodejs/node" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Work\prototype\src" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Work\prototype\src\Visual" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="JavaScript Debug.debug">
+    <configuration default="true" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
+      <method />
+    </configuration>
+    <configuration default="true" type="DartTestRunConfigurationType" factoryName="Dart Test">
+      <method />
+    </configuration>
+    <configuration default="true" type="JavaScriptTestRunnerJest" factoryName="Jest">
+      <node-interpreter value="project" />
+      <working-dir value="" />
+      <envs />
+      <scope-kind value="ALL" />
+      <method />
+    </configuration>
+    <configuration default="true" type="JavaScriptTestRunnerKarma" factoryName="Karma">
+      <config-file value="" />
+      <node-interpreter value="project" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="JavaScriptTestRunnerProtractor" factoryName="Protractor">
+      <config-file value="" />
+      <node-interpreter value="project" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug">
+      <method />
+    </configuration>
+    <configuration default="true" type="NodeJSConfigurationType" factoryName="Node.js" path-to-node="project" working-dir="">
+      <method />
+    </configuration>
+    <configuration default="true" type="cucumber.js" factoryName="Cucumber.js">
+      <option name="cucumberJsArguments" value="" />
+      <option name="executablePath" />
+      <option name="filePath" />
+      <method />
+    </configuration>
+    <configuration default="true" type="js.build_tools.gulp" factoryName="Gulp.js">
+      <node-interpreter>project</node-interpreter>
+      <node-options />
+      <gulpfile />
+      <tasks />
+      <arguments />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="js.build_tools.npm" factoryName="npm">
+      <command value="run" />
+      <scripts />
+      <node-interpreter value="project" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="mocha-javascript-test-runner" factoryName="Mocha">
+      <node-interpreter>project</node-interpreter>
+      <node-options />
+      <working-directory />
+      <pass-parent-env>true</pass-parent-env>
+      <envs />
+      <ui>bdd</ui>
+      <extra-mocha-options />
+      <test-kind>DIRECTORY</test-kind>
+      <test-directory />
+      <recursive>false</recursive>
+      <method />
+    </configuration>
+    <configuration default="false" name="debug" type="JavascriptDebugType" factoryName="JavaScript Debug" uri="http://localhost:63342/wspace/index.html">
+      <method />
+    </configuration>
+    <list size="1">
+      <item index="0" class="java.lang.String" itemvalue="JavaScript Debug.debug" />
+    </list>
+  </component>
+  <component name="ShelveChangesManager" show_recycled="false">
+    <option name="remove_strategy" value="false" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="517c6efc-afad-4cc6-b549-a781f5eccf57" name="Default" comment="" />
+      <created>1493025079780</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1493025079780</updated>
+      <workItem from="1493025080868" duration="273000" />
+      <workItem from="1493025437125" duration="41000" />
+      <workItem from="1493025517370" duration="18047000" />
+      <workItem from="1493048660401" duration="19661000" />
+      <workItem from="1493106153941" duration="907000" />
+      <workItem from="1493107352348" duration="193000" />
+      <workItem from="1493107593921" duration="3236000" />
+      <workItem from="1493111187546" duration="1172000" />
+      <workItem from="1493112859562" duration="1108000" />
+      <workItem from="1493114091309" duration="29813000" />
+      <workItem from="1493193425933" duration="20000" />
+      <workItem from="1493194864000" duration="4464000" />
+      <workItem from="1493206062179" duration="3026000" />
+      <workItem from="1493209194301" duration="9451000" />
+      <workItem from="1493229603828" duration="3480000" />
+      <workItem from="1493274963293" duration="259000" />
+      <workItem from="1493275322994" duration="4624000" />
+      <workItem from="1493796349234" duration="2543000" />
+      <workItem from="1494958835740" duration="639000" />
+      <workItem from="1494959809024" duration="3744000" />
+      <workItem from="1494967957387" duration="5190000" />
+      <workItem from="1495022107150" duration="8283000" />
+      <workItem from="1495099724177" duration="1089000" />
+      <workItem from="1495101792756" duration="252000" />
+      <workItem from="1495102105043" duration="6172000" />
+      <workItem from="1500891472953" duration="1171000" />
+      <workItem from="1500986529754" duration="250000" />
+      <workItem from="1501672142765" duration="108000" />
+      <workItem from="1501672567144" duration="2092000" />
+      <workItem from="1501674818435" duration="1919000" />
+      <workItem from="1501676769651" duration="1717000" />
+      <workItem from="1501679857950" duration="1806000" />
+      <workItem from="1501681790273" duration="2398000" />
+      <workItem from="1501684605502" duration="2306000" />
+      <workItem from="1501686936252" duration="1896000" />
+      <workItem from="1501688853921" duration="70000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="143420000" />
+  </component>
+  <component name="TodoView">
+    <todo-panel id="selected-file">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <layout>
+      <window_info id="TypeScript" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18854167" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32944915" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="TypeScript Compiler" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32946146" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32946146" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+    </layout>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="processedProjectFiles" value="true" />
+  </component>
+  <component name="Vcs.Log.UiProperties">
+    <option name="RECENTLY_FILTERED_USER_GROUPS">
+      <collection />
+    </option>
+    <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+      <collection />
+    </option>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <option name="time" value="2" />
+    </breakpoint-manager>
+    <watches-manager />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/src/Game.ts" />
+    <entry file="file://$PROJECT_DIR$/src/Logic/Widgets/LoaderWidget.ts" />
+    <entry file="file://$PROJECT_DIR$/src/Logic/Visual/GameBackground.ts" />
+    <entry file="file://$PROJECT_DIR$/src/Logic/Visual/GameGround.ts" />
+    <entry file="file://$PROJECT_DIR$/src/Logic/Visual/GameDragon.ts" />
+    <entry file="file://$PROJECT_DIR$/src/Logic/Visual/GameBuildings.ts" />
+    <entry file="file://$PROJECT_DIR$/src/Logic/Widgets/FlyGameWidget.ts" />
+    <entry file="file://$PROJECT_DIR$/src/Logic/Visual/GameProgress.ts" />
+    <entry file="file://$PROJECT_DIR$/src/Visual/Widget.ts" />
+    <entry file="file://$PROJECT_DIR$/src/Logic/Visual/GameStars.ts" />
+    <entry file="file://$PROJECT_DIR$/src/Game.ts" />
+    <entry file="file://$PROJECT_DIR$/src/Logic/Widgets/LoaderWidget.ts" />
+    <entry file="file://$PROJECT_DIR$/src/Logic/Visual/GameBackground.ts" />
+    <entry file="file://$PROJECT_DIR$/src/Logic/Visual/GameStars.ts" />
+    <entry file="file://$PROJECT_DIR$/src/Logic/Visual/GameGround.ts" />
+    <entry file="file://$PROJECT_DIR$/src/Logic/Visual/GameDragon.ts" />
+    <entry file="file://$PROJECT_DIR$/src/Logic/Visual/GameBuildings.ts" />
+    <entry file="file://$PROJECT_DIR$/src/Logic/Visual/GameProgress.ts" />
+    <entry file="file://$PROJECT_DIR$/src/Visual/Widget.ts" />
+    <entry file="file://$PROJECT_DIR$/src/Logic/Widgets/FlyGameWidget.ts" />
+    <entry file="file://$PROJECT_DIR$/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="272">
+          <caret line="16" column="50" lean-forward="false" selection-start-line="16" selection-start-column="50" selection-end-line="16" selection-end-column="50" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Game.ts" />
+    <entry file="file://$PROJECT_DIR$/src/Logic/Widgets/LoaderWidget.ts" />
+    <entry file="file://$PROJECT_DIR$/src/Logic/Visual/GameBackground.ts" />
+    <entry file="file://$PROJECT_DIR$/src/Logic/Visual/GameGround.ts" />
+    <entry file="file://$PROJECT_DIR$/src/Logic/Visual/GameDragon.ts" />
+    <entry file="file://$PROJECT_DIR$/src/Logic/Visual/GameBuildings.ts" />
+    <entry file="file://$PROJECT_DIR$/src/Visual/Widget.ts" />
+    <entry file="file://$PROJECT_DIR$/src/Logic/Widgets/FlyGameWidget.ts" />
+    <entry file="file://$PROJECT_DIR$/src/Game.ts" />
+    <entry file="file://$PROJECT_DIR$/src/Logic/Visual/GameProgress.ts" />
+    <entry file="file://$PROJECT_DIR$/src/Visual/Particle.ts" />
+    <entry file="file://$PROJECT_DIR$/src/Logic/Visual/ParticleSimple.ts" />
+    <entry file="file://$PROJECT_DIR$/src/Logic/Visual/GameGround.ts" />
+    <entry file="file://$PROJECT_DIR$/src/Logic/Visual/GameDragon.ts" />
+    <entry file="file://$PROJECT_DIR$/src/Logic/Visual/GameBuildings.ts" />
+    <entry file="file://$PROJECT_DIR$/src/Visual/Widget.ts" />
+    <entry file="file://$PROJECT_DIR$/src/Logic/Visual/GameBackground.ts" />
+    <entry file="file://$PROJECT_DIR$/src/Logic/Visual/GameStars.ts" />
+    <entry file="file://$PROJECT_DIR$/src/Visual/Particles.ts" />
+    <entry file="file://$PROJECT_DIR$/src/Logic/Widgets/LoaderWidget.ts" />
+    <entry file="file://$PROJECT_DIR$/src/Logic/Widgets/FlyGameWidget.ts" />
+    <entry file="file://$PROJECT_DIR$/pixi.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="13662" column="40" lean-forward="false" selection-start-line="13662" selection-start-column="40" selection-end-line="13662" selection-end-column="40" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/smoothie.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/three.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
+          <caret line="8" column="2" lean-forward="false" selection-start-line="8" selection-start-column="2" selection-end-line="9" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/geometry.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="935">
+          <caret line="55" column="17" lean-forward="true" selection-start-line="55" selection-start-column="17" selection-end-line="55" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Visual/Particle.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="15" column="22" lean-forward="false" selection-start-line="15" selection-start-column="22" selection-end-line="15" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Visual/Widget.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4216">
+          <caret line="250" column="9" lean-forward="false" selection-start-line="250" selection-start-column="9" selection-end-line="250" selection-end-column="9" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="918">
+          <caret line="54" column="0" lean-forward="false" selection-start-line="54" selection-start-column="0" selection-end-line="54" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Game.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="225" column="49" lean-forward="false" selection-start-line="225" selection-start-column="49" selection-end-line="225" selection-end-column="49" />
+          <folding>
+            <element signature="e#38#72#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>

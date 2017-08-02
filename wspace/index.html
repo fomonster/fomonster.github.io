@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Elite game</title>
+
+		<meta charset="utf-8"/>
+		<meta name="description" content=""/>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+		<meta http-equiv="pragma" content="no-cache"/>
+		<meta http-equiv="cache-control" content="no-cache"/>
+		<meta http-equiv="expires" content="0"/>
+		<meta http-equiv="max-age" content="0"/>
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+		<script>
+            exports = {};
+		</script>
+		<script src="smoothie.js"></script>
+		<script src="three.js"></script>
+		<script src="Game.js"></script>
+		<script src="geometry.js"></script>
+
+		<style>
+			body {
+				color: #808080;
+				font-family:Monospace;
+				font-size:13px;
+				text-align:center;
+
+				background-color: #fff;
+				margin: 0px;
+				overflow: hidden;
+			}
+
+			#info {
+				position: absolute;
+				top: 0px; width: 100%;
+				padding: 5px;
+			}
+
+			a {
+
+				color: #0080ff;
+			}
+
+		</style>
+	</head>
+	<script>
+
+		var app;
+		function onLoad() {
+
+			var container = document.getElementById('container');
+			Game.init(container);
+
+
+		};
+
+    </script>
+    <body onload="onLoad();">
+        <div id="container"></div>
+    </body>
+
+</html>
