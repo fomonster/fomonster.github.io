@@ -1,6 +1,6 @@
 
 import * as THREE from 'three';
-import * as PIXI from 'pixi.js';
+import * as PIXI from 'pixi.js'; 
 import {Widget} from "./engine/Widget";
 import {Particles} from "./engine/Particles"
 import {Screen} from "./game/Screen"

@@ -33,14 +33,12 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Game.ts" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Game.ts" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Game.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="718">
-              <caret line="150" column="36" lean-forward="true" selection-start-line="150" selection-start-column="36" selection-end-line="150" selection-end-column="36" />
-              <folding>
-                <element signature="e#1#32#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="34">
+              <caret line="2" column="33" lean-forward="false" selection-start-line="2" selection-start-column="33" selection-end-line="2" selection-end-column="33" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -58,14 +56,13 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="LoaderWidget.ts" pinned="false" current-in-tab="true">
+      <file leaf-file-name="LoaderWidget.ts" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/game/widgets/LoaderWidget.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="170">
-              <caret line="10" column="40" lean-forward="true" selection-start-line="10" selection-start-column="40" selection-end-line="10" selection-end-column="40" />
+            <state relative-caret-position="102">
+              <caret line="6" column="28" lean-forward="true" selection-start-line="6" selection-start-column="28" selection-end-line="6" selection-end-column="28" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
-                <element signature="e#116#148#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -170,8 +167,8 @@
         <option value="$PROJECT_DIR$/tsconfig.json" />
         <option value="$PROJECT_DIR$/src/game/Screen.ts" />
         <option value="$PROJECT_DIR$/src/game/widgets/GameWidget.ts" />
-        <option value="$PROJECT_DIR$/src/Game.ts" />
         <option value="$PROJECT_DIR$/src/game/widgets/LoaderWidget.ts" />
+        <option value="$PROJECT_DIR$/src/Game.ts" />
       </list>
     </option>
   </component>
@@ -223,13 +220,7 @@
             <path>
               <item name="space" type="b2602c69:ProjectViewProjectNode" />
               <item name="space" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="space" type="b2602c69:ProjectViewProjectNode" />
-              <item name="space" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="game" type="462c0819:PsiDirectoryNode" />
+              <item name="bin" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -375,12 +366,12 @@
       <workItem from="1501760560053" duration="3240000" />
       <workItem from="1501764239192" duration="503000" />
       <workItem from="1501765027300" duration="14881000" />
-      <workItem from="1501799645375" duration="2599000" />
+      <workItem from="1501799645375" duration="4281000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="179035000" />
+    <option name="totallyTimeSpent" value="180717000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -615,24 +606,21 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Game.ts">
+    <entry file="file://$PROJECT_DIR$/src/game/widgets/LoaderWidget.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="718">
-          <caret line="150" column="36" lean-forward="true" selection-start-line="150" selection-start-column="36" selection-end-line="150" selection-end-column="36" />
+        <state relative-caret-position="102">
+          <caret line="6" column="28" lean-forward="true" selection-start-line="6" selection-start-column="28" selection-end-line="6" selection-end-column="28" />
           <folding>
-            <element signature="e#1#32#0" expanded="true" />
+            <element signature="n#!!doc" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/game/widgets/LoaderWidget.ts">
+    <entry file="file://$PROJECT_DIR$/src/Game.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="10" column="40" lean-forward="true" selection-start-line="10" selection-start-column="40" selection-end-line="10" selection-end-column="40" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-            <element signature="e#116#148#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="34">
+          <caret line="2" column="33" lean-forward="false" selection-start-line="2" selection-start-column="33" selection-end-line="2" selection-end-column="33" />
+          <folding />
         </state>
       </provider>
     </entry>
