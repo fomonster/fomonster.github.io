@@ -16,14 +16,17 @@ exports.__esModule = true;
  * http://www.photoshopessentials.com/photo-effects/rotoscope/
  *
  */
-var THREE = require("../../three.js");
-var PIXI = require("../../pixi.js");
+var THREE = require("three.js");
+var PIXI = require("pixi.js");
 var Widget_1 = require("../../Visual/Widget");
-var Game_1 = require("../../Game");
+var Screen_1 = require("../../Screen");
 var GameWidget = (function (_super) {
     __extends(GameWidget, _super);
     function GameWidget() {
-        return _super !== null && _super.apply(this, arguments) || this;
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.graphicsA = null;
+        _this.graphicsB = null;
+        return _this;
     }
     GameWidget.prototype.preInit = function () {
         _super.prototype.preInit.call(this);
@@ -33,7 +36,6 @@ var GameWidget = (function (_super) {
     };
     GameWidget.prototype.postInit = function () {
         _super.prototype.postInit.call(this);
-        alert("wow 2" + Game_1.Game.scene);
         //-------------------------------------------------------------------------------------
         // 3D Scene
         //-------------------------------------------------------------------------------------
@@ -42,9 +44,9 @@ var GameWidget = (function (_super) {
         var cube = new THREE.Mesh(geometry, material);
         cube.position.z = 0;
         cube.rotation.z = -45;
-        Game_1.Game.scene.add(cube);
+        Screen_1.Screen.scene.add(cube);
         var mesh = new THREE.Mesh(new THREE.SphereBufferGeometry(100, 16, 8), new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true }));
-        Game_1.Game.scene.add(mesh);
+        Screen_1.Screen.scene.add(mesh);
         //-------------------------------------------------------------------------------------
         // 2D Scene
         //-------------------------------------------------------------------------------------
@@ -55,8 +57,8 @@ var GameWidget = (function (_super) {
         graphics.lineTo(100, 100);
         graphics.lineTo(0, 100);
         graphics.endFill();
-        Game_1.Game.screen.addChild(graphics);
-        Game_1.Game.graphicsA = graphics;
+        Screen_1.Screen.screen.addChild(graphics);
+        this.graphicsA = graphics;
         graphics = new PIXI.Graphics();
         graphics.beginFill(0x06e630);
         graphics.moveTo(0, 0);
@@ -64,8 +66,9 @@ var GameWidget = (function (_super) {
         graphics.lineTo(100, 100);
         graphics.lineTo(0, 100);
         graphics.endFill();
-        Game_1.Game.screen.addChild(graphics);
-        Game_1.Game.graphicsB = graphics;
+        Screen_1.Screen.screen.addChild(graphics);
+        this.graphicsB = graphics;
+        this.resize();
     };
     GameWidget.prototype.preRelease = function () {
         _super.prototype.preRelease.call(this);
@@ -78,6 +81,16 @@ var GameWidget = (function (_super) {
     };
     GameWidget.prototype.update = function (deltaTime) {
         _super.prototype.update.call(this, deltaTime);
+    };
+    GameWidget.prototype.resize = function () {
+        if (this.graphicsA) {
+            this.graphicsA.x = Screen_1.Screen.screenLeft;
+            this.graphicsA.y = Screen_1.Screen.screenTop;
+        }
+        if (this.graphicsB) {
+            this.graphicsB.x = Screen_1.Screen.screenWidth + Screen_1.Screen.screenLeft - 100;
+            this.graphicsB.y = Screen_1.Screen.screenHeight + Screen_1.Screen.screenTop - 100;
+        }
     };
     return GameWidget;
 }(Widget_1.Widget));

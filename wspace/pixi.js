@@ -39294,7 +39294,7 @@ var _mesh = require('./mesh');
 
 var mesh = _interopRequireWildcard(_mesh);
 
-var _particles = require('./Visual/Particles');
+var _particles = require('./particles');
 
 var particles = _interopRequireWildcard(_particles);
 

@@ -1,7 +1,7 @@
+"use strict";
 /**
  * Created by fomonster on 24.04.2017.
  */
-"use strict";
 exports.__esModule = true;
 var Widget = (function () {
     function Widget() {
@@ -297,14 +297,14 @@ var Widget = (function () {
             window.onMouseIn();
         }*/
     };
+    Widget.STATE_INVISIBLE = 0;
+    Widget.STATE_SHOW = 1;
+    Widget.STATE_VISIBLE = 2;
+    Widget.STATE_HIDE = 3;
+    Widget.STATE_REMOVED = 4;
+    Widget.widgets = new Array();
+    Widget.over = false;
     return Widget;
 }());
-Widget.STATE_INVISIBLE = 0;
-Widget.STATE_SHOW = 1;
-Widget.STATE_VISIBLE = 2;
-Widget.STATE_HIDE = 3;
-Widget.STATE_REMOVED = 4;
-Widget.widgets = new Array();
-Widget.over = false;
 exports.Widget = Widget;
 //# sourceMappingURL=Widget.js.map

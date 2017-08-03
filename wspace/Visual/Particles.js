@@ -16,9 +16,9 @@ var Particles = (function () {
             }
         }
     };
+    Particles.screen = null;
+    Particles.items = [];
     return Particles;
 }());
-Particles.screen = null;
-Particles.items = [];
 exports.Particles = Particles;
 //# sourceMappingURL=Particles.js.map

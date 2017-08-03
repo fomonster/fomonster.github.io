@@ -16,9 +16,9 @@ exports.__esModule = true;
  * http://www.photoshopessentials.com/photo-effects/rotoscope/
  *
  */
-var PIXI = require("../../pixi.js");
+var PIXI = require("pixi.js");
 var Widget_1 = require("../../Visual/Widget");
-var Game_1 = require("../../Game");
+var Screen_1 = require("../../Screen");
 var LoaderWidget = (function (_super) {
     __extends(LoaderWidget, _super);
     function LoaderWidget() {
@@ -32,7 +32,7 @@ var LoaderWidget = (function (_super) {
     LoaderWidget.prototype.init = function () {
         _super.prototype.init.call(this);
         this.container = new PIXI.Container();
-        //Game.screen.addChild(this.container);
+        Screen_1.Screen.screen.addChild(this.container);
         this.graphics = new PIXI.Graphics();
         this.container.addChild(this.graphics);
         this.totalLoaded = 0;
@@ -40,10 +40,10 @@ var LoaderWidget = (function (_super) {
         this.updateProgressBar();
         this.loadAssets();
     };
-    LoaderWidget.prototype.relase = function () {
+    LoaderWidget.prototype.release = function () {
         _super.prototype.release.call(this);
         this.container.removeChild(this.graphics);
-        Game_1.Game.screen.removeChild(this.container);
+        Screen_1.Screen.screen.removeChild(this.container);
     };
     LoaderWidget.prototype.update = function (deltaTime) {
         _super.prototype.update.call(this, deltaTime);
@@ -54,12 +54,12 @@ var LoaderWidget = (function (_super) {
         this.graphics.clear();
         this.graphics.lineStyle(1, 0xffffff, 1);
         var sx = progressWidth;
-        var sy = 0.5 * (Game_1.Game.baseHeight - progressHeight);
-        var ex = Game_1.Game.baseWidth - progressWidth;
+        var sy = 0.5 * (Screen_1.Screen.baseHeight - progressHeight);
+        var ex = Screen_1.Screen.baseWidth - progressWidth;
         var ey = sy + progressHeight;
-        var px = (Game_1.Game.baseWidth - progressWidth * 2) * this.totalLoaded / this.totalToLoad;
+        var px = (Screen_1.Screen.baseWidth - progressWidth * 2) * this.totalLoaded / this.totalToLoad;
         this.graphics.beginFill(0x1f1f1f, 1);
-        this.graphics.drawRect(sx, sy, Game_1.Game.baseWidth - progressWidth * 2, progressHeight);
+        this.graphics.drawRect(sx, sy, Screen_1.Screen.baseWidth - progressWidth * 2, progressHeight);
         this.graphics.beginFill(0xcfcfcf, 1);
         this.graphics.drawRect(sx, sy, px, progressHeight);
     };

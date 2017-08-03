@@ -16,8 +16,8 @@
             exports = {};
 		</script>
 		<script src="smoothie.js"></script>
-		<script src="three.js"></script>
 		<script src="Visual/Widget.js"></script>
+		<script src="Screen.js"></script>
 		<script src="Game.js"></script>
 		<script src="Logic/Widgets/LoaderWidget.js"></script>
 		<script src="Logic/Widgets/GameWidget.js"></script>
@@ -54,14 +54,6 @@
 			var container = document.getElementById('container');
 			Game.init(container);
 
-            //-------------------------------------------------------------------------------------
-            // Widgets
-            //-------------------------------------------------------------------------------------
-
-            Widget.addWidget("LoaderWidget", new LoaderWidget());
-            Widget.addWidget("GameWidget", new GameWidget());
-
-            Widget.showWidget("LoaderWidget");
 		};
 
     </script>

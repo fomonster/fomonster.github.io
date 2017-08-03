@@ -4,9 +4,9 @@
  * http://www.photoshopessentials.com/photo-effects/rotoscope/
  *
  */
-import * as PIXI from '../../pixi.js';
+import * as PIXI from 'pixi.js';
 import {Widget} from "../../Visual/Widget";
-import {Game} from "../../Game";
+import {Screen} from "../../Screen";
 
 export class LoaderWidget extends Widget
 {
@@ -20,7 +20,7 @@ export class LoaderWidget extends Widget
         super.init();
 
         this.container = new PIXI.Container();
-        //Game.screen.addChild(this.container);
+        Screen.screen.addChild(this.container);
 
         this.graphics = new PIXI.Graphics();
         this.container.addChild(this.graphics);
@@ -32,13 +32,13 @@ export class LoaderWidget extends Widget
         this.loadAssets();
     }
 
-    public relase():void
+    public release():void
     {
         super.release();
 
         this.container.removeChild(this.graphics);
 
-        Game.screen.removeChild(this.container);
+        Screen.screen.removeChild(this.container);
 
     }
 
@@ -57,13 +57,13 @@ export class LoaderWidget extends Widget
         this.graphics.lineStyle(1, 0xffffff, 1);
 
         var sx:number = progressWidth;
-        var sy:number = 0.5 * (Game.baseHeight - progressHeight);
-        var ex:number = Game.baseWidth - progressWidth;
+        var sy:number = 0.5 * (Screen.baseHeight - progressHeight);
+        var ex:number = Screen.baseWidth - progressWidth;
         var ey:number = sy + progressHeight;
-        var px:number = (Game.baseWidth-progressWidth*2)*this.totalLoaded/ this.totalToLoad;
+        var px:number = (Screen.baseWidth-progressWidth*2)*this.totalLoaded/ this.totalToLoad;
 
         this.graphics.beginFill(0x1f1f1f, 1);
-        this.graphics.drawRect(sx,sy,Game.baseWidth-progressWidth*2,progressHeight);
+        this.graphics.drawRect(sx,sy,Screen.baseWidth-progressWidth*2,progressHeight);
 
         this.graphics.beginFill(0xcfcfcf, 1);
         this.graphics.drawRect(sx,sy,px,progressHeight);
