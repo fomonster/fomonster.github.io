@@ -16,7 +16,7 @@ exports.__esModule = true;
  * http://www.photoshopessentials.com/photo-effects/rotoscope/
  *
  */
-var THREE = require("three.js");
+var THREE = require("three");
 var PIXI = require("pixi.js");
 var Widget_1 = require("../../Visual/Widget");
 var Screen_1 = require("../../Screen");
@@ -39,12 +39,14 @@ var GameWidget = (function (_super) {
         //-------------------------------------------------------------------------------------
         // 3D Scene
         //-------------------------------------------------------------------------------------
-        var geometry = new THREE.BoxGeometry(100, 100, 300);
-        var material = new THREE.MeshNormalMaterial();
-        var cube = new THREE.Mesh(geometry, material);
+        var cube = new THREE.Mesh(new THREE.BoxGeometry(100, 100, 300), new THREE.MeshNormalMaterial());
         cube.position.z = 0;
         cube.rotation.z = -45;
         Screen_1.Screen.scene.add(cube);
+        var cubea = new THREE.Mesh(new THREE.BoxGeometry(100, 300, 100), new THREE.MeshNormalMaterial());
+        cubea.position.z = 0;
+        cubea.rotation.z = -45;
+        Screen_1.Screen.scene.add(cubea);
         var mesh = new THREE.Mesh(new THREE.SphereBufferGeometry(100, 16, 8), new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true }));
         Screen_1.Screen.scene.add(mesh);
         //-------------------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-import * as THREE from 'three.js';
+import * as THREE from 'three';
 import * as PIXI from 'pixi.js';
 import {Widget} from "./Visual/Widget";
 import {Particles} from "./Visual/Particles"
@@ -85,6 +85,7 @@ export class Game
         Widget.addWidget("LoaderWidget", new LoaderWidget());
         Widget.addWidget("GameWidget", new GameWidget());
 
+        //
         Widget.showWidget("LoaderWidget");
 
     }

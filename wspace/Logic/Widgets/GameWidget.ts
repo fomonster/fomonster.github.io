@@ -4,7 +4,7 @@
  * http://www.photoshopessentials.com/photo-effects/rotoscope/
  *
  */
-import * as THREE from 'three.js';
+import * as THREE from 'three';
 import * as PIXI from 'pixi.js';
 import {Widget} from "../../Visual/Widget";
 import {Screen} from "../../Screen";
@@ -36,13 +36,15 @@ export class GameWidget extends Widget
         // 3D Scene
         //-------------------------------------------------------------------------------------
 
-        var geometry = new THREE.BoxGeometry( 100, 100, 300 );
-        var material = new THREE.MeshNormalMaterial();
-        var cube = new THREE.Mesh( geometry, material );
+        var cube = new THREE.Mesh( new THREE.BoxGeometry( 100, 100, 300 ), new THREE.MeshNormalMaterial() );
         cube.position.z = 0;
         cube.rotation.z = -45;
         Screen.scene.add( cube );
 
+        var cubea = new THREE.Mesh( new THREE.BoxGeometry( 100, 300, 100 ), new THREE.MeshNormalMaterial() );
+        cubea.position.z = 0;
+        cubea.rotation.z = -45;
+        Screen.scene.add( cubea );
 
         var mesh:THREE.Mesh = new THREE.Mesh(
             new THREE.SphereBufferGeometry( 100, 16, 8 ),

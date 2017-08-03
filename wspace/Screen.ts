@@ -1,4 +1,4 @@
-import * as THREE from 'three.js';
+import * as THREE from 'three';
 import * as PIXI from 'pixi.js';
 import {Widget} from "./Visual/Widget";
 
@@ -9,14 +9,14 @@ export class Screen
     public static baseHeight:number = 768;
 
     // 3D
-    public static camera:THREE.Camera = null;
+    public static camera:THREE.PerspectiveCamera = null;
     public static scene:THREE.Scene = null;
     public static renderer:THREE.WebGLRenderer = null;
 
     // 2D
     public static stage:PIXI.Container = null;
     public static canvas:any = null;
-    public static screen:PIXI.Container = null;
+    public static screen:PIXI.Container = null; 
 
     public static mouseX:number = 0;
     public static mouseY:number = 0;

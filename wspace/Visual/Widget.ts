@@ -12,10 +12,10 @@ export class Widget
 
     static widgets:Array<Widget> = new Array<Widget>();
     static over:boolean = false;
+
     /**
      *
      */
-
     public name:string = "";
     public isDialog:boolean = false;
     public widgetState:number = 0;

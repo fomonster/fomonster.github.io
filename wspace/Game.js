@@ -1,6 +1,6 @@
 "use strict";
 exports.__esModule = true;
-var THREE = require("three.js");
+var THREE = require("three");
 var PIXI = require("pixi.js");
 var Widget_1 = require("./Visual/Widget");
 var Particles_1 = require("./Visual/Particles");
@@ -62,6 +62,7 @@ var Game = (function () {
         //-------------------------------------------------------------------------------------
         Widget_1.Widget.addWidget("LoaderWidget", new LoaderWidget_1.LoaderWidget());
         Widget_1.Widget.addWidget("GameWidget", new GameWidget_1.GameWidget());
+        //
         Widget_1.Widget.showWidget("LoaderWidget");
     };
     Game.done = function () {
