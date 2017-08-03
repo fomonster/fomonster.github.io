@@ -1,0 +1,23 @@
+{
+    "compileOnSave": true, 
+    "compilerOptions": {
+        "target": "es5",
+        "module": "amd",
+        "noEmitOnError": true,
+        "noImplicitAny": false,
+        "locale": "en-US",
+        "lib": ["es2016","dom"],
+        "allowSyntheticDefaultImports":false,
+        "allowJs":false,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "rootDir": ".", 
+        "sourceMap": true,
+        "outDir": "./",
+        "out":"main.js"
+    },
+    "exclude": [
+        "node_modules"
+    ]
+    
+} 
