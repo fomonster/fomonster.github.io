@@ -14,6 +14,6 @@ npm install three
 import * as THREE from 'three';
 import * as PIXI from 'pixi.js';
 
-
-
 https://basarat.gitbooks.io/typescript/docs/project/tsconfig.html
+
+https://www.html5rocks.com/en/tutorials/webaudio/positional_audio/

@@ -11,10 +11,10 @@
         "allowJs":false,
         "removeComments": true,
         "preserveConstEnums": true,
-        "rootDir": ".", 
+        "rootDir": "./src/", 
         "sourceMap": true,
-        "outDir": "./",
-        "out":"main.js"
+        "outDir": "./bin/",
+        "outFile":"./bin/main.js"
     },
     "exclude": [
         "node_modules"

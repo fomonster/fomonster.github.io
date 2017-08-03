@@ -10,7 +10,6 @@ import {GameWidget} from "./game/widgets/GameWidget";
 export class Game
 {
 
-
     public static container: HTMLElement = null;
     public static lastTime:number = 0;
 
@@ -160,14 +159,4 @@ export class Game
         Widget.resizeWidget();
     }
 
-    constructor()
-    {
-        console.log("new Game");
-    }
-
 }
-
-//window.onload = () => {
-//    var container = document.getElementById('container');
-//    Game.init(container);
-//};

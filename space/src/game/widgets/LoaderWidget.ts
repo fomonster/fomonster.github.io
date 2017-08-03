@@ -76,17 +76,12 @@ export class LoaderWidget extends Widget
 
         PIXI.loader
             .add('atlas', 'assets/atlas.json')
-            .add('background', 'assets/background.png')
-            .add('buildings', 'assets/buildings.png')
-            .add('fog', 'assets/fog.png')
-            .add('ground', 'assets/ground.png')
-            .add('mountains', 'assets/mountains.png')
             .load(this.onLoadComplete.bind(this));
     }
 
     public onLoadComplete():void {
         this.close();
-        Widget.showWidget("GameWidget");
+        Widget.showWidget("GameWidget"); 
     }
 
     public onProgressCallback(loader, resource):void

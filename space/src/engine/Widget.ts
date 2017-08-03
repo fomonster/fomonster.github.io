@@ -4,7 +4,7 @@
 
 export class Widget
 {
-    static STATE_INVISIBLE:number = 0;
+    static STATE_INVISIBLE:number = 0; 
     static STATE_SHOW:number = 1;
     static STATE_VISIBLE:number = 2;
     static STATE_HIDE:number = 3;
