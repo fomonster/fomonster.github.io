@@ -61,8 +61,8 @@
       <file leaf-file-name="LoaderWidget.ts" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/game/widgets/LoaderWidget.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1411">
-              <caret line="83" column="41" lean-forward="false" selection-start-line="83" selection-start-column="41" selection-end-line="83" selection-end-column="41" />
+            <state relative-caret-position="170">
+              <caret line="10" column="40" lean-forward="true" selection-start-line="10" selection-start-column="40" selection-end-line="10" selection-end-column="40" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
                 <element signature="e#116#148#0" expanded="true" />
@@ -314,7 +314,7 @@
       <envs />
       <method />
     </configuration>
-    <configuration name="debug" type="JavascriptDebugType" factoryName="JavaScript Debug" uri="http://localhost:63342/space/index.html" />
+    <configuration name="debug" type="JavascriptDebugType" factoryName="JavaScript Debug" uri="http://localhost:63342/space/bin/index.html" />
   </component>
   <component name="ShelveChangesManager" show_recycled="false">
     <option name="remove_strategy" value="false" />
@@ -375,12 +375,12 @@
       <workItem from="1501760560053" duration="3240000" />
       <workItem from="1501764239192" duration="503000" />
       <workItem from="1501765027300" duration="14881000" />
-      <workItem from="1501799645375" duration="2482000" />
+      <workItem from="1501799645375" duration="2599000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="178918000" />
+    <option name="totallyTimeSpent" value="179035000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -627,8 +627,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/game/widgets/LoaderWidget.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1411">
-          <caret line="83" column="41" lean-forward="false" selection-start-line="83" selection-start-column="41" selection-end-line="83" selection-end-column="41" />
+        <state relative-caret-position="170">
+          <caret line="10" column="40" lean-forward="true" selection-start-line="10" selection-start-column="40" selection-end-line="10" selection-end-column="40" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
             <element signature="e#116#148#0" expanded="true" />

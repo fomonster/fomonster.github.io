@@ -81,7 +81,7 @@ export class LoaderWidget extends Widget
 
     public onLoadComplete():void {
         this.close();
-        Widget.showWidget("GameWidget"); 
+        Widget.showWidget("GameWidget");
     }
 
     public onProgressCallback(loader, resource):void
