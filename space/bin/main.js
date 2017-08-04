@@ -359,315 +359,6 @@ define("game/Screen", ["require", "exports"], function (require, exports) {
     }());
     exports.Screen = Screen;
 });
-define("game/widgets/LoaderWidget", ["require", "exports", "pixi.js", "engine/Widget", "game/Screen"], function (require, exports, PIXI, Widget_1, Screen_1) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var LoaderWidget = (function (_super) {
-        __extends(LoaderWidget, _super);
-        function LoaderWidget() {
-            var _this = _super !== null && _super.apply(this, arguments) || this;
-            _this.container = null;
-            _this.graphics = null;
-            _this.totalLoaded = 0;
-            _this.totalToLoad = 0;
-            return _this;
-        }
-        LoaderWidget.prototype.init = function () {
-            _super.prototype.init.call(this);
-            this.container = new PIXI.Container();
-            Screen_1.Screen.screen.addChild(this.container);
-            this.graphics = new PIXI.Graphics();
-            this.container.addChild(this.graphics);
-            this.totalLoaded = 0;
-            this.totalToLoad = 100;
-            this.updateProgressBar();
-            this.loadAssets();
-        };
-        LoaderWidget.prototype.release = function () {
-            _super.prototype.release.call(this);
-            this.container.removeChild(this.graphics);
-            Screen_1.Screen.screen.removeChild(this.container);
-        };
-        LoaderWidget.prototype.update = function (deltaTime) {
-            _super.prototype.update.call(this, deltaTime);
-        };
-        LoaderWidget.prototype.updateProgressBar = function () {
-            var progressHeight = 10;
-            var progressWidth = 150;
-            this.graphics.clear();
-            this.graphics.lineStyle(1, 0xffffff, 1);
-            var sx = progressWidth;
-            var sy = 0.5 * (Screen_1.Screen.baseHeight - progressHeight);
-            var ex = Screen_1.Screen.baseWidth - progressWidth;
-            var ey = sy + progressHeight;
-            var px = (Screen_1.Screen.baseWidth - progressWidth * 2) * this.totalLoaded / this.totalToLoad;
-            this.graphics.beginFill(0x1f1f1f, 1);
-            this.graphics.drawRect(sx, sy, Screen_1.Screen.baseWidth - progressWidth * 2, progressHeight);
-            this.graphics.beginFill(0xcfcfcf, 1);
-            this.graphics.drawRect(sx, sy, px, progressHeight);
-        };
-        LoaderWidget.prototype.loadAssets = function () {
-            PIXI.loader.on('progress', this.onProgressCallback.bind(this));
-            PIXI.loader
-                .add("assets/inventory.json")
-                .add('atlas', 'assets/atlas.json')
-                .load(this.onLoadComplete.bind(this));
-        };
-        LoaderWidget.prototype.onLoadComplete = function () {
-            this.close();
-            Widget_1.Widget.showWidget("GameWidget");
-        };
-        LoaderWidget.prototype.onProgressCallback = function (loader, resource) {
-            this.totalLoaded = loader.progress;
-            this.updateProgressBar();
-            console.log('Progress:', loader.progress + '% ' + resource.name);
-        };
-        return LoaderWidget;
-    }(Widget_1.Widget));
-    exports.LoaderWidget = LoaderWidget;
-});
-define("game/widgets/GameWidget", ["require", "exports", "three", "pixi.js", "engine/Widget", "game/Screen"], function (require, exports, THREE, PIXI, Widget_2, Screen_2) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var GameWidget = (function (_super) {
-        __extends(GameWidget, _super);
-        function GameWidget() {
-            var _this = _super !== null && _super.apply(this, arguments) || this;
-            _this.graphicsA = null;
-            _this.graphicsB = null;
-            return _this;
-        }
-        GameWidget.prototype.preInit = function () {
-            _super.prototype.preInit.call(this);
-        };
-        GameWidget.prototype.init = function () {
-            _super.prototype.init.call(this);
-        };
-        GameWidget.prototype.postInit = function () {
-            _super.prototype.postInit.call(this);
-            var cube = new THREE.Mesh(new THREE.BoxGeometry(100, 100, 300), new THREE.MeshNormalMaterial());
-            cube.position.z = 0;
-            cube.rotation.z = 0;
-            Screen_2.Screen.scene.add(cube);
-            var cubea = new THREE.Mesh(new THREE.BoxGeometry(100, 300, 100), new THREE.MeshNormalMaterial());
-            cubea.position.z = 0;
-            cubea.rotation.z = 0;
-            Screen_2.Screen.scene.add(cubea);
-            var mesh = new THREE.Mesh(new THREE.SphereBufferGeometry(100, 16, 8), new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true }));
-            Screen_2.Screen.scene.add(mesh);
-            var graphics = new PIXI.Graphics();
-            graphics.beginFill(0xe60630);
-            graphics.moveTo(0, 0);
-            graphics.lineTo(100, 0);
-            graphics.lineTo(100, 100);
-            graphics.lineTo(0, 100);
-            graphics.endFill();
-            Screen_2.Screen.screen.addChild(graphics);
-            this.graphicsA = graphics;
-            graphics = new PIXI.Graphics();
-            graphics.beginFill(0x06e630);
-            graphics.moveTo(0, 0);
-            graphics.lineTo(100, 0);
-            graphics.lineTo(100, 100);
-            graphics.lineTo(0, 100);
-            graphics.endFill();
-            Screen_2.Screen.screen.addChild(graphics);
-            this.graphicsB = graphics;
-            this.resize();
-        };
-        GameWidget.prototype.preRelease = function () {
-            _super.prototype.preRelease.call(this);
-        };
-        GameWidget.prototype.release = function () {
-            _super.prototype.release.call(this);
-        };
-        GameWidget.prototype.postRelease = function () {
-            _super.prototype.postRelease.call(this);
-        };
-        GameWidget.prototype.update = function (deltaTime) {
-            _super.prototype.update.call(this, deltaTime);
-        };
-        GameWidget.prototype.resize = function () {
-            if (this.graphicsA) {
-                this.graphicsA.x = Screen_2.Screen.screenLeft;
-                this.graphicsA.y = Screen_2.Screen.screenTop;
-            }
-            if (this.graphicsB) {
-                this.graphicsB.x = Screen_2.Screen.screenWidth + Screen_2.Screen.screenLeft - 100;
-                this.graphicsB.y = Screen_2.Screen.screenHeight + Screen_2.Screen.screenTop - 100;
-            }
-        };
-        return GameWidget;
-    }(Widget_2.Widget));
-    exports.GameWidget = GameWidget;
-});
-define("game/data/GameData", ["require", "exports"], function (require, exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var GameData = (function () {
-        function GameData() {
-        }
-        GameData.load = function () {
-        };
-        GameData.save = function () {
-        };
-        GameData.update = function (deltaTime) {
-        };
-        return GameData;
-    }());
-    exports.GameData = GameData;
-});
-define("Game", ["require", "exports", "three", "pixi.js", "engine/Widget", "engine/Particles", "game/Screen", "game/widgets/LoaderWidget", "game/widgets/GameWidget", "game/data/GameData"], function (require, exports, THREE, PIXI, Widget_3, Particles_1, Screen_3, LoaderWidget_1, GameWidget_1, GameData_1) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var Game = (function () {
-        function Game() {
-        }
-        Game.init = function (container) {
-            Game.container = container;
-            Game.init3DRender();
-            Game.init2DRender();
-            Game.lastTime = Date.now() * 0.0001;
-            Widget_3.Widget.initWidgets();
-            var handler = function () {
-                var time = Date.now() * 0.0001;
-                var deltaTime = time - Game.lastTime;
-                Game.lastTime = time;
-                Game.update(deltaTime);
-                Game.render();
-                window.requestAnimationFrame(handler);
-            };
-            window.requestAnimationFrame(handler);
-            window.addEventListener('resize', function () { Game.resize(); }, false);
-            Screen_3.Screen.canvas.plugins.interaction.on('mousemove', function (mouseData) {
-                var newPosition = mouseData.data.getLocalPosition(Screen_3.Screen.screen);
-                Widget_3.Widget.onMouseMove(newPosition.x, newPosition.y);
-                if (newPosition.x < 0 || newPosition.y < 0 || newPosition.x >= Screen_3.Screen.width || newPosition.y >= Screen_3.Screen.height) {
-                    if (Widget_3.Widget.over) {
-                        Widget_3.Widget.onMouseOut();
-                    }
-                }
-                else {
-                    if (!Widget_3.Widget.over) {
-                        Widget_3.Widget.onMouseIn();
-                    }
-                }
-            });
-            Screen_3.Screen.canvas.plugins.interaction.on('mousedown', function (mouseData) {
-                var newPosition = mouseData.data.getLocalPosition(Screen_3.Screen.screen);
-                Widget_3.Widget.onMouseDown(newPosition.x, newPosition.y);
-            });
-            Screen_3.Screen.canvas.plugins.interaction.on('mouseup', function (mouseData) {
-                var newPosition = mouseData.data.getLocalPosition(Screen_3.Screen.screen);
-                Widget_3.Widget.onMouseUp(newPosition.x, newPosition.y);
-            });
-            Game.resize();
-            Widget_3.Widget.addWidget("LoaderWidget", new LoaderWidget_1.LoaderWidget());
-            Widget_3.Widget.addWidget("GameWidget", new GameWidget_1.GameWidget());
-            Widget_3.Widget.showWidget("LoaderWidget");
-        };
-        Game.done = function () {
-            Widget_3.Widget.doneWidgets();
-        };
-        Game.init3DRender = function () {
-            Screen_3.Screen.renderer = new THREE.WebGLRenderer({ antialias: true });
-            Screen_3.Screen.renderer.setClearColor(0x000000);
-            Screen_3.Screen.renderer.setPixelRatio(window.devicePixelRatio);
-            Screen_3.Screen.renderer.setSize(window.innerWidth, window.innerHeight);
-            Game.container.appendChild(Screen_3.Screen.renderer.domElement);
-            Screen_3.Screen.camera = new THREE.PerspectiveCamera(20, window.innerWidth / window.innerHeight, 1, 30000);
-            Screen_3.Screen.scene = new THREE.Scene();
-        };
-        Game.init2DRender = function () {
-            Screen_3.Screen.stage = new PIXI.Container();
-            Screen_3.Screen.canvas = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight, { transparent: true });
-            Screen_3.Screen.canvas.view.style.position = "absolute";
-            Screen_3.Screen.canvas.view.style.top = "0px";
-            Screen_3.Screen.canvas.view.style.left = "0px";
-            Game.container.appendChild(Screen_3.Screen.canvas.view);
-            Screen_3.Screen.screen = new PIXI.Container();
-            Screen_3.Screen.stage.addChild(Screen_3.Screen.screen);
-        };
-        Game.update = function (deltaTime) {
-            for (var i = 0; i < Screen_3.Screen.scene.children.length; i++) {
-                var object = Screen_3.Screen.scene.children[i];
-                object.rotation.y += deltaTime * 10.0;
-                object.rotation.x += deltaTime * 3.0;
-                object.rotation.z += deltaTime * 5.0;
-            }
-            Screen_3.Screen.camera.position.z = 1800;
-            Screen_3.Screen.camera.lookAt(Screen_3.Screen.scene.position);
-            Particles_1.Particles.update(deltaTime);
-            Widget_3.Widget.updateWidgets(deltaTime);
-            GameData_1.GameData.update(deltaTime);
-            Game.render();
-        };
-        Game.render = function () {
-            if (!Screen_3.Screen.scene || !Screen_3.Screen.camera)
-                return;
-            Screen_3.Screen.renderer.render(Screen_3.Screen.scene, Screen_3.Screen.camera);
-            Screen_3.Screen.canvas.render(Screen_3.Screen.stage);
-        };
-        Game.resize = function () {
-            Screen_3.Screen.resize();
-            Widget_3.Widget.resizeWidget();
-        };
-        Game.container = null;
-        Game.lastTime = 0;
-        return Game;
-    }());
-    exports.Game = Game;
-});
-define("game/logic/space/objects/GameObject", ["require", "exports", "three"], function (require, exports, three_1) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var GameObject = (function () {
-        function GameObject() {
-            this.position = new three_1.Vector3();
-            this.needDelete = false;
-        }
-        GameObject.prototype.dispose = function () {
-        };
-        GameObject.prototype.update = function (deltaTime) {
-        };
-        return GameObject;
-    }());
-    exports.GameObject = GameObject;
-});
-define("game/logic/space/Space", ["require", "exports"], function (require, exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var Space = (function () {
-        function Space() {
-            this.objects = new Array();
-        }
-        Space.prototype.dispose = function () {
-            this.clear();
-        };
-        Space.prototype.clear = function () {
-            for (var i = this.objects.length - 1; i >= 0; i++) {
-                var object = this.objects[i];
-                object.dispose();
-            }
-        };
-        Space.prototype.init = function (seed) {
-        };
-        Space.prototype.update = function (deltaTime) {
-            for (var i = this.objects.length - 1; i >= 0; i++) {
-                var object = this.objects[i];
-                if (object.needDelete) {
-                    object.dispose();
-                    this.objects.splice(i, 1);
-                }
-                else {
-                    object.update(deltaTime);
-                }
-            }
-        };
-        return Space;
-    }());
-    exports.Space = Space;
-});
 define("engine/Assets", ["require", "exports", "pixi.js"], function (require, exports, PIXI) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -675,55 +366,42 @@ define("engine/Assets", ["require", "exports", "pixi.js"], function (require, ex
         function Assets() {
         }
         Assets.getObject = function (name) {
+            return Assets.objectMap[name];
         };
         Assets.getTexture = function (name) {
-            var texture = PIXI.loader.resources[name].texture;
+            var texture = null;
+            if (!name)
+                return null;
+            if (!PIXI.loader.resources[name]) {
+                texture = Assets.textureMap[name];
+                if (!texture) {
+                    console.log("getTexture " + name + " error");
+                    return;
+                }
+                return texture;
+            }
+            texture = PIXI.loader.resources[name].texture;
             return texture;
         };
         Assets.getTextureFromAtlas = function (atlasName, name) {
-            return PIXI.loader.resources[atlasName].textures[name];
+            if (!PIXI.loader.resources[atlasName]) {
+                console.log("getTextureFromAtlas " + atlasName + " error");
+                return;
+            }
+            var texture = PIXI.loader.resources[atlasName].textures[name];
+            if (!texture) {
+                console.log("getTextureFromAtlas " + atlasName + " " + name + "error");
+                return;
+            }
+            return texture;
         };
+        Assets.objectMap = new Map();
+        Assets.textureMap = new Map();
         return Assets;
     }());
     exports.Assets = Assets;
 });
-define("game/logic/space/objects/SpaceShip", ["require", "exports", "game/logic/space/objects/GameObject"], function (require, exports, GameObject_1) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var SpaceShip = (function (_super) {
-        __extends(SpaceShip, _super);
-        function SpaceShip() {
-            return _super !== null && _super.apply(this, arguments) || this;
-        }
-        return SpaceShip;
-    }(GameObject_1.GameObject));
-    exports.SpaceShip = SpaceShip;
-});
-define("game/logic/space/objects/SpaceStation", ["require", "exports", "game/logic/space/objects/GameObject"], function (require, exports, GameObject_2) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var SpaceStation = (function (_super) {
-        __extends(SpaceStation, _super);
-        function SpaceStation() {
-            return _super !== null && _super.apply(this, arguments) || this;
-        }
-        return SpaceStation;
-    }(GameObject_2.GameObject));
-    exports.SpaceStation = SpaceStation;
-});
-define("game/logic/space/objects/Asteriod", ["require", "exports", "game/logic/space/objects/GameObject"], function (require, exports, GameObject_3) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var Asteriod = (function (_super) {
-        __extends(Asteriod, _super);
-        function Asteriod() {
-            return _super !== null && _super.apply(this, arguments) || this;
-        }
-        return Asteriod;
-    }(GameObject_3.GameObject));
-    exports.Asteriod = Asteriod;
-});
-define("game/data/game/Inventory", ["require", "exports", "engine/Assets", "three"], function (require, exports, Assets_1, three_2) {
+define("game/data/game/Inventory", ["require", "exports", "engine/Assets", "three"], function (require, exports, Assets_1, three_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var InventoryItemSlot = (function () {
@@ -731,7 +409,7 @@ define("game/data/game/Inventory", ["require", "exports", "engine/Assets", "thre
             this.x = 0;
             this.y = 0;
             this.type = 0;
-            this.position = new three_2.Vector3();
+            this.position = new three_1.Vector3();
             this.scale = 1;
             this.visible = true;
         }
@@ -756,7 +434,7 @@ define("game/data/game/Inventory", ["require", "exports", "engine/Assets", "thre
                 this.image = Assets_1.Assets.getTexture(data.image.name);
             }
             if (data.model) {
-                this.modelName = data.model[0].name;
+                this.modelName = data.model.name;
             }
             this.slots.splice(0, this.slots.length);
             if (data.slots && data.slots.length > 0) {
@@ -1175,7 +853,7 @@ define("game/data/game/Inventory", ["require", "exports", "engine/Assets", "thre
             Inventory.typesList.splice(0, Inventory.typesList.length);
             Inventory.typesMap.clear();
             Inventory.typesIdMap.clear();
-            var data = Assets_1.Assets.getObject("inventoryitems.json");
+            var data = Assets_1.Assets.getObject("assets/inventory.json");
             Inventory.typesAdd(data);
         };
         Inventory.done = function () {
@@ -1236,5 +914,365 @@ define("game/data/game/Inventory", ["require", "exports", "engine/Assets", "thre
         return Inventory;
     }());
     exports.Inventory = Inventory;
+});
+define("game/widgets/LoaderWidget", ["require", "exports", "pixi.js", "engine/Widget", "game/Screen", "engine/Assets", "game/data/game/Inventory"], function (require, exports, PIXI, Widget_1, Screen_1, Assets_2, Inventory_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var LoaderWidget = (function (_super) {
+        __extends(LoaderWidget, _super);
+        function LoaderWidget() {
+            var _this = _super !== null && _super.apply(this, arguments) || this;
+            _this.container = null;
+            _this.graphics = null;
+            _this.totalLoaded = 0;
+            _this.totalToLoad = 0;
+            return _this;
+        }
+        LoaderWidget.prototype.init = function () {
+            _super.prototype.init.call(this);
+            this.container = new PIXI.Container();
+            Screen_1.Screen.screen.addChild(this.container);
+            this.graphics = new PIXI.Graphics();
+            this.container.addChild(this.graphics);
+            this.totalLoaded = 0;
+            this.totalToLoad = 100;
+            this.updateProgressBar();
+            this.loadAssets();
+        };
+        LoaderWidget.prototype.release = function () {
+            _super.prototype.release.call(this);
+            this.container.removeChild(this.graphics);
+            Screen_1.Screen.screen.removeChild(this.container);
+        };
+        LoaderWidget.prototype.update = function (deltaTime) {
+            _super.prototype.update.call(this, deltaTime);
+        };
+        LoaderWidget.prototype.updateProgressBar = function () {
+            var progressHeight = 10;
+            var progressWidth = 150;
+            this.graphics.clear();
+            this.graphics.lineStyle(1, 0xffffff, 1);
+            var sx = progressWidth;
+            var sy = 0.5 * (Screen_1.Screen.baseHeight - progressHeight);
+            var ex = Screen_1.Screen.baseWidth - progressWidth;
+            var ey = sy + progressHeight;
+            var px = (Screen_1.Screen.baseWidth - progressWidth * 2) * this.totalLoaded / this.totalToLoad;
+            this.graphics.beginFill(0x1f1f1f, 1);
+            this.graphics.drawRect(sx, sy, Screen_1.Screen.baseWidth - progressWidth * 2, progressHeight);
+            this.graphics.beginFill(0xcfcfcf, 1);
+            this.graphics.drawRect(sx, sy, px, progressHeight);
+        };
+        LoaderWidget.prototype.loadAssets = function () {
+            PIXI.loader.on('progress', this.onProgressCallback.bind(this));
+            PIXI.loader.on('load', this.onLoadCallback.bind(this));
+            PIXI.loader
+                .add(["assets/inventory.json"])
+                .add('atlas', 'assets/atlas.json')
+                .load(this.onLoadComplete.bind(this));
+        };
+        LoaderWidget.prototype.onLoadComplete = function () {
+            Inventory_1.Inventory.init();
+            this.close();
+            Widget_1.Widget.showWidget("GameWidget");
+        };
+        LoaderWidget.prototype.onProgressCallback = function (loader, resource) {
+            this.totalLoaded = loader.progress;
+            this.updateProgressBar();
+            console.log('Progress:', loader.progress + '% ' + resource.name);
+        };
+        LoaderWidget.prototype.onLoadCallback = function (loader, resource) {
+            console.log('loaded:', resource.name);
+            var n = resource.name;
+            if (n.indexOf("json") >= 0) {
+                Assets_2.Assets.objectMap[n] = resource.data;
+            }
+            else if (resource.spritesheet) {
+                var spritesheet = resource.spritesheet;
+                for (var name_1 in spritesheet.textures) {
+                    Assets_2.Assets.textureMap[name_1] = spritesheet.textures[name_1];
+                }
+            }
+        };
+        return LoaderWidget;
+    }(Widget_1.Widget));
+    exports.LoaderWidget = LoaderWidget;
+});
+define("game/widgets/GameWidget", ["require", "exports", "three", "pixi.js", "engine/Widget", "game/Screen"], function (require, exports, THREE, PIXI, Widget_2, Screen_2) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var GameWidget = (function (_super) {
+        __extends(GameWidget, _super);
+        function GameWidget() {
+            var _this = _super !== null && _super.apply(this, arguments) || this;
+            _this.graphicsA = null;
+            _this.graphicsB = null;
+            return _this;
+        }
+        GameWidget.prototype.preInit = function () {
+            _super.prototype.preInit.call(this);
+        };
+        GameWidget.prototype.init = function () {
+            _super.prototype.init.call(this);
+        };
+        GameWidget.prototype.postInit = function () {
+            _super.prototype.postInit.call(this);
+            var cube = new THREE.Mesh(new THREE.BoxGeometry(100, 100, 300), new THREE.MeshNormalMaterial());
+            cube.position.z = 0;
+            cube.rotation.z = 0;
+            Screen_2.Screen.scene.add(cube);
+            var cubea = new THREE.Mesh(new THREE.BoxGeometry(100, 300, 100), new THREE.MeshNormalMaterial());
+            cubea.position.z = 0;
+            cubea.rotation.z = 0;
+            Screen_2.Screen.scene.add(cubea);
+            var mesh = new THREE.Mesh(new THREE.SphereBufferGeometry(100, 16, 8), new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true }));
+            Screen_2.Screen.scene.add(mesh);
+            var graphics = new PIXI.Graphics();
+            graphics.beginFill(0xe60630);
+            graphics.moveTo(0, 0);
+            graphics.lineTo(100, 0);
+            graphics.lineTo(100, 100);
+            graphics.lineTo(0, 100);
+            graphics.endFill();
+            Screen_2.Screen.screen.addChild(graphics);
+            this.graphicsA = graphics;
+            graphics = new PIXI.Graphics();
+            graphics.beginFill(0x06e630);
+            graphics.moveTo(0, 0);
+            graphics.lineTo(100, 0);
+            graphics.lineTo(100, 100);
+            graphics.lineTo(0, 100);
+            graphics.endFill();
+            Screen_2.Screen.screen.addChild(graphics);
+            this.graphicsB = graphics;
+            this.resize();
+        };
+        GameWidget.prototype.preRelease = function () {
+            _super.prototype.preRelease.call(this);
+        };
+        GameWidget.prototype.release = function () {
+            _super.prototype.release.call(this);
+        };
+        GameWidget.prototype.postRelease = function () {
+            _super.prototype.postRelease.call(this);
+        };
+        GameWidget.prototype.update = function (deltaTime) {
+            _super.prototype.update.call(this, deltaTime);
+        };
+        GameWidget.prototype.resize = function () {
+            if (this.graphicsA) {
+                this.graphicsA.x = Screen_2.Screen.screenLeft;
+                this.graphicsA.y = Screen_2.Screen.screenTop;
+            }
+            if (this.graphicsB) {
+                this.graphicsB.x = Screen_2.Screen.screenWidth + Screen_2.Screen.screenLeft - 100;
+                this.graphicsB.y = Screen_2.Screen.screenHeight + Screen_2.Screen.screenTop - 100;
+            }
+        };
+        return GameWidget;
+    }(Widget_2.Widget));
+    exports.GameWidget = GameWidget;
+});
+define("game/data/GameData", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var GameData = (function () {
+        function GameData() {
+        }
+        GameData.load = function () {
+        };
+        GameData.save = function () {
+        };
+        GameData.update = function (deltaTime) {
+        };
+        return GameData;
+    }());
+    exports.GameData = GameData;
+});
+define("Game", ["require", "exports", "three", "pixi.js", "engine/Widget", "engine/Particles", "game/Screen", "game/widgets/LoaderWidget", "game/widgets/GameWidget", "game/data/GameData"], function (require, exports, THREE, PIXI, Widget_3, Particles_1, Screen_3, LoaderWidget_1, GameWidget_1, GameData_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var Game = (function () {
+        function Game() {
+        }
+        Game.init = function (container) {
+            Game.container = container;
+            Game.init3DRender();
+            Game.init2DRender();
+            Game.lastTime = Date.now() * 0.0001;
+            Widget_3.Widget.initWidgets();
+            var handler = function () {
+                var time = Date.now() * 0.0001;
+                var deltaTime = time - Game.lastTime;
+                Game.lastTime = time;
+                Game.update(deltaTime);
+                Game.render();
+                window.requestAnimationFrame(handler);
+            };
+            window.requestAnimationFrame(handler);
+            window.addEventListener('resize', function () { Game.resize(); }, false);
+            Screen_3.Screen.canvas.plugins.interaction.on('mousemove', function (mouseData) {
+                var newPosition = mouseData.data.getLocalPosition(Screen_3.Screen.screen);
+                Widget_3.Widget.onMouseMove(newPosition.x, newPosition.y);
+                if (newPosition.x < 0 || newPosition.y < 0 || newPosition.x >= Screen_3.Screen.width || newPosition.y >= Screen_3.Screen.height) {
+                    if (Widget_3.Widget.over) {
+                        Widget_3.Widget.onMouseOut();
+                    }
+                }
+                else {
+                    if (!Widget_3.Widget.over) {
+                        Widget_3.Widget.onMouseIn();
+                    }
+                }
+            });
+            Screen_3.Screen.canvas.plugins.interaction.on('mousedown', function (mouseData) {
+                var newPosition = mouseData.data.getLocalPosition(Screen_3.Screen.screen);
+                Widget_3.Widget.onMouseDown(newPosition.x, newPosition.y);
+            });
+            Screen_3.Screen.canvas.plugins.interaction.on('mouseup', function (mouseData) {
+                var newPosition = mouseData.data.getLocalPosition(Screen_3.Screen.screen);
+                Widget_3.Widget.onMouseUp(newPosition.x, newPosition.y);
+            });
+            Game.resize();
+            Widget_3.Widget.addWidget("LoaderWidget", new LoaderWidget_1.LoaderWidget());
+            Widget_3.Widget.addWidget("GameWidget", new GameWidget_1.GameWidget());
+            Widget_3.Widget.showWidget("LoaderWidget");
+        };
+        Game.done = function () {
+            Widget_3.Widget.doneWidgets();
+        };
+        Game.init3DRender = function () {
+            Screen_3.Screen.renderer = new THREE.WebGLRenderer({ antialias: true });
+            Screen_3.Screen.renderer.setClearColor(0x000000);
+            Screen_3.Screen.renderer.setPixelRatio(window.devicePixelRatio);
+            Screen_3.Screen.renderer.setSize(window.innerWidth, window.innerHeight);
+            Game.container.appendChild(Screen_3.Screen.renderer.domElement);
+            Screen_3.Screen.camera = new THREE.PerspectiveCamera(20, window.innerWidth / window.innerHeight, 1, 30000);
+            Screen_3.Screen.scene = new THREE.Scene();
+        };
+        Game.init2DRender = function () {
+            Screen_3.Screen.stage = new PIXI.Container();
+            Screen_3.Screen.canvas = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight, { transparent: true });
+            Screen_3.Screen.canvas.view.style.position = "absolute";
+            Screen_3.Screen.canvas.view.style.top = "0px";
+            Screen_3.Screen.canvas.view.style.left = "0px";
+            Game.container.appendChild(Screen_3.Screen.canvas.view);
+            Screen_3.Screen.screen = new PIXI.Container();
+            Screen_3.Screen.stage.addChild(Screen_3.Screen.screen);
+        };
+        Game.update = function (deltaTime) {
+            for (var i = 0; i < Screen_3.Screen.scene.children.length; i++) {
+                var object = Screen_3.Screen.scene.children[i];
+                object.rotation.y += deltaTime * 10.0;
+                object.rotation.x += deltaTime * 3.0;
+                object.rotation.z += deltaTime * 5.0;
+            }
+            Screen_3.Screen.camera.position.z = 1800;
+            Screen_3.Screen.camera.lookAt(Screen_3.Screen.scene.position);
+            Particles_1.Particles.update(deltaTime);
+            Widget_3.Widget.updateWidgets(deltaTime);
+            GameData_1.GameData.update(deltaTime);
+            Game.render();
+        };
+        Game.render = function () {
+            if (!Screen_3.Screen.scene || !Screen_3.Screen.camera)
+                return;
+            Screen_3.Screen.renderer.render(Screen_3.Screen.scene, Screen_3.Screen.camera);
+            Screen_3.Screen.canvas.render(Screen_3.Screen.stage);
+        };
+        Game.resize = function () {
+            Screen_3.Screen.resize();
+            Widget_3.Widget.resizeWidget();
+        };
+        Game.container = null;
+        Game.lastTime = 0;
+        return Game;
+    }());
+    exports.Game = Game;
+});
+define("game/logic/space/objects/GameObject", ["require", "exports", "three"], function (require, exports, three_2) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var GameObject = (function () {
+        function GameObject() {
+            this.position = new three_2.Vector3();
+            this.needDelete = false;
+        }
+        GameObject.prototype.dispose = function () {
+        };
+        GameObject.prototype.update = function (deltaTime) {
+        };
+        return GameObject;
+    }());
+    exports.GameObject = GameObject;
+});
+define("game/logic/space/Space", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var Space = (function () {
+        function Space() {
+            this.objects = new Array();
+        }
+        Space.prototype.dispose = function () {
+            this.clear();
+        };
+        Space.prototype.clear = function () {
+            for (var i = this.objects.length - 1; i >= 0; i++) {
+                var object = this.objects[i];
+                object.dispose();
+            }
+        };
+        Space.prototype.init = function (seed) {
+        };
+        Space.prototype.update = function (deltaTime) {
+            for (var i = this.objects.length - 1; i >= 0; i++) {
+                var object = this.objects[i];
+                if (object.needDelete) {
+                    object.dispose();
+                    this.objects.splice(i, 1);
+                }
+                else {
+                    object.update(deltaTime);
+                }
+            }
+        };
+        return Space;
+    }());
+    exports.Space = Space;
+});
+define("game/logic/space/objects/Asteriod", ["require", "exports", "game/logic/space/objects/GameObject"], function (require, exports, GameObject_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var Asteriod = (function (_super) {
+        __extends(Asteriod, _super);
+        function Asteriod() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        return Asteriod;
+    }(GameObject_1.GameObject));
+    exports.Asteriod = Asteriod;
+});
+define("game/logic/space/objects/SpaceShip", ["require", "exports", "game/logic/space/objects/GameObject"], function (require, exports, GameObject_2) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var SpaceShip = (function (_super) {
+        __extends(SpaceShip, _super);
+        function SpaceShip() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        return SpaceShip;
+    }(GameObject_2.GameObject));
+    exports.SpaceShip = SpaceShip;
+});
+define("game/logic/space/objects/SpaceStation", ["require", "exports", "game/logic/space/objects/GameObject"], function (require, exports, GameObject_3) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var SpaceStation = (function (_super) {
+        __extends(SpaceStation, _super);
+        function SpaceStation() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        return SpaceStation;
+    }(GameObject_3.GameObject));
+    exports.SpaceStation = SpaceStation;
 });
 //# sourceMappingURL=main.js.map

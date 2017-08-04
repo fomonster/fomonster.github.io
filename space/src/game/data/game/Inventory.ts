@@ -51,7 +51,7 @@ export class InventoryItemType
         }
 
         if (data.model) {
-            this.modelName = data.model[0].name;
+            this.modelName = data.model.name;
             //model = SS3DMeshModelList.Get();
         }
 
@@ -624,7 +624,7 @@ export class Inventory
         Inventory.typesMap.clear();
         Inventory.typesIdMap.clear();
 
-        var data:any = Assets.getObject("inventoryitems.json");
+        var data:any = Assets.getObject("assets/inventory.json");
         Inventory.typesAdd(data);
     }
 

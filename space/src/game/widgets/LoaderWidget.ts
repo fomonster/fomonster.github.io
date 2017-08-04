@@ -7,6 +7,8 @@
 import * as PIXI from 'pixi.js';
 import {Widget} from "../../engine/Widget";
 import {Screen} from "../Screen";
+import {Assets} from "../../engine/Assets";
+import {Inventory} from "../data/game/Inventory";
 
 export class LoaderWidget extends Widget
 {
@@ -73,26 +75,40 @@ export class LoaderWidget extends Widget
     public loadAssets():void
     {
         PIXI.loader.on('progress', this.onProgressCallback.bind(this));
+        PIXI.loader.on('load', this.onLoadCallback.bind(this));
 
         PIXI.loader
-            .add("assets/inventory.json")
+            .add(["assets/inventory.json"])
             .add('atlas', 'assets/atlas.json')
             .load(this.onLoadComplete.bind(this));
     }
 
-    public onLoadComplete():void {
+    public onLoadComplete():void
+    {
+        Inventory.init();
         this.close();
         Widget.showWidget("GameWidget");
     }
 
     public onProgressCallback(loader, resource):void
     {
-        //console.log("-"+event.);
         this.totalLoaded = loader.progress;
         this.updateProgressBar();
         console.log('Progress:', loader.progress + '% ' + resource.name);
-
-
     }
 
+    public onLoadCallback(loader, resource):void
+    {
+        console.log('loaded:',  resource.name);
+
+        var n:string = resource.name;
+        if ( n.indexOf("json") >= 0) {
+            Assets.objectMap[n] = resource.data;
+        } else if ( resource.spritesheet ) {
+            var spritesheet:PIXI.Spritesheet = resource.spritesheet;
+            for(let name in spritesheet.textures) {
+                Assets.textureMap[name] = spritesheet.textures[name];
+            }
+        }
+    }
 }
