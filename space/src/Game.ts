@@ -6,6 +6,7 @@ import {Particles} from "./engine/Particles"
 import {Screen} from "./game/Screen"
 import {LoaderWidget} from "./game/widgets/LoaderWidget";
 import {GameWidget} from "./game/widgets/GameWidget";
+import {GameData} from "./game/data/GameData";
 
 export class Game
 {
@@ -142,6 +143,7 @@ export class Game
 
         Particles.update(deltaTime);
         Widget.updateWidgets(deltaTime);
+        GameData.update(deltaTime);
 
         Game.render();
     }

@@ -38,12 +38,12 @@ export class GameWidget extends Widget
 
         var cube = new THREE.Mesh( new THREE.BoxGeometry( 100, 100, 300 ), new THREE.MeshNormalMaterial() );
         cube.position.z = 0;
-        cube.rotation.z = -45;
+        cube.rotation.z = 0;
         Screen.scene.add( cube );
 
         var cubea = new THREE.Mesh( new THREE.BoxGeometry( 100, 300, 100 ), new THREE.MeshNormalMaterial() );
         cubea.position.z = 0;
-        cubea.rotation.z = -45;
+        cubea.rotation.z = 0;
         Screen.scene.add( cubea );
 
         var mesh:THREE.Mesh = new THREE.Mesh(

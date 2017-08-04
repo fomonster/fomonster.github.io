@@ -1,0 +1,111 @@
+{
+	"items":[
+		{
+			"id":"FF00", "name":"empty", "type":-1, "slottype":-1, "pricetype":-1, "maxcount":999999, "caption":"",
+			"image": {
+				"name":"cargo_unknown"
+			},
+			"model": {
+				"name":""
+			},
+			"params": [
+				{ "name":"mass", "min":0, "max":0, "mode":"add", "caption":"mass", "id":-1 },
+				{ "name":"price", "min":0, "max":0, "mode":"add", "caption":"price", "id":-1 },
+				{ "name":"condition", "min":0, "max":0, "mode":"add", "caption":"condition", "id":1 },
+			]
+		},
+		{
+			"id":"FF01", "name":"exp", "type":-1, "slottype":-1, "pricetype":-1, "maxcount":999999999,	"caption":"expirience",
+			"image": {
+				"name":"cargo_exp"
+			},
+			"model": {
+				"name":""
+			},
+			"params": [
+				{ "name":"mass", "min":0, "max":0, "mode":"add", "caption":"mass", "id":-1 },
+				{ "name":"price", "min":0, "max":0, "mode":"add", "caption":"price", "id":-1 },
+				{ "name":"condition", "min":100, "max":100, "mode":"add", "caption":"condition", "id":1 },
+			]
+		},
+		{
+			"id":"FF02", "name":"energy", "type":-1, "slottype":-1, "pricetype":-1, "maxcount":999999999,	"caption":"energy",
+			"image": {
+				"name":"cargo_energy"
+			},
+			"model": {
+				"name":""
+			},
+			"params": [
+				{ "name":"mass", "min":0, "max":0, "mode":"add", "caption":"mass", "id":-1 },
+				{ "name":"price", "min":0, "max":0, "mode":"add", "caption":"price", "id":-1 },
+				{ "name":"condition", "min":100, "max":100, "mode":"add", "caption":"condition", "id":1 },
+			]
+		},
+		{
+			"id":"1401", "name":"weapon_1", "type":20, "slottype":20, "pricetype":1, "maxcount":1,	"caption":"Machine gun",
+			"image": {
+				"name":"weapon_01_icon"
+			},
+			"model": {
+				"name":"weapon_01"
+			},			
+			"weapon": {
+				"name":1
+			},			
+			"params": [
+				{ "name":"level", "min":1, "max":333, "mode":"add", "caption":"mass", "id":1 },
+				{ "name":"damagemin", "min":50, "max":100, "mode":"add", "caption":"mass", "id":1 },
+				{ "name":"damagemax", "min":150, "max":300, "mode":"add", "caption":"mass", "id":1 },
+				{ "name":"velocity", "min":580, "max":580, "mode":"add", "caption":"mass", "id":3 },
+				{ "name":"randomshift", "min":40, "max":40, "mode":"add", "caption":"mass", "id":3 },
+				{ "name":"delay", "min":20, "max":20, "mode":"add", "caption":"mass", "id":4 },
+
+				{ "name":"mass", "min":90, "max":10, "mode":"add", "caption":"mass", "id":2 },
+				{ "name":"price", "min":50, "max":200000, "mode":"add", "caption":"price", "id":-1 },
+				{ "name":"condition", "min":100, "max":100, "mode":"add", "caption":"condition", "id":1 },
+			]
+		},
+		{
+			"id":"1E01", "name":"engine_1", "type":34, "slottype":34, "pricetype":1, "maxcount":1,	"caption":"Ion motor",
+			"image": {
+				"name":"engine_01_icon"
+			},
+			"model": {
+				"name":"engine_01"
+			},
+			"params": [
+				{ "name":"level", "min":1, "max":333, "mode":"add", "caption":"mass", "id":1 },
+				{ "name":"maxvelocity", "min":10, "max":15, "mode":"add", "caption":"mass", "id":1 },
+
+				{ "name":"mass", "min":90, "max":10, "mode":"add", "caption":"mass", "id":2 },
+				{ "name":"price", "min":50, "max":200000, "mode":"add", "caption":"price", "id":1 },
+				{ "name":"condition", "min":100, "max":100, "mode":"add", "caption":"condition", "id":-1 },
+			]
+		},
+		{
+			"id":"0A01", "name":"ship_1", "type":10, "slottype":10, "pricetype":1, "maxcount":1,	"caption":"Space ship",
+			"image": {
+				"name":"spaceship_01_icon"
+			},
+			"model": {
+				"name":"spaceship_01"
+			},
+			"slots": [
+				{ "x":0, "y":0, "type":20, "visible":true, "scale":1, "posX":0, "posY":0, "posZ": 0 },
+				{ "x":0, "y":0, "type":20, "visible":true, "scale":1, "posX":0, "posY":0, "posZ": 0 },
+				{ "x":0, "y":0, "type":34, "visible":true, "scale":1, "posX":0, "posY":0, "posZ": 0 },				
+			],
+			"params": [
+				{ "name":"level", "min":1, "max":333, "mode":"add", "caption":"mass", "id":1 },
+				{ "name":"cargo", "min":300, "max":90000, "mode":"add", "caption":"mass", "id":1 },
+				{ "name":"mobility", "min":60, "max":70, "mode":"add", "caption":"mass", "id":3 },
+				{ "name":"armor", "min":1, "max":16, "mode":"add", "caption":"mass", "id":2 },
+
+				{ "name":"mass", "min":0, "max":0, "mode":"add", "caption":"mass", "id":1 },
+				{ "name":"price", "min":50, "max":200000, "mode":"add", "caption":"price", "id":1 },
+				{ "name":"condition", "min":100, "max":4000, "mode":"add", "caption":"condition", "id":-1 },
+			]
+		},
+	]
+}

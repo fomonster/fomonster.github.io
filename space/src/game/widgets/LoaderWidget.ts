@@ -75,6 +75,7 @@ export class LoaderWidget extends Widget
         PIXI.loader.on('progress', this.onProgressCallback.bind(this));
 
         PIXI.loader
+            .add("assets/inventory.json")
             .add('atlas', 'assets/atlas.json')
             .load(this.onLoadComplete.bind(this));
     }
@@ -90,6 +91,8 @@ export class LoaderWidget extends Widget
         this.totalLoaded = loader.progress;
         this.updateProgressBar();
         console.log('Progress:', loader.progress + '% ' + resource.name);
+
+
     }
 
 }

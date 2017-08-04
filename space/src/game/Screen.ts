@@ -1,6 +1,5 @@
 import * as THREE from 'three';
 import * as PIXI from 'pixi.js';
-import {Widget} from "../engine/Widget";
 
 export class Screen
 {
@@ -82,10 +81,6 @@ export class Screen
             Screen.screenHeight = Screen.baseHeight;
         }
 
-
-
-
-        Widget.resizeWidget();
     }
 	
 }
