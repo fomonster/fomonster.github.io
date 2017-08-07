@@ -401,6 +401,58 @@ define("engine/Assets", ["require", "exports", "pixi.js"], function (require, ex
     }());
     exports.Assets = Assets;
 });
+define("engine/Random", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var Random = (function () {
+        function Random() {
+        }
+        Random.irandom = function (max) {
+            if (max <= 0)
+                return 0;
+            Random.iseed = ((Random.iseed >> 3) * Random.iseed * 16805 + 789221) % 2147483647;
+            return Random.iseed % max;
+        };
+        Random.irandomminmax = function (min, max) {
+            Random.iseed = ((Random.iseed >> 3) * Random.iseed * 16805 + 789221) % 2147483647;
+            if (min < max) {
+                return (Random.iseed % (max - min + 1)) + min;
+            }
+            else if (max < min) {
+                return (Random.iseed % (min - max + 1)) + max;
+            }
+            else {
+                return min;
+            }
+        };
+        Random.frandom = function () {
+            Random.iseed = ((Random.iseed >> 3) * Random.iseed * 16805 + 789221) % 2147483647;
+            return (1.0 * (Random.iseed % 10000000)) / 5000000.0 - 1.0;
+        };
+        Random.irandomminmaxparam = function (min, max, param) {
+            if (param < 0)
+                param = 0;
+            if (param > 1000)
+                param = 1000;
+            Random.iseed = ((Random.iseed >> 3) * Random.iseed * 16805 + 789221) % 2147483647;
+            var k = (0.05 + 1.9 * param / 1000) * 0.5;
+            var y;
+            var x;
+            if (Random.iseed < 1073741823) {
+                x = 1 - Random.iseed / 1073741823;
+                y = k - k * (x * x);
+            }
+            else {
+                x = Random.iseed / 1073741823 - 1;
+                y = k + (1 - k) * (x * x);
+            }
+            return (max - min) * y + min + 0.5;
+        };
+        Random.iseed = 1;
+        return Random;
+    }());
+    exports.Random = Random;
+});
 define("game/data/game/Inventory", ["require", "exports", "engine/Assets", "three"], function (require, exports, Assets_1, three_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -494,7 +546,6 @@ define("game/data/game/Inventory", ["require", "exports", "engine/Assets", "thre
             this.itemType = null;
             this.slots = new Array();
             this.paramsInit = new Map();
-            this.paramsSlot = new Map();
             this.params = new Map();
         }
         InventoryItem.prototype.dispose = function () {
@@ -513,7 +564,6 @@ define("game/data/game/Inventory", ["require", "exports", "engine/Assets", "thre
         InventoryItem.prototype.initParams = function () {
             this.paramsInit.clear();
             this.params.clear();
-            this.paramsSlot.clear();
             for (var i = 0; i < this.itemType.params.length; i++) {
                 var param = this.itemType.params[i];
                 Inventory.iseed = (0xFFFF & this.seed) + param.id;
@@ -562,12 +612,9 @@ define("game/data/game/Inventory", ["require", "exports", "engine/Assets", "thre
         InventoryItem.prototype.calculate = function () {
             if (!this.isChanged)
                 return;
-            for (var i = this.slots.length - 1; i >= 0; i--) {
-                this.slots[i].calculate();
-            }
-            var itcount = this.getCount();
             this.params.clear();
             for (var i = this.slots.length - 1; i >= 0; i--) {
+                this.slots[i].calculate();
                 Inventory.mergeParams(this.params, this.slots[i].params);
             }
             Inventory.mergeParams(this.params, this.paramsInit, this.getCount());
@@ -609,6 +656,9 @@ define("game/data/game/Inventory", ["require", "exports", "engine/Assets", "thre
             this.params.clear();
         };
         Inventory.prototype.add = function (type, count, seed, condition) {
+            if (count === void 0) { count = 1; }
+            if (seed === void 0) { seed = 0; }
+            if (condition === void 0) { condition = 16777215; }
             var item = null;
             if (type == null)
                 return null;
@@ -624,6 +674,9 @@ define("game/data/game/Inventory", ["require", "exports", "engine/Assets", "thre
             return item;
         };
         Inventory.prototype.addById = function (id, count, seed, condition) {
+            if (count === void 0) { count = 1; }
+            if (seed === void 0) { seed = 0; }
+            if (condition === void 0) { condition = 16777215; }
             var type = Inventory.getById(id);
             if (type == null)
                 return null;
@@ -643,6 +696,13 @@ define("game/data/game/Inventory", ["require", "exports", "engine/Assets", "thre
                 }
             }
             this.onChanged();
+            return item;
+        };
+        Inventory.prototype.addRandom = function (type, count, levelMin, levelMax) {
+            if (count === void 0) { count = 1; }
+            if (levelMin === void 0) { levelMin = 1; }
+            if (levelMax === void 0) { levelMax = 16777215; }
+            var item = this.add(type, count, Inventory.irandom(10000));
             return item;
         };
         Inventory.prototype.remove = function (offset, count) {
@@ -832,8 +892,49 @@ define("game/data/game/Inventory", ["require", "exports", "engine/Assets", "thre
             return (itema.id == itemb.id) && (itema.seed == itemb.seed) && (itema.condition == itemb.condition);
         };
         Inventory.prototype.saveTo = function (data) {
+            data.push(this.list.length);
+            for (var i = 0; i < this.list.length; i++) {
+                var item = this.list[i];
+                data.push(item.id ^ 0xab97f413);
+                data.push(item.seed ^ 0x13ab97f4);
+                data.push(item.getCondition() ^ 0xabf41397);
+                data.push(item.getCount() ^ 0xf4ab9713);
+                for (var j = 0; j < item.slots.length; j++) {
+                    var slot = item.slots[j];
+                    slot.saveTo(data);
+                }
+            }
         };
-        Inventory.prototype.loadFrom = function (data) {
+        Inventory.prototype.loadFrom = function (data, offset) {
+            this.clear();
+            if (data.length <= 0 && offset < data.length)
+                return;
+            var itemsCount = data[offset++];
+            for (var i = 0; i < itemsCount; i++) {
+                if (offset + 4 >= data.length)
+                    return;
+                var id = data[offset++];
+                id = (id ^ 0xab97f413) & 0x0000ffff;
+                var seed = data[offset++];
+                seed = (seed ^ 0x13ab97f4) & 0x0000ffff;
+                var condition = data[offset++];
+                condition = (condition ^ 0xabf41397) & 0x0000ffff;
+                var count = data[offset++];
+                count = count ^ 0xf4ab9713;
+                var it = this.addById(id, count, seed, condition);
+                if (it != null) {
+                    for (var j = 0; j < it.slots.length; j++) {
+                        var slot = it.slots[j];
+                        slot.loadFrom(data, offset);
+                    }
+                }
+            }
+        };
+        Inventory.irandom = function (max) {
+            if (max <= 0)
+                return 0;
+            Inventory.iseed = ((Inventory.iseed >> 3) * Inventory.iseed * 16805 + 789221) % 2147483647;
+            return Inventory.iseed % max;
         };
         Inventory.irandomminmax = function (min, max) {
             Inventory.iseed = ((Inventory.iseed >> 3) * Inventory.iseed * 16805 + 789221) % 2147483647;
@@ -915,7 +1016,100 @@ define("game/data/game/Inventory", ["require", "exports", "engine/Assets", "thre
     }());
     exports.Inventory = Inventory;
 });
-define("game/widgets/LoaderWidget", ["require", "exports", "pixi.js", "engine/Widget", "game/Screen", "engine/Assets", "game/data/game/Inventory"], function (require, exports, PIXI, Widget_1, Screen_1, Assets_2, Inventory_1) {
+define("game/data/user/UserData", ["require", "exports", "game/data/game/Inventory", "engine/Random"], function (require, exports, Inventory_1, Random_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var UserData = (function () {
+        function UserData() {
+            this.base = new Inventory_1.Inventory();
+            this.inventory = new Inventory_1.Inventory();
+        }
+        UserData.prototype.load = function () {
+            var data = localStorage.getItem("elite_game_save");
+            if (data == null) {
+                this.startInit();
+            }
+            else {
+                this.loadFromObject(data);
+            }
+        };
+        UserData.prototype.save = function () {
+            var data = this.saveToObject();
+            localStorage.setItem("elite_game_save", data);
+        };
+        UserData.prototype.loadFromObject = function (data) {
+        };
+        UserData.prototype.saveToObject = function () {
+            var baseData = new Array();
+            this.base.saveTo(baseData);
+            var inventoryData = new Array();
+            this.inventory.saveTo(inventoryData);
+            var data = {
+                inventory: inventoryData,
+                base: baseData
+            };
+            return data;
+        };
+        UserData.prototype.startInit = function () {
+            Inventory_1.Inventory.iseed = 33;
+            this.inventory.clear();
+            this.base.clear();
+            var lev = 1;
+            var it = this.base.addRandom(Inventory_1.Inventory.get("spaceship_1"), 1, lev - 1, lev + 1);
+            it.calculate();
+            var baseItem = this.base.getFirstItem();
+            for (var i = 0; i < baseItem.slots.length; i++) {
+                var list = new Array();
+                for (var j = 0; j < Inventory_1.Inventory.typesList.length; j++) {
+                    if (Inventory_1.Inventory.typesList[j].slotType == baseItem.slots[i].slotType) {
+                        list.push(Inventory_1.Inventory.typesList[j]);
+                    }
+                }
+                var id = Random_1.Random.irandom(list.length);
+                if (list.length > 0) {
+                    baseItem.slots[i].addRandom(list[id], 1, lev - 1, lev + 1);
+                }
+            }
+            this.base.isChanged = true;
+            this.base.calculate();
+            this.inventory.add(Inventory_1.Inventory.get("exp"), 1);
+            this.inventory.add(Inventory_1.Inventory.get("energy"), 50);
+            this.inventory.add(Inventory_1.Inventory.get("money"), 150);
+            this.inventory.addRandom(Inventory_1.Inventory.get("weapon_1"), 1);
+            this.inventory.addRandom(Inventory_1.Inventory.get("engine_1"), 1);
+        };
+        UserData.prototype.update = function (deltaTime) {
+        };
+        return UserData;
+    }());
+    exports.UserData = UserData;
+});
+define("game/data/GameData", ["require", "exports", "game/data/user/UserData", "game/data/game/Inventory"], function (require, exports, UserData_1, Inventory_2) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var GameData = (function () {
+        function GameData() {
+        }
+        GameData.init = function () {
+            Inventory_2.Inventory.init();
+        };
+        GameData.load = function () {
+            GameData.userData.load();
+            console.log("Game loaded");
+        };
+        GameData.save = function () {
+            GameData.userData.save();
+            console.log("Game saved");
+        };
+        GameData.update = function (deltaTime) {
+            GameData.userData.update(deltaTime);
+        };
+        GameData.userData = new UserData_1.UserData();
+        return GameData;
+    }());
+    exports.GameData = GameData;
+});
+define("game/widgets/LoaderWidget", ["require", "exports", "pixi.js", "engine/Widget", "game/Screen", "engine/Assets", "game/data/GameData"], function (require, exports, PIXI, Widget_1, Screen_1, Assets_2, GameData_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var LoaderWidget = (function (_super) {
@@ -929,7 +1123,6 @@ define("game/widgets/LoaderWidget", ["require", "exports", "pixi.js", "engine/Wi
             return _this;
         }
         LoaderWidget.prototype.init = function () {
-            _super.prototype.init.call(this);
             this.container = new PIXI.Container();
             Screen_1.Screen.screen.addChild(this.container);
             this.graphics = new PIXI.Graphics();
@@ -938,11 +1131,12 @@ define("game/widgets/LoaderWidget", ["require", "exports", "pixi.js", "engine/Wi
             this.totalToLoad = 100;
             this.updateProgressBar();
             this.loadAssets();
+            _super.prototype.init.call(this);
         };
         LoaderWidget.prototype.release = function () {
-            _super.prototype.release.call(this);
             this.container.removeChild(this.graphics);
             Screen_1.Screen.screen.removeChild(this.container);
+            _super.prototype.release.call(this);
         };
         LoaderWidget.prototype.update = function (deltaTime) {
             _super.prototype.update.call(this, deltaTime);
@@ -966,12 +1160,13 @@ define("game/widgets/LoaderWidget", ["require", "exports", "pixi.js", "engine/Wi
             PIXI.loader.on('progress', this.onProgressCallback.bind(this));
             PIXI.loader.on('load', this.onLoadCallback.bind(this));
             PIXI.loader
-                .add(["assets/inventory.json"])
+                .add('assets/inventory.json')
                 .add('atlas', 'assets/atlas.json')
                 .load(this.onLoadComplete.bind(this));
         };
         LoaderWidget.prototype.onLoadComplete = function () {
-            Inventory_1.Inventory.init();
+            GameData_1.GameData.init();
+            GameData_1.GameData.load();
             this.close();
             Widget_1.Widget.showWidget("GameWidget");
         };
@@ -997,7 +1192,99 @@ define("game/widgets/LoaderWidget", ["require", "exports", "pixi.js", "engine/Wi
     }(Widget_1.Widget));
     exports.LoaderWidget = LoaderWidget;
 });
-define("game/widgets/GameWidget", ["require", "exports", "three", "pixi.js", "engine/Widget", "game/Screen"], function (require, exports, THREE, PIXI, Widget_2, Screen_2) {
+define("game/logic/space/objects/GameObject", ["require", "exports", "three", "game/data/game/Inventory"], function (require, exports, three_2, Inventory_3) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var GameObject = (function () {
+        function GameObject() {
+            this.position = new three_2.Vector3();
+            this.needDelete = false;
+            this.inventory = new Inventory_3.Inventory();
+            this.base = new Inventory_3.Inventory();
+            this.hash = GameObject.hashCounter;
+            GameObject.hashCounter++;
+        }
+        GameObject.prototype.dispose = function () {
+        };
+        GameObject.prototype.update = function (deltaTime) {
+        };
+        GameObject.prototype.calculateInventory = function () {
+        };
+        GameObject.hashCounter = 1;
+        return GameObject;
+    }());
+    exports.GameObject = GameObject;
+});
+define("game/logic/space/objects/SpaceShip", ["require", "exports", "game/logic/space/objects/GameObject"], function (require, exports, GameObject_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var SpaceShip = (function (_super) {
+        __extends(SpaceShip, _super);
+        function SpaceShip() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        SpaceShip.prototype.calculateInventory = function () {
+        };
+        return SpaceShip;
+    }(GameObject_1.GameObject));
+    exports.SpaceShip = SpaceShip;
+});
+define("game/logic/space/Space", ["require", "exports", "game/logic/space/objects/SpaceShip", "game/data/GameData", "three"], function (require, exports, SpaceShip_1, GameData_2, three_3) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var Space = (function () {
+        function Space() {
+            this.objects = new Array();
+            this.currentShipHash = 0;
+            this.respawnDelay = 3;
+            this.respownPoint = new three_3.Vector3();
+            this.updateShipsRespawnDelay = 1;
+        }
+        Space.prototype.dispose = function () {
+            this.clear();
+        };
+        Space.prototype.clear = function () {
+            for (var i = this.objects.length - 1; i >= 0; i++) {
+                var object = this.objects[i];
+                object.dispose();
+            }
+        };
+        Space.prototype.addObject = function (object) {
+            this.objects.push(object);
+        };
+        Space.prototype.init = function () {
+            this.addPlayerSpaceShip();
+        };
+        Space.prototype.done = function () {
+            this.clear();
+        };
+        Space.prototype.update = function (deltaTime) {
+            for (var i = this.objects.length - 1; i >= 0; i--) {
+                var object = this.objects[i];
+                if (object.needDelete) {
+                    object.dispose();
+                    this.objects.splice(i, 1);
+                }
+                else {
+                    object.update(deltaTime);
+                }
+            }
+        };
+        Space.prototype.addPlayerSpaceShip = function () {
+            var spaceship = new SpaceShip_1.SpaceShip();
+            spaceship.position.set(this.respownPoint.x, this.respownPoint.y, this.respownPoint.z);
+            spaceship.base = GameData_2.GameData.userData.base;
+            spaceship.inventory = GameData_2.GameData.userData.inventory;
+            spaceship.base.isChanged = true;
+            spaceship.calculateInventory();
+            this.addObject(spaceship);
+            this.currentShipHash = spaceship.hash;
+        };
+        return Space;
+    }());
+    exports.Space = Space;
+});
+define("game/widgets/GameWidget", ["require", "exports", "engine/Widget", "game/Screen", "game/logic/space/Space", "game/data/GameData"], function (require, exports, Widget_2, Screen_2, Space_1, GameData_3) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var GameWidget = (function (_super) {
@@ -1006,59 +1293,43 @@ define("game/widgets/GameWidget", ["require", "exports", "three", "pixi.js", "en
             var _this = _super !== null && _super.apply(this, arguments) || this;
             _this.graphicsA = null;
             _this.graphicsB = null;
+            _this.space = null;
             return _this;
         }
         GameWidget.prototype.preInit = function () {
             _super.prototype.preInit.call(this);
+            this.space = new Space_1.Space();
         };
         GameWidget.prototype.init = function () {
+            GameData_3.GameData.load();
             _super.prototype.init.call(this);
         };
         GameWidget.prototype.postInit = function () {
-            _super.prototype.postInit.call(this);
-            var cube = new THREE.Mesh(new THREE.BoxGeometry(100, 100, 300), new THREE.MeshNormalMaterial());
-            cube.position.z = 0;
-            cube.rotation.z = 0;
-            Screen_2.Screen.scene.add(cube);
-            var cubea = new THREE.Mesh(new THREE.BoxGeometry(100, 300, 100), new THREE.MeshNormalMaterial());
-            cubea.position.z = 0;
-            cubea.rotation.z = 0;
-            Screen_2.Screen.scene.add(cubea);
-            var mesh = new THREE.Mesh(new THREE.SphereBufferGeometry(100, 16, 8), new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true }));
-            Screen_2.Screen.scene.add(mesh);
-            var graphics = new PIXI.Graphics();
-            graphics.beginFill(0xe60630);
-            graphics.moveTo(0, 0);
-            graphics.lineTo(100, 0);
-            graphics.lineTo(100, 100);
-            graphics.lineTo(0, 100);
-            graphics.endFill();
-            Screen_2.Screen.screen.addChild(graphics);
-            this.graphicsA = graphics;
-            graphics = new PIXI.Graphics();
-            graphics.beginFill(0x06e630);
-            graphics.moveTo(0, 0);
-            graphics.lineTo(100, 0);
-            graphics.lineTo(100, 100);
-            graphics.lineTo(0, 100);
-            graphics.endFill();
-            Screen_2.Screen.screen.addChild(graphics);
-            this.graphicsB = graphics;
+            this.space.init();
             this.resize();
+            _super.prototype.postInit.call(this);
         };
         GameWidget.prototype.preRelease = function () {
+            GameData_3.GameData.save();
             _super.prototype.preRelease.call(this);
         };
         GameWidget.prototype.release = function () {
+            this.space.done();
             _super.prototype.release.call(this);
         };
         GameWidget.prototype.postRelease = function () {
+            this.space.dispose();
+            this.space = null;
             _super.prototype.postRelease.call(this);
         };
         GameWidget.prototype.update = function (deltaTime) {
             _super.prototype.update.call(this, deltaTime);
+            if (this.space) {
+                this.space.update(deltaTime);
+            }
         };
         GameWidget.prototype.resize = function () {
+            _super.prototype.resize.call(this);
             if (this.graphicsA) {
                 this.graphicsA.x = Screen_2.Screen.screenLeft;
                 this.graphicsA.y = Screen_2.Screen.screenTop;
@@ -1072,23 +1343,7 @@ define("game/widgets/GameWidget", ["require", "exports", "three", "pixi.js", "en
     }(Widget_2.Widget));
     exports.GameWidget = GameWidget;
 });
-define("game/data/GameData", ["require", "exports"], function (require, exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var GameData = (function () {
-        function GameData() {
-        }
-        GameData.load = function () {
-        };
-        GameData.save = function () {
-        };
-        GameData.update = function (deltaTime) {
-        };
-        return GameData;
-    }());
-    exports.GameData = GameData;
-});
-define("Game", ["require", "exports", "three", "pixi.js", "engine/Widget", "engine/Particles", "game/Screen", "game/widgets/LoaderWidget", "game/widgets/GameWidget", "game/data/GameData"], function (require, exports, THREE, PIXI, Widget_3, Particles_1, Screen_3, LoaderWidget_1, GameWidget_1, GameData_1) {
+define("Game", ["require", "exports", "three", "pixi.js", "engine/Widget", "engine/Particles", "game/Screen", "game/widgets/LoaderWidget", "game/widgets/GameWidget", "game/data/GameData"], function (require, exports, THREE, PIXI, Widget_3, Particles_1, Screen_3, LoaderWidget_1, GameWidget_1, GameData_4) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var Game = (function () {
@@ -1170,7 +1425,7 @@ define("Game", ["require", "exports", "three", "pixi.js", "engine/Widget", "engi
             Screen_3.Screen.camera.lookAt(Screen_3.Screen.scene.position);
             Particles_1.Particles.update(deltaTime);
             Widget_3.Widget.updateWidgets(deltaTime);
-            GameData_1.GameData.update(deltaTime);
+            GameData_4.GameData.update(deltaTime);
             Game.render();
         };
         Game.render = function () {
@@ -1189,57 +1444,7 @@ define("Game", ["require", "exports", "three", "pixi.js", "engine/Widget", "engi
     }());
     exports.Game = Game;
 });
-define("game/logic/space/objects/GameObject", ["require", "exports", "three"], function (require, exports, three_2) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var GameObject = (function () {
-        function GameObject() {
-            this.position = new three_2.Vector3();
-            this.needDelete = false;
-        }
-        GameObject.prototype.dispose = function () {
-        };
-        GameObject.prototype.update = function (deltaTime) {
-        };
-        return GameObject;
-    }());
-    exports.GameObject = GameObject;
-});
-define("game/logic/space/Space", ["require", "exports"], function (require, exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var Space = (function () {
-        function Space() {
-            this.objects = new Array();
-        }
-        Space.prototype.dispose = function () {
-            this.clear();
-        };
-        Space.prototype.clear = function () {
-            for (var i = this.objects.length - 1; i >= 0; i++) {
-                var object = this.objects[i];
-                object.dispose();
-            }
-        };
-        Space.prototype.init = function (seed) {
-        };
-        Space.prototype.update = function (deltaTime) {
-            for (var i = this.objects.length - 1; i >= 0; i++) {
-                var object = this.objects[i];
-                if (object.needDelete) {
-                    object.dispose();
-                    this.objects.splice(i, 1);
-                }
-                else {
-                    object.update(deltaTime);
-                }
-            }
-        };
-        return Space;
-    }());
-    exports.Space = Space;
-});
-define("game/logic/space/objects/Asteriod", ["require", "exports", "game/logic/space/objects/GameObject"], function (require, exports, GameObject_1) {
+define("game/logic/space/objects/Asteriod", ["require", "exports", "game/logic/space/objects/GameObject"], function (require, exports, GameObject_2) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var Asteriod = (function (_super) {
@@ -1248,20 +1453,8 @@ define("game/logic/space/objects/Asteriod", ["require", "exports", "game/logic/s
             return _super !== null && _super.apply(this, arguments) || this;
         }
         return Asteriod;
-    }(GameObject_1.GameObject));
-    exports.Asteriod = Asteriod;
-});
-define("game/logic/space/objects/SpaceShip", ["require", "exports", "game/logic/space/objects/GameObject"], function (require, exports, GameObject_2) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var SpaceShip = (function (_super) {
-        __extends(SpaceShip, _super);
-        function SpaceShip() {
-            return _super !== null && _super.apply(this, arguments) || this;
-        }
-        return SpaceShip;
     }(GameObject_2.GameObject));
-    exports.SpaceShip = SpaceShip;
+    exports.Asteriod = Asteriod;
 });
 define("game/logic/space/objects/SpaceStation", ["require", "exports", "game/logic/space/objects/GameObject"], function (require, exports, GameObject_3) {
     "use strict";

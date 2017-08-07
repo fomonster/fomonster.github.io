@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import * as PIXI from 'pixi.js';
 import {Assets} from "../../../engine/Assets";
 import {Vector3} from "three";
+import {Random} from "../../../engine/Random";
 
 export class InventoryItemSlot
 {
@@ -93,7 +94,7 @@ export class InventoryItemType
             }*/
         }
 
-        // Парамерыы
+        // Парамеры
         this.params.splice(0, this.params.length);
         if (data.params && data.params.length > 0) {
             for (var i:number = 0; i < data.params.length; i++) {
@@ -130,7 +131,6 @@ export class InventoryItem
     public slots:Array<Inventory> = new Array<Inventory>();
 
     public paramsInit:Map<string, number> = new Map<string, number>();
-    public paramsSlot:Map<string, number> = new Map<string, number>();
     public params:Map<string, number> = new Map<string, number>();
 
     constructor()
@@ -158,7 +158,6 @@ export class InventoryItem
     {
         this.paramsInit.clear();
         this.params.clear();
-        this.paramsSlot.clear();
 
         for (var i:number = 0; i < this.itemType.params.length;i++) {
             var param:any = this.itemType.params[i];
@@ -221,14 +220,10 @@ export class InventoryItem
     public calculate():void
     {
         if (!this.isChanged) return;
+        this.params.clear();
 
         for (var i:number = this.slots.length - 1; i >= 0; i--) {
             this.slots[i].calculate();
-        }
-        var itcount:number  = this.getCount();
-
-        this.params.clear();
-        for (var i:number = this.slots.length - 1; i >= 0; i--) {
             Inventory.mergeParams(this.params, this.slots[i].params);
         }
         Inventory.mergeParams(this.params, this.paramsInit, this.getCount());
@@ -294,7 +289,7 @@ export class Inventory
         this.params.clear();
     }
 
-    public add(type:InventoryItemType, count:number, seed:number, condition:number)
+    public add(type:InventoryItemType, count:number = 1, seed:number = 0, condition:number = 16777215)
     {
         var item:InventoryItem = null;
         if (type == null) return null;
@@ -310,7 +305,7 @@ export class Inventory
         return item;
     }
 
-    public addById(id:number, count:number, seed:number, condition:number):InventoryItem
+    public addById(id:number, count:number = 1, seed:number = 0, condition:number = 16777215):InventoryItem
     {
         var type:InventoryItemType = Inventory.getById(id);
         if (type == null) return null;
@@ -334,6 +329,12 @@ export class Inventory
             }
         }
         this.onChanged();
+        return item;
+    }
+
+    public addRandom(type:InventoryItemType, count:number = 1, levelMin:number = 1, levelMax:number = 16777215)
+    {
+        var item:InventoryItem = this.add(type, count, Inventory.irandom(10000) );
         return item;
     }
 
@@ -553,52 +554,68 @@ export class Inventory
         return (itema.id == itemb.id) && (itema.seed == itemb.seed) && (itema.condition == itemb.condition);
     }
 
-    public saveTo(data:any)
+    /**
+     *
+     */
+    public saveTo(data:Array<number>)
     {
-        /*data->writeInt(list.size());
-        for (int i = 0; i < list.size(); i++) {
-        InventoryItem* it = list[i];
-        data->writeShort(it->id ^ 0xab97f413);
-        data->writeShort(it->seed ^ 0x13ab97f4);
-        data->writeShort(it->getCondition() ^ 0xabf41397);
-        data->writeUnsignedInt(it->getCount() ^ 0xf4ab9713);
-        // Ñëîòû
-        for (int j = 0; j < it->slots.size(); j++) {
-            Inventory* slot = it->slots[j];
-            slot->saveTo(data);
+        data.push(this.list.length);
+        for (var i:number = 0; i < this.list.length; i++) {
+            var item:InventoryItem = this.list[i];
+
+            data.push(item.id ^ 0xab97f413);
+            data.push(item.seed ^ 0x13ab97f4);
+            data.push(item.getCondition() ^ 0xabf41397);
+            data.push(item.getCount() ^ 0xf4ab9713);
+
+            for (var j:number = 0; j < item.slots.length; j++) {
+                var slot:Inventory = item.slots[j];
+                slot.saveTo(data);
+            }
+
         }
-    }*/
     }
 
-    public loadFrom(data:any)
+    /**
+     *
+     */
+    public loadFrom(data:Array<number>, offset:number)
     {
-        /*clear();
-        int itemscount = data->readInt();
+        this.clear();
+        if ( data.length <= 0 && offset < data.length ) return;
+        var itemsCount:number = data[offset++];
 
-        for (int i = 0; i < itemscount; i++) {
-        int id = data->readShort();
-        id = (id ^ 0xab97f413) & 0x0000ffff;
-        int seed = data->readShort();
-        seed = (seed ^ 0x13ab97f4) & 0x0000ffff;
-        int condition = data->readShort();
-        condition = (condition ^ 0xabf41397) & 0x0000ffff;
-        int count = data->readUnsignedInt();
-        count = count ^ 0xf4ab9713;
-        InventoryItem* it = addById(id, count, seed, condition);
-        if (it != null) {
-            // Ñëîòû
-            for (int j = 0; j < it->slots.size(); j++) {
-                Inventory* slot = it->slots[j];
-                slot->loadFrom(data);
+        for (var i:number = 0; i < itemsCount; i++) {
+            if ( offset + 4 >= data.length ) return;
+            var id:number = data[offset++];
+            id = (id ^ 0xab97f413) & 0x0000ffff;
+            var seed:number = data[offset++];
+            seed = (seed ^ 0x13ab97f4) & 0x0000ffff;
+            var condition:number = data[offset++];
+            condition = (condition ^ 0xabf41397) & 0x0000ffff;
+            var count:number = data[offset++];
+            count = count ^ 0xf4ab9713;
+            var it:InventoryItem = this.addById(id, count, seed, condition);
+            if (it != null) {
+                for (var j:number = 0; j < it.slots.length; j++) {
+                    var slot:Inventory = it.slots[j];
+                    slot.loadFrom(data, offset);
+                }
             }
         }
-    }*/
 
     }
 
     /**
      *
      */
+
+    public static irandom(max:number):number
+    {
+        if (max <= 0) return 0;
+        Inventory.iseed = ((Inventory.iseed >> 3) * Inventory.iseed * 16805 + 789221) % 2147483647;
+        return Inventory.iseed % max;
+    }
 
     public static irandomminmax(min:number, max:number):number
     {

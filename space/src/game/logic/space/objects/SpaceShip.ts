@@ -5,4 +5,10 @@ export class SpaceShip extends GameObject
 
 
 
+    public calculateInventory()
+    {
+
+    }
+
+
 }

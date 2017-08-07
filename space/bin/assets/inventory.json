@@ -84,7 +84,7 @@
 			]
 		},
 		{
-			"id":"0A01", "name":"ship_1", "type":10, "slottype":10, "pricetype":1, "maxcount":1,	"caption":"Space ship",
+			"id":"0A01", "name":"spaceship_1", "type":10, "slottype":10, "pricetype":1, "maxcount":1,	"caption":"Space ship",
 			"image": {
 				"name":"spaceship_1"
 			},

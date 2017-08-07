@@ -8,7 +8,7 @@ import * as PIXI from 'pixi.js';
 import {Widget} from "../../engine/Widget";
 import {Screen} from "../Screen";
 import {Assets} from "../../engine/Assets";
-import {Inventory} from "../data/game/Inventory";
+import {GameData} from "../data/GameData";
 
 export class LoaderWidget extends Widget
 {
@@ -19,8 +19,6 @@ export class LoaderWidget extends Widget
 
     public init():void
     {
-        super.init();
-
         this.container = new PIXI.Container();
         Screen.screen.addChild(this.container);
 
@@ -32,16 +30,19 @@ export class LoaderWidget extends Widget
         this.updateProgressBar();
 
         this.loadAssets();
+
+        super.init();
     }
 
     public release():void
     {
-        super.release();
+
 
         this.container.removeChild(this.graphics);
 
         Screen.screen.removeChild(this.container);
 
+        super.release();
     }
 
 
@@ -78,14 +79,17 @@ export class LoaderWidget extends Widget
         PIXI.loader.on('load', this.onLoadCallback.bind(this));
 
         PIXI.loader
-            .add(["assets/inventory.json"])
+            .add('assets/inventory.json')
             .add('atlas', 'assets/atlas.json')
             .load(this.onLoadComplete.bind(this));
     }
 
     public onLoadComplete():void
     {
-        Inventory.init();
+        GameData.init();
+
+        GameData.load(); // TODO: сделать загрузку с сервера
+
         this.close();
         Widget.showWidget("GameWidget");
     }
