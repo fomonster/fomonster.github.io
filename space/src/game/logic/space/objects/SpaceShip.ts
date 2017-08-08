@@ -1,10 +1,16 @@
+import * as THREE from 'three';
+import * as PIXI from 'pixi.js';
 import {GameObject} from "./GameObject";
 import {Inventory, InventoryItem} from "../../../data/game/Inventory";
 import {SpaceShipWeapon} from "./SpaceShipWeapon";
 import {SpaceShipReactive} from "./SpaceShipReactive";
+import {Assets} from "../../../../engine/Assets";
+import {Screen} from "../../../Screen";
 
 export class SpaceShip extends GameObject
 {
+
+    public mesh:THREE.Mesh = null;
 
     public mass:number = 0;
 
@@ -45,6 +51,20 @@ export class SpaceShip extends GameObject
     public regenerationDelay:number = 0;
 
     public regenerationDelayMax:number = 0;
+
+
+    public setMesh(meshName:string)
+    {
+        if ( this.mesh != null ) {
+            Screen.scene.remove(this.mesh);
+            this.mesh.geometry.dispose();
+            this.mesh.material.dispose();
+            this.mesh = null;
+        }
+        var model:any = Assets.getGeometry("assets/model.json");
+        this.mesh = new THREE.Mesh( model.geometry, model.materials[0] ); //new THREE.MeshBasicMaterial()
+        Screen.scene.add( this.mesh );
+    }
 
     public calculateInventory()
     {
@@ -128,7 +148,7 @@ export class SpaceShip extends GameObject
             this.conditionMax = baseItem.conditionMax;
 
             // Изображение корабля в пространстве
-            //TODO: model = base.itemType.model;
+            this.setMesh(baseItem.itemType.modelName);
 
             // Проходим все слоты
             for (i = baseItem.slots.length - 1; i >= 0; i--) {
@@ -189,6 +209,11 @@ export class SpaceShip extends GameObject
     {
         // Расчет инвентаря
         this.calculateInventory();
+
+        //
+        this.mesh.rotation.y += deltaTime * 10.0;
+        this.mesh.rotation.x += deltaTime * 3.0;
+        this.mesh.rotation.z += deltaTime * 5.0;
 
         // Регенерация протектора - щита
         this.protectorDelay += deltaTime;

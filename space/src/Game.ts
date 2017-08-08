@@ -128,18 +128,18 @@ export class Game
     public static update(deltaTime)
     {
 
-        for (var i = 0; i < Screen.scene.children.length; i++) {
-            var object = Screen.scene.children[i];
-            object.rotation.y += deltaTime * 10.0;
-            object.rotation.x += deltaTime * 3.0;
-            object.rotation.z += deltaTime * 5.0;
-        }
+        //for (var i = 0; i < Screen.scene.children.length; i++) {
+        //    var object = Screen.scene.children[i];
+        //    object.rotation.y += deltaTime * 10.0;
+        //   object.rotation.x += deltaTime * 3.0;
+        //    object.rotation.z += deltaTime * 5.0;
+        //}
 
-        Screen.camera.position.z = 1800;
-        //Game.camera.position.x += (mouseX - camera.position.x) * 0.05;
+        Screen.camera.position.z = 18;
+        //ame.camera.position.x += (mouseX - camera.position.x) * 0.05;
         //Game.camera.position.y += (- mouseY - camera.position.y) * 0.05;
 
-        Screen.camera.lookAt(Screen.scene.position);
+        //Screen.camera.lookAt(Screen.scene.position);
 
         Particles.update(deltaTime);
         Widget.updateWidgets(deltaTime);

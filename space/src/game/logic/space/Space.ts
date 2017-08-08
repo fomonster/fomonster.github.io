@@ -5,6 +5,7 @@ import {Screen} from "../../Screen";
 import {SpaceShip} from "./objects/SpaceShip";
 import {GameData} from "../../data/GameData";
 import {Vector3} from "three";
+import {Assets} from "../../../engine/Assets";
 
 export class Space
 {
@@ -12,6 +13,14 @@ export class Space
     // Игровые объекты
     //--------------------------------------------------------------------------
 
+    //
+    public light:THREE.Light = null;
+
+    //
+    public particles:THREE.Points = null;
+    public particlesGeometry:THREE.Geometry = null;
+
+    //
     public objects:Array<GameObject> = new Array<GameObject>();
 
     //--------------------------------------------------------------------------
@@ -74,6 +83,42 @@ export class Space
      */
     public init()
     {
+        // Stars
+
+
+        // ----------------
+
+        this.light = new THREE.DirectionalLight( 0xffffff );
+        this.light.position.set( 0, 0, 1 );
+        Screen.scene.add( this.light );
+
+        // -----------------
+
+        this.particlesGeometry = new THREE.Geometry();
+
+        for ( var i = 0; i < 10000; i ++ ) {
+
+            var vertex = new THREE.Vector3();
+            vertex.x = THREE.Math.randFloatSpread( 2000 );
+            vertex.y = THREE.Math.randFloatSpread( 2000 );
+            vertex.z = THREE.Math.randFloatSpread( 2000 );
+
+            var r = Math.sqrt(vertex.x * vertex.x + vertex.y * vertex.y + vertex.z * vertex.z);
+            if ( r != 0 ) {
+                vertex.x = 20000 * vertex.x / r;
+                vertex.y = 20000 * vertex.y / r;
+                vertex.z = 20000 * vertex.z / r;
+            }
+
+            this.particlesGeometry.vertices.push( vertex );
+
+        }
+
+        this.particles = new THREE.Points( this.particlesGeometry, new THREE.PointsMaterial( { color: 0x888888, size: 2, sizeAttenuation:false } ) );
+        Screen.scene.add( this.particles );
+
+
+        // -----------------
 
         this.addPlayerSpaceShip();
 
@@ -88,6 +133,10 @@ export class Space
     {
         this.clear();
 
+        // Stars
+        Screen.scene.remove( this.particles );
+        this.particlesGeometry.dispose();
+        this.particles = null;
 
     }
 

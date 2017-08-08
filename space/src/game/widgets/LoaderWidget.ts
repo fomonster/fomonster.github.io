@@ -75,13 +75,13 @@ export class LoaderWidget extends Widget
 
     public loadAssets():void
     {
-        PIXI.loader.on('progress', this.onProgressCallback.bind(this));
-        PIXI.loader.on('load', this.onLoadCallback.bind(this));
+        var list:Array<any> = [
+            'assets/model.json',
+            'assets/inventory.json',
+            ['atlas', 'assets/atlas.json']
+        ];
 
-        PIXI.loader
-            .add('assets/inventory.json')
-            .add('atlas', 'assets/atlas.json')
-            .load(this.onLoadComplete.bind(this));
+        Assets.load(list, this.onLoadComplete.bind(this), this.onProgressCallback.bind(this));
     }
 
     public onLoadComplete():void
@@ -101,18 +101,5 @@ export class LoaderWidget extends Widget
         console.log('Progress:', loader.progress + '% ' + resource.name);
     }
 
-    public onLoadCallback(loader, resource):void
-    {
-        console.log('loaded:',  resource.name);
 
-        var n:string = resource.name;
-        if ( n.indexOf("json") >= 0) {
-            Assets.objectMap[n] = resource.data;
-        } else if ( resource.spritesheet ) {
-            var spritesheet:PIXI.Spritesheet = resource.spritesheet;
-            for(let name in spritesheet.textures) {
-                Assets.textureMap[name] = spritesheet.textures[name];
-            }
-        }
-    }
 }

@@ -89,7 +89,7 @@
 				"name":"spaceship_1"
 			},
 			"model": {
-				"name":"spaceship_1"
+				"name":"assets/model.json"
 			},
 			"slots": [
 				{ "x":0, "y":0, "type":20, "visible":true, "scale":1, "posX":0, "posY":0, "posZ": 0 },
