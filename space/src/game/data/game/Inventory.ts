@@ -29,7 +29,7 @@ export class InventoryItemType
     public caption:string;
 
     public image:PIXI.Texture;
-    //public weaponShotType:ShotBase;
+    public weaponShotType:number;
 
     public modelName:string;
 
@@ -79,19 +79,7 @@ export class InventoryItemType
 
         // Weapons
         if (data.weapon ) {
-            /* weaponName = xmltype->elements("weapon")[0]->attributeInt("name");
-            if (weaponName == 1) {
-                weaponShotType = new ShotA();
-            }
-            else if (weaponName == 2) {
-                weaponShotType = new ShotA();
-            }
-            else if (weaponName == 3) {
-                weaponShotType = new ShotA();
-            }
-            else if (weaponName == 4) {
-                weaponShotType = new ShotA();
-            }*/
+            this.weaponShotType = data.weapon.name;
         }
 
         // Парамеры
@@ -156,8 +144,8 @@ export class InventoryItem
 
     public initParams()
     {
-        this.paramsInit.clear();
-        this.params.clear();
+        this.paramsInit = new Map<string, number>();
+        this.params = new Map<string, number>();
 
         for (var i:number = 0; i < this.itemType.params.length;i++) {
             var param:any = this.itemType.params[i];
@@ -220,7 +208,7 @@ export class InventoryItem
     public calculate():void
     {
         if (!this.isChanged) return;
-        this.params.clear();
+        this.params = new Map<string, number>();
 
         for (var i:number = this.slots.length - 1; i >= 0; i--) {
             this.slots[i].calculate();
@@ -286,7 +274,7 @@ export class Inventory
             this.list[i].dispose();
         }
         this.list.splice(0, this.list.length);
-        this.params.clear();
+        this.params = new Map<string, number>();
     }
 
     public add(type:InventoryItemType, count:number = 1, seed:number = 0, condition:number = 16777215)
@@ -504,7 +492,7 @@ export class Inventory
     {
         if (!this.isChanged) return;
 
-        this.params.clear();
+        this.params = new Map<string, number>();
         for (var i:number = this.list.length - 1; i >= 0; i--) {
             this.list[i].calculate();
             Inventory.mergeParams(this.params, this.list[i].params);
@@ -638,8 +626,8 @@ export class Inventory
             ///Inventory.typesList[i].dispose();
         }
         Inventory.typesList.splice(0, Inventory.typesList.length);
-        Inventory.typesMap.clear();
-        Inventory.typesIdMap.clear();
+        Inventory.typesMap = new Map<string, InventoryItemType>();
+        Inventory.typesIdMap = new Map<number, InventoryItemType>();
 
         var data:any = Assets.getObject("assets/inventory.json");
         Inventory.typesAdd(data);
@@ -651,8 +639,8 @@ export class Inventory
             //Inventory.typesList[i].dispose();
         }
         Inventory.typesList.splice(0, Inventory.typesList.length);
-        Inventory.typesMap.clear();
-        Inventory.typesIdMap.clear();
+        Inventory.typesMap = new Map<string, InventoryItemType>();
+        Inventory.typesIdMap = new Map<number, InventoryItemType>();
     }
 
     public static typesAdd(data:any)

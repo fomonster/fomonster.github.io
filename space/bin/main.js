@@ -513,6 +513,7 @@ define("game/data/game/Inventory", ["require", "exports", "engine/Assets", "thre
                 }
             }
             if (data.weapon) {
+                this.weaponShotType = data.weapon.name;
             }
             this.params.splice(0, this.params.length);
             if (data.params && data.params.length > 0) {
@@ -562,8 +563,8 @@ define("game/data/game/Inventory", ["require", "exports", "engine/Assets", "thre
             this.initParams();
         };
         InventoryItem.prototype.initParams = function () {
-            this.paramsInit.clear();
-            this.params.clear();
+            this.paramsInit = new Map();
+            this.params = new Map();
             for (var i = 0; i < this.itemType.params.length; i++) {
                 var param = this.itemType.params[i];
                 Inventory.iseed = (0xFFFF & this.seed) + param.id;
@@ -612,7 +613,7 @@ define("game/data/game/Inventory", ["require", "exports", "engine/Assets", "thre
         InventoryItem.prototype.calculate = function () {
             if (!this.isChanged)
                 return;
-            this.params.clear();
+            this.params = new Map();
             for (var i = this.slots.length - 1; i >= 0; i--) {
                 this.slots[i].calculate();
                 Inventory.mergeParams(this.params, this.slots[i].params);
@@ -653,7 +654,7 @@ define("game/data/game/Inventory", ["require", "exports", "engine/Assets", "thre
                 this.list[i].dispose();
             }
             this.list.splice(0, this.list.length);
-            this.params.clear();
+            this.params = new Map();
         };
         Inventory.prototype.add = function (type, count, seed, condition) {
             if (count === void 0) { count = 1; }
@@ -849,7 +850,7 @@ define("game/data/game/Inventory", ["require", "exports", "engine/Assets", "thre
         Inventory.prototype.calculate = function () {
             if (!this.isChanged)
                 return;
-            this.params.clear();
+            this.params = new Map();
             for (var i = this.list.length - 1; i >= 0; i--) {
                 this.list[i].calculate();
                 Inventory.mergeParams(this.params, this.list[i].params);
@@ -952,8 +953,8 @@ define("game/data/game/Inventory", ["require", "exports", "engine/Assets", "thre
             for (var i = 0; i < Inventory.typesList.length; i++) {
             }
             Inventory.typesList.splice(0, Inventory.typesList.length);
-            Inventory.typesMap.clear();
-            Inventory.typesIdMap.clear();
+            Inventory.typesMap = new Map();
+            Inventory.typesIdMap = new Map();
             var data = Assets_1.Assets.getObject("assets/inventory.json");
             Inventory.typesAdd(data);
         };
@@ -961,8 +962,8 @@ define("game/data/game/Inventory", ["require", "exports", "engine/Assets", "thre
             for (var i = 0; i < Inventory.typesList.length; i++) {
             }
             Inventory.typesList.splice(0, Inventory.typesList.length);
-            Inventory.typesMap.clear();
-            Inventory.typesIdMap.clear();
+            Inventory.typesMap = new Map();
+            Inventory.typesIdMap = new Map();
         };
         Inventory.typesAdd = function (data) {
             for (var i = 0; i < data.items.length; i++) {
@@ -1215,21 +1216,173 @@ define("game/logic/space/objects/GameObject", ["require", "exports", "three", "g
     }());
     exports.GameObject = GameObject;
 });
-define("game/logic/space/objects/SpaceShip", ["require", "exports", "game/logic/space/objects/GameObject"], function (require, exports, GameObject_1) {
+define("game/logic/space/objects/SpaceShipWeapon", ["require", "exports", "three"], function (require, exports, three_3) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var SpaceShipWeapon = (function () {
+        function SpaceShipWeapon() {
+            this.radius = 0;
+            this.damageMin = 0;
+            this.damageMax = 0;
+            this.velocity = 0;
+            this.randomShift = 0;
+            this.splashDamageRadius = 0;
+            this.delayMax = 0;
+            this.delay = 0;
+            this.position = new three_3.Vector3();
+            this.weaponShotType = 0;
+        }
+        return SpaceShipWeapon;
+    }());
+    exports.SpaceShipWeapon = SpaceShipWeapon;
+});
+define("game/logic/space/objects/SpaceShipReactive", ["require", "exports", "three"], function (require, exports, three_4) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var SpaceShipReactive = (function () {
+        function SpaceShipReactive() {
+            this.position = new three_4.Vector3();
+            this.scale = 1;
+        }
+        return SpaceShipReactive;
+    }());
+    exports.SpaceShipReactive = SpaceShipReactive;
+});
+define("game/logic/space/objects/SpaceShip", ["require", "exports", "game/logic/space/objects/GameObject", "game/logic/space/objects/SpaceShipWeapon", "game/logic/space/objects/SpaceShipReactive"], function (require, exports, GameObject_1, SpaceShipWeapon_1, SpaceShipReactive_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var SpaceShip = (function (_super) {
         __extends(SpaceShip, _super);
         function SpaceShip() {
-            return _super !== null && _super.apply(this, arguments) || this;
+            var _this = _super !== null && _super.apply(this, arguments) || this;
+            _this.mass = 0;
+            _this.cargo = 0;
+            _this.isOverload = false;
+            _this.maxVelocity = 1;
+            _this.armor = 0;
+            _this.shield = 0;
+            _this.mobility = 0;
+            _this.radarRadius = 0;
+            _this.conditionReg = 0;
+            _this.protectorReg = 0;
+            _this.protectorDelay = 0;
+            _this.protectorDelayMax = 0;
+            _this.protectorMax = 0;
+            _this.protector = 0;
+            _this.weaponList = new Array();
+            _this.reactiveList = new Array();
+            _this.condition = 0;
+            _this.conditionMax = 0;
+            _this.regenerationDelay = 0;
+            _this.regenerationDelayMax = 0;
+            return _this;
         }
         SpaceShip.prototype.calculateInventory = function () {
+            if (!this.base.isChanged && !this.inventory.isChanged)
+                return;
+            if (this.inventory.isChanged) {
+                this.inventory.calculate();
+            }
+            var isBaseChanged = this.base.isChanged;
+            if (isBaseChanged) {
+                this.base.calculate();
+            }
+            this.mass = this.base.getParam("mass") + this.inventory.getParam("mass");
+            this.cargo = this.base.getParam("cargo");
+            this.maxVelocity = this.base.getParam("maxvelocity");
+            if (this.mass > this.cargo) {
+                this.maxVelocity = 1;
+                this.isOverload = true;
+            }
+            else {
+                this.isOverload = false;
+            }
+            if (this.maxVelocity < 1)
+                this.maxVelocity = 1;
+            if (!isBaseChanged) {
+                return;
+            }
+            this.armor = this.base.getParam("armor");
+            this.shield = this.base.getParam("shield");
+            this.mobility = this.base.getParam("mobility");
+            this.radarRadius = this.base.getParam("radarradius");
+            this.conditionReg = this.base.getParam("conditionreg");
+            this.protectorReg = this.base.getParam("protectorreg");
+            this.protectorMax = this.base.getParam("protectormax");
+            this.protectorDelayMax = this.base.getParam("protectordelay");
+            if (this.protector < 0)
+                this.protector = 0;
+            if (this.protector > this.protectorMax)
+                this.protector = this.protectorMax;
+            this.weaponList.splice(0, this.weaponList.length);
+            this.reactiveList.splice(0, this.reactiveList.length);
+            var i;
+            var wpn;
+            var rea;
+            var baseItem = this.base.getFirstItem();
+            var slot;
+            var slotItem;
+            if (baseItem != null) {
+                this.condition = baseItem.getCondition();
+                this.conditionMax = baseItem.conditionMax;
+                for (i = baseItem.slots.length - 1; i >= 0; i--) {
+                    slot = baseItem.slots[i];
+                    slotItem = slot.getFirstItem();
+                    if (slot.slotSlot.type == 1) {
+                        rea = new SpaceShipReactive_1.SpaceShipReactive();
+                        rea.position = slot.slotSlot.position;
+                        rea.scale = slot.slotSlot.scale;
+                        this.reactiveList.push(rea);
+                    }
+                    if (slotItem != null) {
+                        if (slotItem.itemType.type == 20) {
+                            wpn = new SpaceShipWeapon_1.SpaceShipWeapon();
+                            wpn.radius = slotItem.getParam("damageradius");
+                            wpn.damageMin = slotItem.getParam("damagemin");
+                            wpn.damageMax = slotItem.getParam("damagemax");
+                            wpn.velocity = slotItem.getParam("velocity");
+                            wpn.randomShift = slotItem.getParam("randomshift") * 0.001;
+                            wpn.splashDamageRadius = slotItem.getParam("damagesplashradius");
+                            ;
+                            wpn.delayMax = slotItem.getParam("delay") * 0.01;
+                            wpn.delay = wpn.delayMax;
+                            wpn.position = slot.slotSlot.position;
+                            wpn.weaponShotType = slotItem.itemType.weaponShotType;
+                            this.weaponList.push(wpn);
+                        }
+                    }
+                }
+            }
+        };
+        SpaceShip.prototype.update = function (deltaTime) {
+            this.calculateInventory();
+            this.protectorDelay += deltaTime;
+            if (this.protectorDelay >= this.protectorDelayMax) {
+                this.protector += this.protectorReg * deltaTime;
+                if (this.protector > this.protectorMax) {
+                    this.protector = this.protectorMax;
+                }
+            }
+            this.regenerationDelay += deltaTime;
+            if (this.regenerationDelay >= this.regenerationDelayMax) {
+                if (this.condition < this.conditionMax) {
+                    this.condition += this.conditionReg;
+                    if (this.condition >= this.conditionMax) {
+                        this.condition = this.conditionMax;
+                    }
+                    var baseItem = this.base.getFirstItem();
+                    if (baseItem != null) {
+                        baseItem.setCondition(this.condition);
+                    }
+                }
+                this.regenerationDelay -= this.regenerationDelayMax;
+            }
         };
         return SpaceShip;
     }(GameObject_1.GameObject));
     exports.SpaceShip = SpaceShip;
 });
-define("game/logic/space/Space", ["require", "exports", "game/logic/space/objects/SpaceShip", "game/data/GameData", "three"], function (require, exports, SpaceShip_1, GameData_2, three_3) {
+define("game/logic/space/Space", ["require", "exports", "game/logic/space/objects/SpaceShip", "game/data/GameData", "three"], function (require, exports, SpaceShip_1, GameData_2, three_5) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var Space = (function () {
@@ -1237,7 +1390,7 @@ define("game/logic/space/Space", ["require", "exports", "game/logic/space/object
             this.objects = new Array();
             this.currentShipHash = 0;
             this.respawnDelay = 3;
-            this.respownPoint = new three_3.Vector3();
+            this.respownPoint = new three_5.Vector3();
             this.updateShipsRespawnDelay = 1;
         }
         Space.prototype.dispose = function () {

@@ -22,8 +22,8 @@
       <file leaf-file-name="GameWidget.ts" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/game/widgets/GameWidget.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="362">
-              <caret line="107" column="26" lean-forward="true" selection-start-line="107" selection-start-column="26" selection-end-line="107" selection-end-column="26" />
+            <state relative-caret-position="209">
+              <caret line="67" column="34" lean-forward="true" selection-start-line="67" selection-start-column="34" selection-end-line="67" selection-end-column="34" />
               <folding>
                 <element signature="e#116#147#0" expanded="true" />
               </folding>
@@ -31,10 +31,20 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="SpaceShipReactive.ts" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/game/logic/space/objects/SpaceShipReactive.ts">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="114">
+              <caret line="6" column="44" lean-forward="false" selection-start-line="6" selection-start-column="44" selection-end-line="6" selection-end-column="44" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="Widget.ts" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/engine/Widget.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="124">
+            <state relative-caret-position="1653">
               <caret line="87" column="28" lean-forward="true" selection-start-line="87" selection-start-column="28" selection-end-line="87" selection-end-column="28" />
               <folding />
             </state>
@@ -44,7 +54,7 @@
       <file leaf-file-name="GameData.ts" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/game/data/GameData.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
+            <state relative-caret-position="285">
               <caret line="15" column="0" lean-forward="true" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
               <folding>
                 <element signature="e#0#31#0" expanded="true" />
@@ -56,7 +66,7 @@
       <file leaf-file-name="LoaderWidget.ts" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/game/widgets/LoaderWidget.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="190">
+            <state relative-caret-position="1615">
               <caret line="90" column="0" lean-forward="false" selection-start-line="90" selection-start-column="0" selection-end-line="90" selection-end-column="0" />
               <folding>
                 <element signature="e#116#148#0" expanded="true" />
@@ -65,11 +75,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="UserData.ts" pinned="false" current-in-tab="true">
+      <file leaf-file-name="UserData.ts" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/game/data/user/UserData.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="567">
-              <caret line="78" column="0" lean-forward="true" selection-start-line="78" selection-start-column="0" selection-end-line="78" selection-end-column="0" />
+            <state relative-caret-position="1444">
+              <caret line="76" column="8" lean-forward="false" selection-start-line="76" selection-start-column="8" selection-end-line="76" selection-end-column="8" />
               <folding>
                 <element signature="e#0#31#0" expanded="true" />
               </folding>
@@ -90,10 +100,22 @@
       <file leaf-file-name="Inventory.ts" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/game/data/game/Inventory.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="256">
-              <caret line="93" column="15" lean-forward="true" selection-start-line="93" selection-start-column="15" selection-end-line="93" selection-end-column="15" />
+            <state relative-caret-position="-3537">
+              <caret line="496" column="37" lean-forward="true" selection-start-line="496" selection-start-column="37" selection-end-line="496" selection-end-column="37" />
               <folding>
                 <element signature="e#0#31#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="SpaceShip.ts" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/game/logic/space/objects/SpaceShip.ts">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="133">
+              <caret line="7" column="0" lean-forward="true" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
+              <folding>
+                <element signature="e#0#40#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -110,9 +132,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>ысфду</find>
-      <find>scale</find>
-      <find>marginRightGen</find>
       <find>minXGen</find>
       <find>particles</find>
       <find>App.</find>
@@ -137,9 +156,12 @@
       <find>random</find>
       <find>params</find>
       <find>paramsSlot</find>
-      <find>paramsInit</find>
-      <find>calculate</find>
       <find>paramsImi</find>
+      <find>weaponShotType</find>
+      <find>typesMap</find>
+      <find>paramsInit</find>
+      <find>.clear</find>
+      <find>calculate</find>
     </findStrings>
     <replaceStrings>
       <replace>Game.</replace>
@@ -149,8 +171,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/smoothie.js" />
-        <option value="$PROJECT_DIR$/src/SS/GUI.ts" />
         <option value="$PROJECT_DIR$/src/SS/GUIWidget.ts" />
         <option value="$PROJECT_DIR$/src/SS/Widget.ts" />
         <option value="$PROJECT_DIR$/src/Logic/Display/Loader.ts" />
@@ -190,7 +210,6 @@
         <option value="$PROJECT_DIR$/src/Game.ts" />
         <option value="$PROJECT_DIR$/src/engine/Assets.ts" />
         <option value="$PROJECT_DIR$/src/game/logic/space/objects/GameObject.ts" />
-        <option value="$PROJECT_DIR$/src/game/logic/space/objects/SpaceShip.ts" />
         <option value="$PROJECT_DIR$/src/game/logic/space/objects/Asteriod.ts" />
         <option value="$PROJECT_DIR$/src/game/logic/space/Space.ts" />
         <option value="$PROJECT_DIR$/src/game/data/GameData.ts" />
@@ -199,7 +218,10 @@
         <option value="$PROJECT_DIR$/src/game/widgets/GameWidget.ts" />
         <option value="$PROJECT_DIR$/src/engine/Random.ts" />
         <option value="$PROJECT_DIR$/src/game/data/user/UserData.ts" />
+        <option value="$PROJECT_DIR$/src/game/logic/space/objects/SpaceShipReactive.ts" />
+        <option value="$PROJECT_DIR$/src/game/logic/space/objects/SpaceShipWeapon.ts" />
         <option value="$PROJECT_DIR$/src/game/data/game/Inventory.ts" />
+        <option value="$PROJECT_DIR$/src/game/logic/space/objects/SpaceShip.ts" />
       </list>
     </option>
   </component>
@@ -269,6 +291,14 @@
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="game" type="462c0819:PsiDirectoryNode" />
               <item name="data" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="space" type="b2602c69:ProjectViewProjectNode" />
+              <item name="space" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="game" type="462c0819:PsiDirectoryNode" />
+              <item name="data" type="462c0819:PsiDirectoryNode" />
+              <item name="game" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="space" type="b2602c69:ProjectViewProjectNode" />
@@ -461,11 +491,12 @@
       <workItem from="1501877996533" duration="8400000" />
       <workItem from="1501916510886" duration="6635000" />
       <workItem from="1501997150067" duration="17489000" />
+      <workItem from="1502108542378" duration="7257000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="247006000" />
+    <option name="totallyTimeSpent" value="254263000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -535,21 +566,11 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/src/game/data/user/UserData.ts</url>
-          <line>76</line>
-          <properties />
-          <option name="timeStamp" value="47" />
-        </line-breakpoint>
-      </breakpoints>
       <option name="time" value="48" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/Logic/Visual/GameProgress.ts" />
-    <entry file="file://$PROJECT_DIR$/src/Visual/Particle.ts" />
     <entry file="file://$PROJECT_DIR$/src/Logic/Visual/ParticleSimple.ts" />
     <entry file="file://$PROJECT_DIR$/src/Logic/Visual/GameGround.ts" />
     <entry file="file://$PROJECT_DIR$/src/Logic/Visual/GameDragon.ts" />
@@ -629,17 +650,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="152">
           <caret line="9" column="7" lean-forward="false" selection-start-line="9" selection-start-column="7" selection-end-line="9" selection-end-column="7" />
-          <folding>
-            <element signature="e#0#31#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/game/logic/space/objects/SpaceShip.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="133">
-          <caret line="7" column="31" lean-forward="true" selection-start-line="7" selection-start-column="31" selection-end-line="7" selection-end-column="31" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -647,7 +657,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="133">
           <caret line="7" column="1" lean-forward="false" selection-start-line="7" selection-start-column="1" selection-end-line="7" selection-end-column="1" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -674,47 +683,25 @@
         <state relative-caret-position="171">
           <caret line="22" column="35" lean-forward="true" selection-start-line="22" selection-start-column="35" selection-end-line="22" selection-end-column="35" />
           <folding>
-            <element signature="e#1#32#0" expanded="true" />
+            <element signature="e#1#32#0" expanded="false" />
             <marker date="1501877925823" expanded="true" signature="4919:4961" ph="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/game/widgets/LoaderWidget.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="190">
-          <caret line="90" column="0" lean-forward="false" selection-start-line="90" selection-start-column="0" selection-end-line="90" selection-end-column="0" />
-          <folding>
-            <element signature="e#116#148#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/game/data/GameData.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="15" column="0" lean-forward="true" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#31#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/engine/Widget.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="124">
+        <state relative-caret-position="1653">
           <caret line="87" column="28" lean-forward="true" selection-start-line="87" selection-start-column="28" selection-end-line="87" selection-end-column="28" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/game/widgets/GameWidget.ts">
+    <entry file="file://$PROJECT_DIR$/src/game/logic/space/objects/SpaceShipWeapon.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="362">
-          <caret line="107" column="26" lean-forward="true" selection-start-line="107" selection-start-column="26" selection-end-line="107" selection-end-column="26" />
-          <folding>
-            <element signature="e#116#147#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="209">
+          <caret line="11" column="28" lean-forward="false" selection-start-line="11" selection-start-column="28" selection-end-line="11" selection-end-column="28" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -726,22 +713,70 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/game/data/game/Inventory.ts">
+    <entry file="file://$PROJECT_DIR$/src/game/data/GameData.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="256">
-          <caret line="93" column="15" lean-forward="true" selection-start-line="93" selection-start-column="15" selection-end-line="93" selection-end-column="15" />
+        <state relative-caret-position="285">
+          <caret line="15" column="0" lean-forward="true" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/game/widgets/LoaderWidget.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1615">
+          <caret line="90" column="0" lean-forward="false" selection-start-line="90" selection-start-column="0" selection-end-line="90" selection-end-column="0" />
+          <folding>
+            <element signature="e#116#148#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/game/data/user/UserData.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="567">
-          <caret line="78" column="0" lean-forward="true" selection-start-line="78" selection-start-column="0" selection-end-line="78" selection-end-column="0" />
+        <state relative-caret-position="1444">
+          <caret line="76" column="8" lean-forward="false" selection-start-line="76" selection-start-column="8" selection-end-line="76" selection-end-column="8" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/game/widgets/GameWidget.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="209">
+          <caret line="67" column="34" lean-forward="true" selection-start-line="67" selection-start-column="34" selection-end-line="67" selection-end-column="34" />
+          <folding>
+            <element signature="e#116#147#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/game/data/game/Inventory.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-3537">
+          <caret line="496" column="37" lean-forward="true" selection-start-line="496" selection-start-column="37" selection-end-line="496" selection-end-column="37" />
+          <folding>
+            <element signature="e#0#31#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/game/logic/space/objects/SpaceShipReactive.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="114">
+          <caret line="6" column="44" lean-forward="false" selection-start-line="6" selection-start-column="44" selection-end-line="6" selection-end-column="44" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/game/logic/space/objects/SpaceShip.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="133">
+          <caret line="7" column="0" lean-forward="true" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#40#0" expanded="true" />
           </folding>
         </state>
       </provider>
