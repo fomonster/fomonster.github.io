@@ -6,11 +6,19 @@ import {SpaceShipWeapon} from "./SpaceShipWeapon";
 import {SpaceShipReactive} from "./SpaceShipReactive";
 import {Assets} from "../../../../engine/Assets";
 import {Screen} from "../../../Screen";
+import {SpaceShipPilot} from "./SpaceShipPilot";
+import {Utils} from "../../../../engine/Utils";
+import {Vector3} from "three";
 
 export class SpaceShip extends GameObject
 {
+    public currentHash:number = 0;
+
+    // graphics
 
     public mesh:THREE.Mesh = null;
+
+    // in game properties
 
     public mass:number = 0;
 
@@ -52,6 +60,13 @@ export class SpaceShip extends GameObject
 
     public regenerationDelayMax:number = 0;
 
+    // ai
+
+    public pilot:SpaceShipPilot = null;
+
+
+
+    //
 
     public setMesh(meshName:string)
     {
@@ -62,7 +77,7 @@ export class SpaceShip extends GameObject
             this.mesh = null;
         }
         var model:any = Assets.getGeometry("assets/model.json");
-        this.mesh = new THREE.Mesh( model.geometry, model.materials[0] ); //new THREE.MeshBasicMaterial()
+        this.mesh = new THREE.Mesh( model.geometry, model.materials );
         Screen.scene.add( this.mesh );
     }
 
@@ -207,8 +222,20 @@ export class SpaceShip extends GameObject
 
     public update(deltaTime:number)
     {
+        //
+        Utils.rotateVector(this.rotation, Utils.AXIS_Z, this.forward);
+        Utils.rotateVector(this.rotation, Utils.AXIS_Y, this.up);
+        Utils.rotateVector(this.rotation, Utils.AXIS_X, this.right);
+
+        //
+
         // Расчет инвентаря
         this.calculateInventory();
+
+        //
+        if ( this.pilot ) {
+            this.pilot.update(deltaTime);
+        }
 
         //
         this.mesh.rotation.y += deltaTime * 10.0;
@@ -248,6 +275,10 @@ export class SpaceShip extends GameObject
             this.regenerationDelay -= this.regenerationDelayMax;
         }
 
+        // Применяем скорость
+        this.position.x += this.velocity.x * deltaTime;
+        this.position.y += this.velocity.y * deltaTime;
+        this.position.z += this.velocity.z * deltaTime;
     }
 
 
