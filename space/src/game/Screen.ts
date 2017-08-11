@@ -30,6 +30,9 @@ export class Screen
     public static screenWidth = Screen.baseWidth;
     public static screenHeight = Screen.baseHeight;
 
+    //
+    public static keys:any = {};
+
     public static resize()
     {
         Screen.width = window.innerWidth;
@@ -82,5 +85,13 @@ export class Screen
         }
 
     }
-	
+
+    /**
+     *
+     */
+    public static keyPressed(keyCode:number):boolean
+    {
+        return ( Screen.keys[keyCode] &&  Screen.keys[keyCode] );
+    }
+
 }

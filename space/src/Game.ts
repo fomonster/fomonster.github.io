@@ -7,12 +7,14 @@ import {Screen} from "./game/Screen"
 import {LoaderWidget} from "./game/widgets/LoaderWidget";
 import {GameWidget} from "./game/widgets/GameWidget";
 import {GameData} from "./game/data/GameData";
+import {Vector3} from "three";
 
 export class Game
 {
 
     public static container: HTMLElement = null;
     public static lastTime:number = 0;
+
 
     //-------------------------------------------------------------------------------------
     //
@@ -47,6 +49,19 @@ export class Game
             window.requestAnimationFrame(handler);
         };
         window.requestAnimationFrame(handler);
+
+        window.addEventListener(
+            "keydown", function(event) {
+                Screen.keys[event.keyCode] = true;
+                event.preventDefault();
+            }, false
+        );
+        window.addEventListener(
+            "keyup", function(event) {
+                Screen.keys[event.keyCode] = false;
+                event.preventDefault();
+            }, false
+        );
 
         //
         window.addEventListener( 'resize',  () => { Game.resize(); }, false );
@@ -104,7 +119,12 @@ export class Game
         Screen.renderer.setSize(window.innerWidth, window.innerHeight);
         Game.container.appendChild(Screen.renderer.domElement);
 
-        Screen.camera = new THREE.PerspectiveCamera(20, window.innerWidth / window.innerHeight, 1, 30000);
+        Screen.camera = new THREE.PerspectiveCamera(20, window.innerWidth / window.innerHeight, 3, 30000);
+        Screen.camera.up.set(0,0,1);
+        Screen.camera.position.set(0,0,0);
+
+        Screen.camera.lookAt(new Vector3(0,1,0));
+
 
         Screen.scene = new THREE.Scene();
     }
@@ -135,11 +155,12 @@ export class Game
         //    object.rotation.z += deltaTime * 5.0;
         //}
 
-        Screen.camera.position.z = 18;
+        //Screen.camera.position.z = -18;
         //ame.camera.position.x += (mouseX - camera.position.x) * 0.05;
         //Game.camera.position.y += (- mouseY - camera.position.y) * 0.05;
 
-        //Screen.camera.lookAt(Screen.scene.position);
+        //Screen.camera.lookAt(new Vector3(0,0,-1));
+        //lookAt(Screen.scene.position);
 
         Particles.update(deltaTime);
         Widget.updateWidgets(deltaTime);
@@ -161,4 +182,5 @@ export class Game
         Widget.resizeWidget();
     }
 
+    public static
 }

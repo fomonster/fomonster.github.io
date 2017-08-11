@@ -6,9 +6,14 @@ import {SpaceShip} from "./objects/SpaceShip";
 import {GameData} from "../../data/GameData";
 import {Vector3} from "three";
 import {Assets} from "../../../engine/Assets";
+import {SpaceShipPilotPlayer} from "./objects/SpaceShipPilotPlayer";
+import {Asteroid} from "./objects/Asteroid";
+import {Random} from "../../../engine/Random";
 
 export class Space
 {
+    public static self:Space = null;
+
     //--------------------------------------------------------------------------
     // Игровые объекты
     //--------------------------------------------------------------------------
@@ -22,7 +27,7 @@ export class Space
 
     //
     public objects:Array<GameObject> = new Array<GameObject>();
-
+    public objectsHash:Map<number, GameObject> = new Map<number, GameObject>();
     //--------------------------------------------------------------------------
     // Корабль игрока
     //--------------------------------------------------------------------------
@@ -48,7 +53,7 @@ export class Space
      */
     constructor()
     {
-
+        Space.self = this;
     }
 
     /**
@@ -66,8 +71,10 @@ export class Space
     {
         for(var i:number =this.objects.length-1; i >=0; i++) {
             var object: GameObject = this.objects[i];
+            this.objectsHash[object.hash] = null;
             object.dispose();
         }
+        this.objects.splice(0, this.objects.length);
     }
 
     /**
@@ -75,6 +82,8 @@ export class Space
      */
     public addObject(object:GameObject)
     {
+        if ( object == null ) return;
+        this.objectsHash[object.hash] = object;
         this.objects.push(object);
     }
 
@@ -121,7 +130,7 @@ export class Space
         // -----------------
 
         this.addPlayerSpaceShip();
-
+        this.addAsteroids();
 
 
     }
@@ -149,12 +158,23 @@ export class Space
         for(var i:number =this.objects.length-1; i >=0; i--) {
             var object:GameObject = this.objects[i];
             if ( object.needDelete ) {
+                this.objectsHash[object.hash] = null;
                 object.dispose();
                 this.objects.splice(i,1);
             } else {
                 object.update(deltaTime);
             }
         }
+
+        this.assignCamera(this.objectsHash[this.currentShipHash]);
+    }
+
+    public assignCamera(object:GameObject)
+    {
+        if (object == null ) return;
+        object.mesh.add(Screen.camera);
+        //Screen.camera.position.set(object.position.x, object.position.y, object.position.z);
+        //Screen.camera.rotation.setFromQuaternion(object.rotation);
     }
 
     /**
@@ -164,6 +184,7 @@ export class Space
     {
         //
         var spaceship:SpaceShip = new SpaceShip();
+        spaceship.pilot = new SpaceShipPilotPlayer(spaceship);
         spaceship.position.set(this.respownPoint.x, this.respownPoint.y, this.respownPoint.z);
         spaceship.base = GameData.userData.base;
         spaceship.inventory = GameData.userData.inventory;
@@ -173,4 +194,15 @@ export class Space
         this.currentShipHash = spaceship.hash;
 
     }
+
+    public addAsteroids()
+    {
+        var count:number = 1000;
+        for(var i:number=0;i < count;i++) {
+            var asteroid: Asteroid = new Asteroid();
+            asteroid.position.set(Random.irandomminmax(-500, 500), Random.irandomminmax(-500, 500), Random.irandomminmax(-500, 500));
+            this.addObject(asteroid);
+        }
+    }
+
 }

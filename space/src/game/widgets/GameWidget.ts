@@ -36,6 +36,7 @@ export class GameWidget extends Widget
     public postInit():void
     {
         this.space.init();
+
         //-------------------------------------------------------------------------------------
         // 3D Scene
         //-------------------------------------------------------------------------------------
@@ -109,6 +110,7 @@ export class GameWidget extends Widget
         if ( this.space ) {
             this.space.update(deltaTime);
         }
+
     }
 
     public resize():void

@@ -9,6 +9,58 @@ export class Utils
     public static AXIS_Y:Vector3 = new Vector3(0, 1, 0);
     public static AXIS_Z:Vector3 = new Vector3(0, 0, 1);
 
+    public static shortestArc(q:Quaternion, from:Vector3, to:Vector3)
+    {
+        var v:Vector3 = from.crossVectors(from, to);
+        q.x = v.x; q.y = v.y; q.z = v.z; q.w = from.dot(to);
+        q.normalize();
+        q.w += 1;
+        if ( q.w<=0.00001 ) {
+            if (from.z * from.z > from.x * from.x) {
+                q.x= 0;
+                q.y= from.z;
+                q.z= -from.y;
+            } else {
+                q.x = from.y;
+                q.y = -from.x;
+                q.z = 0;
+            }
+        }
+        q.normalize();
+    }
+
+    public static multiplyLeft(b:Quaternion, a:Quaternion)
+    {
+        var A:number = (b.w + b.x)*(a.w + a.x);
+        var B:number = (b.z - b.y)*(a.y - a.z);
+        var C:number = (b.x - b.w)*(a.y + a.z);
+        var D:number = (b.y + b.z)*(a.x - a.w);
+        var E:number = (b.x + b.z)*(a.x + a.y);
+        var F:number = (b.x - b.z)*(a.x - a.y);
+        var G:number = (b.w + b.y)*(a.w - a.z);
+        var H:number = (b.w - b.y)*(a.w + a.z);
+        b.x = A - (E + F + G + H) * 0.5;
+        b.y = -C + (E - F + G - H) * 0.5;
+        b.z = -D + (E - F - G + H) * 0.5;
+        b.w = B + (-E - F + G + H) * 0.5;
+    }
+
+    public static multiplyRight(a:Quaternion, b:Quaternion)
+    {
+        var A:number = (b.w + b.x)*(a.w + a.x);
+        var B:number = (b.z - b.y)*(a.y - a.z);
+        var C:number = (b.x - b.w)*(a.y + a.z);
+        var D:number = (b.y + b.z)*(a.x - a.w);
+        var E:number = (b.x + b.z)*(a.x + a.y);
+        var F:number = (b.x - b.z)*(a.x - a.y);
+        var G:number = (b.w + b.y)*(a.w - a.z);
+        var H:number = (b.w - b.y)*(a.w + a.z);
+        a.x = A - (E + F + G + H) * 0.5;
+        a.y = -C + (E - F + G - H) * 0.5;
+        a.z = -D + (E - F - G + H) * 0.5;
+        a.w = B + (-E - F + G + H) * 0.5;
+    }
+
     public static rotateVector(q:Quaternion, v:Vector3, to:Vector3 = null):Vector3
     {
         var vt0x:number;

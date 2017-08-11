@@ -1,6 +1,7 @@
 
 import {SpaceShip} from "./SpaceShip";
 import {GameObject} from "./GameObject";
+import {Screen} from "../../../Screen";
 
 export class SpaceShipPilot
 {
@@ -16,7 +17,6 @@ export class SpaceShipPilot
 
     public update(deltaTime:number)
     {
-
 
     }
 

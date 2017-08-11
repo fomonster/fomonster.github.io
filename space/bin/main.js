@@ -339,6 +339,9 @@ define("game/Screen", ["require", "exports"], function (require, exports) {
                 Screen.screenHeight = Screen.baseHeight;
             }
         };
+        Screen.keyPressed = function (keyCode) {
+            return (Screen.keys[keyCode] && Screen.keys[keyCode]);
+        };
         Screen.baseWidth = 1024;
         Screen.baseHeight = 768;
         Screen.camera = null;
@@ -355,6 +358,7 @@ define("game/Screen", ["require", "exports"], function (require, exports) {
         Screen.screenLeft = 0;
         Screen.screenWidth = Screen.baseWidth;
         Screen.screenHeight = Screen.baseHeight;
+        Screen.keys = {};
         return Screen;
     }());
     exports.Screen = Screen;
@@ -1219,6 +1223,7 @@ define("game/widgets/LoaderWidget", ["require", "exports", "pixi.js", "engine/Wi
         LoaderWidget.prototype.loadAssets = function () {
             var list = [
                 'assets/model.json',
+                'assets/asteroid.json',
                 'assets/inventory.json',
                 ['atlas', 'assets/atlas.json']
             ];
@@ -1239,7 +1244,7 @@ define("game/widgets/LoaderWidget", ["require", "exports", "pixi.js", "engine/Wi
     }(Widget_1.Widget));
     exports.LoaderWidget = LoaderWidget;
 });
-define("game/logic/space/objects/GameObject", ["require", "exports", "three", "game/data/game/Inventory"], function (require, exports, three_2, Inventory_3) {
+define("game/logic/space/objects/GameObject", ["require", "exports", "three", "three", "game/data/game/Inventory", "engine/Assets", "game/Screen"], function (require, exports, THREE, three_2, Inventory_3, Assets_3, Screen_2) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var GameObject = (function () {
@@ -1255,12 +1260,28 @@ define("game/logic/space/objects/GameObject", ["require", "exports", "three", "g
             this.needDelete = false;
             this.inventory = new Inventory_3.Inventory();
             this.base = new Inventory_3.Inventory();
+            this.mesh = null;
             this.hash = GameObject.hashCounter;
             GameObject.hashCounter++;
         }
         GameObject.prototype.dispose = function () {
         };
+        GameObject.prototype.setMesh = function (meshName) {
+            if (this.mesh != null) {
+                Screen_2.Screen.scene.remove(this.mesh);
+                this.mesh.geometry.dispose();
+                this.mesh.material.dispose();
+                this.mesh = null;
+            }
+            var model = Assets_3.Assets.getGeometry(meshName);
+            this.mesh = new THREE.Mesh(model.geometry, model.materials);
+            Screen_2.Screen.scene.add(this.mesh);
+        };
         GameObject.prototype.update = function (deltaTime) {
+            if (this.mesh != null) {
+                this.mesh.position.set(this.position.x, this.position.y, this.position.z);
+                this.mesh.setRotationFromQuaternion(this.rotation);
+            }
         };
         GameObject.prototype.calculateInventory = function () {
         };
@@ -1325,6 +1346,56 @@ define("engine/Utils", ["require", "exports", "three"], function (require, expor
     var Utils = (function () {
         function Utils() {
         }
+        Utils.shortestArc = function (q, from, to) {
+            var v = from.crossVectors(from, to);
+            q.x = v.x;
+            q.y = v.y;
+            q.z = v.z;
+            q.w = from.dot(to);
+            q.normalize();
+            q.w += 1;
+            if (q.w <= 0.00001) {
+                if (from.z * from.z > from.x * from.x) {
+                    q.x = 0;
+                    q.y = from.z;
+                    q.z = -from.y;
+                }
+                else {
+                    q.x = from.y;
+                    q.y = -from.x;
+                    q.z = 0;
+                }
+            }
+            q.normalize();
+        };
+        Utils.multiplyLeft = function (b, a) {
+            var A = (b.w + b.x) * (a.w + a.x);
+            var B = (b.z - b.y) * (a.y - a.z);
+            var C = (b.x - b.w) * (a.y + a.z);
+            var D = (b.y + b.z) * (a.x - a.w);
+            var E = (b.x + b.z) * (a.x + a.y);
+            var F = (b.x - b.z) * (a.x - a.y);
+            var G = (b.w + b.y) * (a.w - a.z);
+            var H = (b.w - b.y) * (a.w + a.z);
+            b.x = A - (E + F + G + H) * 0.5;
+            b.y = -C + (E - F + G - H) * 0.5;
+            b.z = -D + (E - F - G + H) * 0.5;
+            b.w = B + (-E - F + G + H) * 0.5;
+        };
+        Utils.multiplyRight = function (a, b) {
+            var A = (b.w + b.x) * (a.w + a.x);
+            var B = (b.z - b.y) * (a.y - a.z);
+            var C = (b.x - b.w) * (a.y + a.z);
+            var D = (b.y + b.z) * (a.x - a.w);
+            var E = (b.x + b.z) * (a.x + a.y);
+            var F = (b.x - b.z) * (a.x - a.y);
+            var G = (b.w + b.y) * (a.w - a.z);
+            var H = (b.w - b.y) * (a.w + a.z);
+            a.x = A - (E + F + G + H) * 0.5;
+            a.y = -C + (E - F + G - H) * 0.5;
+            a.z = -D + (E - F - G + H) * 0.5;
+            a.w = B + (-E - F + G + H) * 0.5;
+        };
         Utils.rotateVector = function (q, v, to) {
             if (to === void 0) { to = null; }
             var vt0x;
@@ -1354,7 +1425,7 @@ define("engine/Utils", ["require", "exports", "three"], function (require, expor
     }());
     exports.Utils = Utils;
 });
-define("game/logic/space/objects/SpaceShip", ["require", "exports", "three", "game/logic/space/objects/GameObject", "game/logic/space/objects/SpaceShipWeapon", "game/logic/space/objects/SpaceShipReactive", "engine/Assets", "game/Screen", "engine/Utils"], function (require, exports, THREE, GameObject_1, SpaceShipWeapon_1, SpaceShipReactive_1, Assets_3, Screen_2, Utils_1) {
+define("game/logic/space/objects/SpaceShip", ["require", "exports", "game/logic/space/objects/GameObject", "game/logic/space/objects/SpaceShipWeapon", "game/logic/space/objects/SpaceShipReactive", "engine/Utils", "three"], function (require, exports, GameObject_1, SpaceShipWeapon_1, SpaceShipReactive_1, Utils_1, three_6) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var SpaceShip = (function (_super) {
@@ -1362,7 +1433,6 @@ define("game/logic/space/objects/SpaceShip", ["require", "exports", "three", "ga
         function SpaceShip() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
             _this.currentHash = 0;
-            _this.mesh = null;
             _this.mass = 0;
             _this.cargo = 0;
             _this.isOverload = false;
@@ -1384,19 +1454,11 @@ define("game/logic/space/objects/SpaceShip", ["require", "exports", "three", "ga
             _this.regenerationDelay = 0;
             _this.regenerationDelayMax = 0;
             _this.pilot = null;
+            _this.targetPoint = null;
+            _this.targetObjectHash = -1;
+            _this.dQ = new three_6.Quaternion();
             return _this;
         }
-        SpaceShip.prototype.setMesh = function (meshName) {
-            if (this.mesh != null) {
-                Screen_2.Screen.scene.remove(this.mesh);
-                this.mesh.geometry.dispose();
-                this.mesh.material.dispose();
-                this.mesh = null;
-            }
-            var model = Assets_3.Assets.getGeometry("assets/model.json");
-            this.mesh = new THREE.Mesh(model.geometry, model.materials);
-            Screen_2.Screen.scene.add(this.mesh);
-        };
         SpaceShip.prototype.calculateInventory = function () {
             if (!this.base.isChanged && !this.inventory.isChanged)
                 return;
@@ -1476,16 +1538,13 @@ define("game/logic/space/objects/SpaceShip", ["require", "exports", "three", "ga
             }
         };
         SpaceShip.prototype.update = function (deltaTime) {
-            Utils_1.Utils.rotateVector(this.rotation, Utils_1.Utils.AXIS_Z, this.forward);
-            Utils_1.Utils.rotateVector(this.rotation, Utils_1.Utils.AXIS_Y, this.up);
+            Utils_1.Utils.rotateVector(this.rotation, Utils_1.Utils.AXIS_Y, this.forward);
+            Utils_1.Utils.rotateVector(this.rotation, Utils_1.Utils.AXIS_Z, this.up);
             Utils_1.Utils.rotateVector(this.rotation, Utils_1.Utils.AXIS_X, this.right);
             this.calculateInventory();
             if (this.pilot) {
                 this.pilot.update(deltaTime);
             }
-            this.mesh.rotation.y += deltaTime * 10.0;
-            this.mesh.rotation.x += deltaTime * 3.0;
-            this.mesh.rotation.z += deltaTime * 5.0;
             this.protectorDelay += deltaTime;
             if (this.protectorDelay >= this.protectorDelayMax) {
                 this.protector += this.protectorReg * deltaTime;
@@ -1507,15 +1566,161 @@ define("game/logic/space/objects/SpaceShip", ["require", "exports", "three", "ga
                 }
                 this.regenerationDelay -= this.regenerationDelayMax;
             }
+            var linVel = Math.sqrt(this.velocity.x * this.velocity.x + this.velocity.y * this.velocity.y + this.velocity.z * this.velocity.z);
+            if (linVel > this.maxVelocity) {
+                this.velocity.x = this.maxVelocity * this.velocity.x / linVel;
+                this.velocity.y = this.maxVelocity * this.velocity.y / linVel;
+                this.velocity.z = this.maxVelocity * this.velocity.z / linVel;
+                linVel = this.maxVelocity;
+            }
             this.position.x += this.velocity.x * deltaTime;
             this.position.y += this.velocity.y * deltaTime;
             this.position.z += this.velocity.z * deltaTime;
+            var r = Math.sqrt(this.angularVelocity.x * this.angularVelocity.x + this.angularVelocity.y * this.angularVelocity.y + this.angularVelocity.z * this.angularVelocity.z);
+            if (r == 0)
+                r = 0.0000000001;
+            var sina = Math.sin(r * 0.5) / r;
+            this.dQ.set(this.angularVelocity.x * sina, this.angularVelocity.y * sina, this.angularVelocity.z * sina, Math.cos(r * 0.5));
+            Utils_1.Utils.multiplyRight(this.rotation, this.dQ);
+            var koeffStop = 5 * deltaTime;
+            if (koeffStop > 0.8)
+                koeffStop = 0.8;
+            var koeffAngle = 0.3 * deltaTime;
+            if (koeffAngle > 1)
+                koeffAngle = 1;
+            _super.prototype.update.call(this, deltaTime);
+        };
+        SpaceShip.prototype.stepRotateToPoint = function (point, deltaTime) {
+            if (point == null)
+                return;
+            var r = point.clone();
+            r = r.sub(this.position).normalize();
+            var rot = new three_6.Quaternion();
+            Utils_1.Utils.shortestArc(rot, this.forward, r);
+            Utils_1.Utils.multiplyLeft(this.rotation, rot);
+        };
+        SpaceShip.prototype.stepMoveToPoint = function (point, deltaTime) {
+            if (point == null)
+                return;
+            var r = point.sub(this.position);
         };
         return SpaceShip;
     }(GameObject_1.GameObject));
     exports.SpaceShip = SpaceShip;
 });
-define("game/logic/space/Space", ["require", "exports", "three", "game/Screen", "game/logic/space/objects/SpaceShip", "game/data/GameData", "three"], function (require, exports, THREE, Screen_3, SpaceShip_1, GameData_2, three_6) {
+define("game/logic/space/objects/SpaceShipPilotPlayer", ["require", "exports", "game/Screen", "game/logic/space/objects/SpaceShipPilot", "game/logic/space/Space", "engine/Random"], function (require, exports, Screen_3, SpaceShipPilot_1, Space_1, Random_2) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var SpaceShipPilotPlayer = (function (_super) {
+        __extends(SpaceShipPilotPlayer, _super);
+        function SpaceShipPilotPlayer() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        SpaceShipPilotPlayer.prototype.update = function (deltaTime) {
+            var acceleration = this.owner.maxVelocity * this.owner.mobility * 0.2;
+            var isForward = Screen_3.Screen.keyPressed(87);
+            var isBackward = Screen_3.Screen.keyPressed(83);
+            var isUp = Screen_3.Screen.keyPressed(89);
+            var isDown = Screen_3.Screen.keyPressed(72);
+            var isLeft = Screen_3.Screen.keyPressed(66);
+            var isRight = Screen_3.Screen.keyPressed(78);
+            var isRotateLeft = Screen_3.Screen.keyPressed(65);
+            var isRotateRight = Screen_3.Screen.keyPressed(68);
+            var isRotateUp = Screen_3.Screen.keyPressed(80);
+            var isRotateDown = Screen_3.Screen.keyPressed(76);
+            var isRotateRollLeft = Screen_3.Screen.keyPressed(81);
+            var isRotateRollRight = Screen_3.Screen.keyPressed(69);
+            var isTarget = Screen_3.Screen.keyPressed(84);
+            if (isUp) {
+                this.owner.velocity.x += this.owner.up.x * acceleration * deltaTime;
+                this.owner.velocity.y += this.owner.up.y * acceleration * deltaTime;
+                this.owner.velocity.z += this.owner.up.z * acceleration * deltaTime;
+            }
+            else if (isRight) {
+                this.owner.velocity.x += this.owner.right.x * acceleration * deltaTime;
+                this.owner.velocity.y += this.owner.right.y * acceleration * deltaTime;
+                this.owner.velocity.z += this.owner.right.z * acceleration * deltaTime;
+            }
+            else if (isForward) {
+                this.owner.velocity.x += this.owner.forward.x * acceleration * deltaTime;
+                this.owner.velocity.y += this.owner.forward.y * acceleration * deltaTime;
+                this.owner.velocity.z += this.owner.forward.z * acceleration * deltaTime;
+            }
+            else if (isBackward) {
+                this.owner.velocity.x -= this.owner.velocity.x * this.owner.mobility * deltaTime * 0.3;
+                this.owner.velocity.y -= this.owner.velocity.y * this.owner.mobility * deltaTime * 0.3;
+                this.owner.velocity.z -= this.owner.velocity.z * this.owner.mobility * deltaTime * 0.3;
+            }
+            if ((isRotateRight && isRotateLeft) || (isRotateUp && isRotateDown) || (isRotateRollRight && isRotateRollLeft) || ((!isRotateLeft && !isRotateRight) && (!isRotateUp && !isRotateDown) && (!isRotateRollLeft && !isRotateRollRight))) {
+                this.owner.angularVelocity.x -= this.owner.angularVelocity.x * this.owner.mobility * deltaTime * 0.5;
+                this.owner.angularVelocity.y -= this.owner.angularVelocity.y * this.owner.mobility * deltaTime * 0.5;
+                this.owner.angularVelocity.z -= this.owner.angularVelocity.z * this.owner.mobility * deltaTime * 0.5;
+            }
+            else {
+                if (isRotateLeft) {
+                    this.owner.angularVelocity.x += this.owner.up.x * deltaTime * this.owner.mobility * 0.01;
+                    this.owner.angularVelocity.y += this.owner.up.y * deltaTime * this.owner.mobility * 0.01;
+                    this.owner.angularVelocity.z += this.owner.up.z * deltaTime * this.owner.mobility * 0.01;
+                }
+                else if (isRotateRight) {
+                    this.owner.angularVelocity.x -= this.owner.up.x * deltaTime * this.owner.mobility * 0.01;
+                    this.owner.angularVelocity.y -= this.owner.up.y * deltaTime * this.owner.mobility * 0.01;
+                    this.owner.angularVelocity.z -= this.owner.up.z * deltaTime * this.owner.mobility * 0.01;
+                }
+                if (isRotateRollLeft) {
+                    this.owner.angularVelocity.x -= this.owner.forward.x * deltaTime * this.owner.mobility * 0.01;
+                    this.owner.angularVelocity.y -= this.owner.forward.y * deltaTime * this.owner.mobility * 0.01;
+                    this.owner.angularVelocity.z -= this.owner.forward.z * deltaTime * this.owner.mobility * 0.01;
+                }
+                else if (isRotateRollRight) {
+                    this.owner.angularVelocity.x += this.owner.forward.x * deltaTime * this.owner.mobility * 0.01;
+                    this.owner.angularVelocity.y += this.owner.forward.y * deltaTime * this.owner.mobility * 0.01;
+                    this.owner.angularVelocity.z += this.owner.forward.z * deltaTime * this.owner.mobility * 0.01;
+                }
+                if (isRotateUp) {
+                    this.owner.angularVelocity.x += this.owner.right.x * deltaTime * this.owner.mobility * 0.01;
+                    this.owner.angularVelocity.y += this.owner.right.y * deltaTime * this.owner.mobility * 0.01;
+                    this.owner.angularVelocity.z += this.owner.right.z * deltaTime * this.owner.mobility * 0.01;
+                }
+                else if (isRotateDown) {
+                    this.owner.angularVelocity.x -= this.owner.right.x * deltaTime * this.owner.mobility * 0.01;
+                    this.owner.angularVelocity.y -= this.owner.right.y * deltaTime * this.owner.mobility * 0.01;
+                    this.owner.angularVelocity.z -= this.owner.right.z * deltaTime * this.owner.mobility * 0.01;
+                }
+            }
+            if (isTarget) {
+                this.owner.targetPoint = Space_1.Space.self.objects[Random_2.Random.irandom(Space_1.Space.self.objects.length)].position;
+            }
+            if (this.owner.targetPoint) {
+                this.owner.stepRotateToPoint(this.owner.targetPoint, deltaTime);
+            }
+        };
+        SpaceShipPilotPlayer.prototype.onObjectCollided = function (obj) {
+        };
+        SpaceShipPilotPlayer.prototype.onShot = function (shot) {
+        };
+        return SpaceShipPilotPlayer;
+    }(SpaceShipPilot_1.SpaceShipPilot));
+    exports.SpaceShipPilotPlayer = SpaceShipPilotPlayer;
+});
+define("game/logic/space/objects/Asteroid", ["require", "exports", "game/logic/space/objects/GameObject"], function (require, exports, GameObject_2) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var Asteroid = (function (_super) {
+        __extends(Asteroid, _super);
+        function Asteroid() {
+            var _this = _super.call(this) || this;
+            _this.setMesh('assets/asteroid.json');
+            return _this;
+        }
+        Asteroid.prototype.update = function (deltaTime) {
+            _super.prototype.update.call(this, deltaTime);
+        };
+        return Asteroid;
+    }(GameObject_2.GameObject));
+    exports.Asteroid = Asteroid;
+});
+define("game/logic/space/Space", ["require", "exports", "three", "game/Screen", "game/logic/space/objects/SpaceShip", "game/data/GameData", "three", "game/logic/space/objects/SpaceShipPilotPlayer", "game/logic/space/objects/Asteroid", "engine/Random"], function (require, exports, THREE, Screen_4, SpaceShip_1, GameData_2, three_7, SpaceShipPilotPlayer_1, Asteroid_1, Random_3) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var Space = (function () {
@@ -1524,10 +1729,12 @@ define("game/logic/space/Space", ["require", "exports", "three", "game/Screen", 
             this.particles = null;
             this.particlesGeometry = null;
             this.objects = new Array();
+            this.objectsHash = new Map();
             this.currentShipHash = 0;
             this.respawnDelay = 3;
-            this.respownPoint = new three_6.Vector3();
+            this.respownPoint = new three_7.Vector3();
             this.updateShipsRespawnDelay = 1;
+            Space.self = this;
         }
         Space.prototype.dispose = function () {
             this.clear();
@@ -1535,16 +1742,21 @@ define("game/logic/space/Space", ["require", "exports", "three", "game/Screen", 
         Space.prototype.clear = function () {
             for (var i = this.objects.length - 1; i >= 0; i++) {
                 var object = this.objects[i];
+                this.objectsHash[object.hash] = null;
                 object.dispose();
             }
+            this.objects.splice(0, this.objects.length);
         };
         Space.prototype.addObject = function (object) {
+            if (object == null)
+                return;
+            this.objectsHash[object.hash] = object;
             this.objects.push(object);
         };
         Space.prototype.init = function () {
             this.light = new THREE.DirectionalLight(0xffffff);
             this.light.position.set(0, 0, 1);
-            Screen_3.Screen.scene.add(this.light);
+            Screen_4.Screen.scene.add(this.light);
             this.particlesGeometry = new THREE.Geometry();
             for (var i = 0; i < 10000; i++) {
                 var vertex = new THREE.Vector3();
@@ -1560,12 +1772,13 @@ define("game/logic/space/Space", ["require", "exports", "three", "game/Screen", 
                 this.particlesGeometry.vertices.push(vertex);
             }
             this.particles = new THREE.Points(this.particlesGeometry, new THREE.PointsMaterial({ color: 0x888888, size: 2, sizeAttenuation: false }));
-            Screen_3.Screen.scene.add(this.particles);
+            Screen_4.Screen.scene.add(this.particles);
             this.addPlayerSpaceShip();
+            this.addAsteroids();
         };
         Space.prototype.done = function () {
             this.clear();
-            Screen_3.Screen.scene.remove(this.particles);
+            Screen_4.Screen.scene.remove(this.particles);
             this.particlesGeometry.dispose();
             this.particles = null;
         };
@@ -1573,6 +1786,7 @@ define("game/logic/space/Space", ["require", "exports", "three", "game/Screen", 
             for (var i = this.objects.length - 1; i >= 0; i--) {
                 var object = this.objects[i];
                 if (object.needDelete) {
+                    this.objectsHash[object.hash] = null;
                     object.dispose();
                     this.objects.splice(i, 1);
                 }
@@ -1580,9 +1794,16 @@ define("game/logic/space/Space", ["require", "exports", "three", "game/Screen", 
                     object.update(deltaTime);
                 }
             }
+            this.assignCamera(this.objectsHash[this.currentShipHash]);
+        };
+        Space.prototype.assignCamera = function (object) {
+            if (object == null)
+                return;
+            object.mesh.add(Screen_4.Screen.camera);
         };
         Space.prototype.addPlayerSpaceShip = function () {
             var spaceship = new SpaceShip_1.SpaceShip();
+            spaceship.pilot = new SpaceShipPilotPlayer_1.SpaceShipPilotPlayer(spaceship);
             spaceship.position.set(this.respownPoint.x, this.respownPoint.y, this.respownPoint.z);
             spaceship.base = GameData_2.GameData.userData.base;
             spaceship.inventory = GameData_2.GameData.userData.inventory;
@@ -1591,11 +1812,20 @@ define("game/logic/space/Space", ["require", "exports", "three", "game/Screen", 
             this.addObject(spaceship);
             this.currentShipHash = spaceship.hash;
         };
+        Space.prototype.addAsteroids = function () {
+            var count = 1000;
+            for (var i = 0; i < count; i++) {
+                var asteroid = new Asteroid_1.Asteroid();
+                asteroid.position.set(Random_3.Random.irandomminmax(-500, 500), Random_3.Random.irandomminmax(-500, 500), Random_3.Random.irandomminmax(-500, 500));
+                this.addObject(asteroid);
+            }
+        };
+        Space.self = null;
         return Space;
     }());
     exports.Space = Space;
 });
-define("game/widgets/GameWidget", ["require", "exports", "engine/Widget", "game/Screen", "game/logic/space/Space", "game/data/GameData"], function (require, exports, Widget_2, Screen_4, Space_1, GameData_3) {
+define("game/widgets/GameWidget", ["require", "exports", "engine/Widget", "game/Screen", "game/logic/space/Space", "game/data/GameData"], function (require, exports, Widget_2, Screen_5, Space_2, GameData_3) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var GameWidget = (function (_super) {
@@ -1609,7 +1839,7 @@ define("game/widgets/GameWidget", ["require", "exports", "engine/Widget", "game/
         }
         GameWidget.prototype.preInit = function () {
             _super.prototype.preInit.call(this);
-            this.space = new Space_1.Space();
+            this.space = new Space_2.Space();
         };
         GameWidget.prototype.init = function () {
             GameData_3.GameData.load();
@@ -1642,19 +1872,19 @@ define("game/widgets/GameWidget", ["require", "exports", "engine/Widget", "game/
         GameWidget.prototype.resize = function () {
             _super.prototype.resize.call(this);
             if (this.graphicsA) {
-                this.graphicsA.x = Screen_4.Screen.screenLeft;
-                this.graphicsA.y = Screen_4.Screen.screenTop;
+                this.graphicsA.x = Screen_5.Screen.screenLeft;
+                this.graphicsA.y = Screen_5.Screen.screenTop;
             }
             if (this.graphicsB) {
-                this.graphicsB.x = Screen_4.Screen.screenWidth + Screen_4.Screen.screenLeft - 100;
-                this.graphicsB.y = Screen_4.Screen.screenHeight + Screen_4.Screen.screenTop - 100;
+                this.graphicsB.x = Screen_5.Screen.screenWidth + Screen_5.Screen.screenLeft - 100;
+                this.graphicsB.y = Screen_5.Screen.screenHeight + Screen_5.Screen.screenTop - 100;
             }
         };
         return GameWidget;
     }(Widget_2.Widget));
     exports.GameWidget = GameWidget;
 });
-define("Game", ["require", "exports", "three", "pixi.js", "engine/Widget", "engine/Particles", "game/Screen", "game/widgets/LoaderWidget", "game/widgets/GameWidget", "game/data/GameData"], function (require, exports, THREE, PIXI, Widget_3, Particles_1, Screen_5, LoaderWidget_1, GameWidget_1, GameData_4) {
+define("Game", ["require", "exports", "three", "pixi.js", "engine/Widget", "engine/Particles", "game/Screen", "game/widgets/LoaderWidget", "game/widgets/GameWidget", "game/data/GameData", "three"], function (require, exports, THREE, PIXI, Widget_3, Particles_1, Screen_6, LoaderWidget_1, GameWidget_1, GameData_4, three_8) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var Game = (function () {
@@ -1675,11 +1905,19 @@ define("Game", ["require", "exports", "three", "pixi.js", "engine/Widget", "engi
                 window.requestAnimationFrame(handler);
             };
             window.requestAnimationFrame(handler);
+            window.addEventListener("keydown", function (event) {
+                Screen_6.Screen.keys[event.keyCode] = true;
+                event.preventDefault();
+            }, false);
+            window.addEventListener("keyup", function (event) {
+                Screen_6.Screen.keys[event.keyCode] = false;
+                event.preventDefault();
+            }, false);
             window.addEventListener('resize', function () { Game.resize(); }, false);
-            Screen_5.Screen.canvas.plugins.interaction.on('mousemove', function (mouseData) {
-                var newPosition = mouseData.data.getLocalPosition(Screen_5.Screen.screen);
+            Screen_6.Screen.canvas.plugins.interaction.on('mousemove', function (mouseData) {
+                var newPosition = mouseData.data.getLocalPosition(Screen_6.Screen.screen);
                 Widget_3.Widget.onMouseMove(newPosition.x, newPosition.y);
-                if (newPosition.x < 0 || newPosition.y < 0 || newPosition.x >= Screen_5.Screen.width || newPosition.y >= Screen_5.Screen.height) {
+                if (newPosition.x < 0 || newPosition.y < 0 || newPosition.x >= Screen_6.Screen.width || newPosition.y >= Screen_6.Screen.height) {
                     if (Widget_3.Widget.over) {
                         Widget_3.Widget.onMouseOut();
                     }
@@ -1690,12 +1928,12 @@ define("Game", ["require", "exports", "three", "pixi.js", "engine/Widget", "engi
                     }
                 }
             });
-            Screen_5.Screen.canvas.plugins.interaction.on('mousedown', function (mouseData) {
-                var newPosition = mouseData.data.getLocalPosition(Screen_5.Screen.screen);
+            Screen_6.Screen.canvas.plugins.interaction.on('mousedown', function (mouseData) {
+                var newPosition = mouseData.data.getLocalPosition(Screen_6.Screen.screen);
                 Widget_3.Widget.onMouseDown(newPosition.x, newPosition.y);
             });
-            Screen_5.Screen.canvas.plugins.interaction.on('mouseup', function (mouseData) {
-                var newPosition = mouseData.data.getLocalPosition(Screen_5.Screen.screen);
+            Screen_6.Screen.canvas.plugins.interaction.on('mouseup', function (mouseData) {
+                var newPosition = mouseData.data.getLocalPosition(Screen_6.Screen.screen);
                 Widget_3.Widget.onMouseUp(newPosition.x, newPosition.y);
             });
             Game.resize();
@@ -1707,39 +1945,41 @@ define("Game", ["require", "exports", "three", "pixi.js", "engine/Widget", "engi
             Widget_3.Widget.doneWidgets();
         };
         Game.init3DRender = function () {
-            Screen_5.Screen.renderer = new THREE.WebGLRenderer({ antialias: true });
-            Screen_5.Screen.renderer.setClearColor(0x000000);
-            Screen_5.Screen.renderer.setPixelRatio(window.devicePixelRatio);
-            Screen_5.Screen.renderer.setSize(window.innerWidth, window.innerHeight);
-            Game.container.appendChild(Screen_5.Screen.renderer.domElement);
-            Screen_5.Screen.camera = new THREE.PerspectiveCamera(20, window.innerWidth / window.innerHeight, 1, 30000);
-            Screen_5.Screen.scene = new THREE.Scene();
+            Screen_6.Screen.renderer = new THREE.WebGLRenderer({ antialias: true });
+            Screen_6.Screen.renderer.setClearColor(0x000000);
+            Screen_6.Screen.renderer.setPixelRatio(window.devicePixelRatio);
+            Screen_6.Screen.renderer.setSize(window.innerWidth, window.innerHeight);
+            Game.container.appendChild(Screen_6.Screen.renderer.domElement);
+            Screen_6.Screen.camera = new THREE.PerspectiveCamera(20, window.innerWidth / window.innerHeight, 3, 30000);
+            Screen_6.Screen.camera.up.set(0, 0, 1);
+            Screen_6.Screen.camera.position.set(0, 0, 0);
+            Screen_6.Screen.camera.lookAt(new three_8.Vector3(0, 1, 0));
+            Screen_6.Screen.scene = new THREE.Scene();
         };
         Game.init2DRender = function () {
-            Screen_5.Screen.stage = new PIXI.Container();
-            Screen_5.Screen.canvas = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight, { transparent: true });
-            Screen_5.Screen.canvas.view.style.position = "absolute";
-            Screen_5.Screen.canvas.view.style.top = "0px";
-            Screen_5.Screen.canvas.view.style.left = "0px";
-            Game.container.appendChild(Screen_5.Screen.canvas.view);
-            Screen_5.Screen.screen = new PIXI.Container();
-            Screen_5.Screen.stage.addChild(Screen_5.Screen.screen);
+            Screen_6.Screen.stage = new PIXI.Container();
+            Screen_6.Screen.canvas = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight, { transparent: true });
+            Screen_6.Screen.canvas.view.style.position = "absolute";
+            Screen_6.Screen.canvas.view.style.top = "0px";
+            Screen_6.Screen.canvas.view.style.left = "0px";
+            Game.container.appendChild(Screen_6.Screen.canvas.view);
+            Screen_6.Screen.screen = new PIXI.Container();
+            Screen_6.Screen.stage.addChild(Screen_6.Screen.screen);
         };
         Game.update = function (deltaTime) {
-            Screen_5.Screen.camera.position.z = 18;
             Particles_1.Particles.update(deltaTime);
             Widget_3.Widget.updateWidgets(deltaTime);
             GameData_4.GameData.update(deltaTime);
             Game.render();
         };
         Game.render = function () {
-            if (!Screen_5.Screen.scene || !Screen_5.Screen.camera)
+            if (!Screen_6.Screen.scene || !Screen_6.Screen.camera)
                 return;
-            Screen_5.Screen.renderer.render(Screen_5.Screen.scene, Screen_5.Screen.camera);
-            Screen_5.Screen.canvas.render(Screen_5.Screen.stage);
+            Screen_6.Screen.renderer.render(Screen_6.Screen.scene, Screen_6.Screen.camera);
+            Screen_6.Screen.canvas.render(Screen_6.Screen.stage);
         };
         Game.resize = function () {
-            Screen_5.Screen.resize();
+            Screen_6.Screen.resize();
             Widget_3.Widget.resizeWidget();
         };
         Game.container = null;
@@ -1747,18 +1987,6 @@ define("Game", ["require", "exports", "three", "pixi.js", "engine/Widget", "engi
         return Game;
     }());
     exports.Game = Game;
-});
-define("game/logic/space/objects/Asteriod", ["require", "exports", "game/logic/space/objects/GameObject"], function (require, exports, GameObject_2) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var Asteriod = (function (_super) {
-        __extends(Asteriod, _super);
-        function Asteriod() {
-            return _super !== null && _super.apply(this, arguments) || this;
-        }
-        return Asteriod;
-    }(GameObject_2.GameObject));
-    exports.Asteriod = Asteriod;
 });
 define("game/logic/space/objects/SpaceStation", ["require", "exports", "game/logic/space/objects/GameObject"], function (require, exports, GameObject_3) {
     "use strict";

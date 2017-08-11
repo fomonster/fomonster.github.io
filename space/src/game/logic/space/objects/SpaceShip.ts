@@ -8,15 +8,13 @@ import {Assets} from "../../../../engine/Assets";
 import {Screen} from "../../../Screen";
 import {SpaceShipPilot} from "./SpaceShipPilot";
 import {Utils} from "../../../../engine/Utils";
-import {Vector3} from "three";
+import {Quaternion, Vector, Vector3} from "three";
 
 export class SpaceShip extends GameObject
 {
     public currentHash:number = 0;
 
-    // graphics
 
-    public mesh:THREE.Mesh = null;
 
     // in game properties
 
@@ -64,22 +62,16 @@ export class SpaceShip extends GameObject
 
     public pilot:SpaceShipPilot = null;
 
+    public targetPoint:Vector3 = null; // точка назначения
+
+    public targetObjectHash:number = -1; // хеш объекта назначения
 
 
     //
 
-    public setMesh(meshName:string)
-    {
-        if ( this.mesh != null ) {
-            Screen.scene.remove(this.mesh);
-            this.mesh.geometry.dispose();
-            this.mesh.material.dispose();
-            this.mesh = null;
-        }
-        var model:any = Assets.getGeometry("assets/model.json");
-        this.mesh = new THREE.Mesh( model.geometry, model.materials );
-        Screen.scene.add( this.mesh );
-    }
+    public dQ:Quaternion = new Quaternion();
+
+
 
     public calculateInventory()
     {
@@ -223,8 +215,8 @@ export class SpaceShip extends GameObject
     public update(deltaTime:number)
     {
         //
-        Utils.rotateVector(this.rotation, Utils.AXIS_Z, this.forward);
-        Utils.rotateVector(this.rotation, Utils.AXIS_Y, this.up);
+        Utils.rotateVector(this.rotation, Utils.AXIS_Y, this.forward);
+        Utils.rotateVector(this.rotation, Utils.AXIS_Z, this.up);
         Utils.rotateVector(this.rotation, Utils.AXIS_X, this.right);
 
         //
@@ -236,11 +228,6 @@ export class SpaceShip extends GameObject
         if ( this.pilot ) {
             this.pilot.update(deltaTime);
         }
-
-        //
-        this.mesh.rotation.y += deltaTime * 10.0;
-        this.mesh.rotation.x += deltaTime * 3.0;
-        this.mesh.rotation.z += deltaTime * 5.0;
 
         // Регенерация протектора - щита
         this.protectorDelay += deltaTime;
@@ -275,11 +262,61 @@ export class SpaceShip extends GameObject
             this.regenerationDelay -= this.regenerationDelayMax;
         }
 
+
+        // Предел скорости
+        var linVel:number = Math.sqrt(this.velocity.x * this.velocity.x + this.velocity.y * this.velocity.y + this.velocity.z * this.velocity.z);
+        if ( linVel > this.maxVelocity )
+        {
+            this.velocity.x = this.maxVelocity * this.velocity.x / linVel;
+            this.velocity.y = this.maxVelocity * this.velocity.y / linVel;
+            this.velocity.z = this.maxVelocity * this.velocity.z / linVel;
+
+            linVel = this.maxVelocity;
+        }
+
         // Применяем скорость
         this.position.x += this.velocity.x * deltaTime;
         this.position.y += this.velocity.y * deltaTime;
         this.position.z += this.velocity.z * deltaTime;
+
+        // Применяем угловую скорость
+        var r:number = Math.sqrt( this.angularVelocity.x * this.angularVelocity.x + this.angularVelocity.y * this.angularVelocity.y + this.angularVelocity.z * this.angularVelocity.z );
+        if ( r == 0 ) r = 0.0000000001;
+        var sina:number = Math.sin(r*0.5) / r;
+        this.dQ.set(this.angularVelocity.x * sina, this.angularVelocity.y * sina, this.angularVelocity.z * sina,  Math.cos(r*0.5)); //setFromAxisAngle
+        Utils.multiplyRight(this.rotation, this.dQ);
+
+        // Коэффициенты уменьшений увеличений
+        var koeffStop:Number = 5 * deltaTime;
+        if ( koeffStop > 0.8 ) koeffStop = 0.8;
+
+        var koeffAngle:Number = 0.3 * deltaTime;
+        if ( koeffAngle > 1 ) koeffAngle = 1;
+
+       super.update(deltaTime);
+
     }
 
+    public stepRotateToPoint(point:Vector3, deltaTime:number)
+    {
+
+        if ( point == null ) return;
+        var r:Vector3 = point.clone();
+        r = r.sub(this.position).normalize();
+        var rot:Quaternion = new Quaternion();
+        Utils.shortestArc(rot, this.forward, r);
+        Utils.multiplyLeft(this.rotation, rot);
+        //rot = this.rotation.clone().multiply(rot);
+        //this.rotation.slerp(rot,deltaTime * this.mobility);
+    }
+
+    public stepMoveToPoint(point:Vector3, deltaTime:number)
+    {
+        if ( point == null ) return;
+        var r:Vector3 = point.sub(this.position);
+
+
+
+    }
 
 }

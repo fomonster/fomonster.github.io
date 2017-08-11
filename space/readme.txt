@@ -20,3 +20,8 @@ https://www.html5rocks.com/en/tutorials/webaudio/positional_audio/
 
 Obfuscator
 https://javascriptobfuscator.com/Javascript-Obfuscator.aspx
+
+https://gamedevelopment.tutsplus.com/ru/tutorials/create-a-space-shooter-with-playcanvas-part-1--cms-28066
+
+vector = camera.getWorldDirection();
+theta = Math.atan2(vector.x,vector.z);

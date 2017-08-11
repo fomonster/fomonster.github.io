@@ -77,6 +77,7 @@ export class LoaderWidget extends Widget
     {
         var list:Array<any> = [
             'assets/model.json',
+            'assets/asteroid.json',
             'assets/inventory.json',
             ['atlas', 'assets/atlas.json']
         ];
