@@ -50,6 +50,8 @@ export class SpaceShipPilotPlayer extends SpaceShipPilot
             this.owner.velocity.z -= this.owner.velocity.z * this.owner.mobility * deltaTime * 0.3;
         }
 
+        var step:number = deltaTime * this.owner.mobility * 0.01;
+
         // Вращение
         if ((isRotateRight && isRotateLeft) || (isRotateUp && isRotateDown) || (isRotateRollRight && isRotateRollLeft) || ((!isRotateLeft && !isRotateRight)&&(!isRotateUp && !isRotateDown)&&(!isRotateRollLeft && !isRotateRollRight)) ) {
             this.owner.angularVelocity.x -= this.owner.angularVelocity.x * this.owner.mobility * deltaTime * 0.5;
@@ -57,31 +59,31 @@ export class SpaceShipPilotPlayer extends SpaceShipPilot
             this.owner.angularVelocity.z -= this.owner.angularVelocity.z * this.owner.mobility * deltaTime * 0.5;
         } else {
             if ( isRotateLeft ) {
-                this.owner.angularVelocity.x += this.owner.up.x * deltaTime * this.owner.mobility * 0.01;
-                this.owner.angularVelocity.y += this.owner.up.y * deltaTime * this.owner.mobility * 0.01;
-                this.owner.angularVelocity.z += this.owner.up.z * deltaTime * this.owner.mobility * 0.01;
+                this.owner.angularVelocity.x += this.owner.up.x * step;
+                this.owner.angularVelocity.y += this.owner.up.y * step;
+                this.owner.angularVelocity.z += this.owner.up.z * step;
             } else if ( isRotateRight ) {
-                this.owner.angularVelocity.x -= this.owner.up.x * deltaTime * this.owner.mobility * 0.01;
-                this.owner.angularVelocity.y -= this.owner.up.y * deltaTime * this.owner.mobility * 0.01;
-                this.owner.angularVelocity.z -= this.owner.up.z * deltaTime * this.owner.mobility * 0.01;
+                this.owner.angularVelocity.x -= this.owner.up.x * step;
+                this.owner.angularVelocity.y -= this.owner.up.y * step;
+                this.owner.angularVelocity.z -= this.owner.up.z * step;
             }
             if ( isRotateRollLeft ) {
-                this.owner.angularVelocity.x -= this.owner.forward.x * deltaTime * this.owner.mobility * 0.01;
-                this.owner.angularVelocity.y -= this.owner.forward.y * deltaTime * this.owner.mobility * 0.01;
-                this.owner.angularVelocity.z -= this.owner.forward.z * deltaTime * this.owner.mobility * 0.01;
+                this.owner.angularVelocity.x -= this.owner.forward.x * step;
+                this.owner.angularVelocity.y -= this.owner.forward.y * step;
+                this.owner.angularVelocity.z -= this.owner.forward.z * step;
             } else if ( isRotateRollRight ) {
-                this.owner.angularVelocity.x += this.owner.forward.x * deltaTime * this.owner.mobility * 0.01;
-                this.owner.angularVelocity.y += this.owner.forward.y * deltaTime * this.owner.mobility * 0.01;
-                this.owner.angularVelocity.z += this.owner.forward.z * deltaTime * this.owner.mobility * 0.01;
+                this.owner.angularVelocity.x += this.owner.forward.x * step;
+                this.owner.angularVelocity.y += this.owner.forward.y * step;
+                this.owner.angularVelocity.z += this.owner.forward.z * step;
             }
             if ( isRotateUp ) {
-                this.owner.angularVelocity.x += this.owner.right.x * deltaTime * this.owner.mobility * 0.01;
-                this.owner.angularVelocity.y += this.owner.right.y * deltaTime * this.owner.mobility * 0.01;
-                this.owner.angularVelocity.z += this.owner.right.z * deltaTime * this.owner.mobility * 0.01;
+                this.owner.angularVelocity.x += this.owner.right.x * step;
+                this.owner.angularVelocity.y += this.owner.right.y * step;
+                this.owner.angularVelocity.z += this.owner.right.z * step;
             } else if ( isRotateDown ) {
-                this.owner.angularVelocity.x -= this.owner.right.x * deltaTime * this.owner.mobility * 0.01;
-                this.owner.angularVelocity.y -= this.owner.right.y * deltaTime * this.owner.mobility * 0.01;
-                this.owner.angularVelocity.z -= this.owner.right.z * deltaTime * this.owner.mobility * 0.01;
+                this.owner.angularVelocity.x -= this.owner.right.x * step;
+                this.owner.angularVelocity.y -= this.owner.right.y * step;
+                this.owner.angularVelocity.z -= this.owner.right.z * step;
             }
         }
 
@@ -92,7 +94,7 @@ export class SpaceShipPilotPlayer extends SpaceShipPilot
         }
 
         if ( this.owner.targetPoint ) {
-            this.owner.stepRotateToPoint(this.owner.targetPoint, deltaTime);
+            this.owner.stepRotateToPoint(this.owner.targetPoint, deltaTime, true);
         }
     }
 

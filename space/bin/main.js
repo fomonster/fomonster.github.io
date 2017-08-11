@@ -1346,8 +1346,16 @@ define("engine/Utils", ["require", "exports", "three"], function (require, expor
     var Utils = (function () {
         function Utils() {
         }
+        Utils.setFromAxisAngle = function (q, vec) {
+            var r = Math.sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
+            if (r == 0)
+                r = 0.0000000001;
+            var sina = Math.sin(r * 0.5) / r;
+            q.set(vec.x * sina, vec.y * sina, vec.z * sina, Math.cos(r * 0.5));
+        };
         Utils.shortestArc = function (q, from, to) {
-            var v = from.crossVectors(from, to);
+            var v = new three_5.Vector3();
+            v.crossVectors(from, to);
             q.x = v.x;
             q.y = v.y;
             q.z = v.z;
@@ -1437,6 +1445,7 @@ define("game/logic/space/objects/SpaceShip", ["require", "exports", "game/logic/
             _this.cargo = 0;
             _this.isOverload = false;
             _this.maxVelocity = 1;
+            _this.maxAngularVelocity = 0.02;
             _this.armor = 0;
             _this.shield = 0;
             _this.mobility = 0;
@@ -1456,7 +1465,6 @@ define("game/logic/space/objects/SpaceShip", ["require", "exports", "game/logic/
             _this.pilot = null;
             _this.targetPoint = null;
             _this.targetObjectHash = -1;
-            _this.dQ = new three_6.Quaternion();
             return _this;
         }
         SpaceShip.prototype.calculateInventory = function () {
@@ -1538,9 +1546,13 @@ define("game/logic/space/objects/SpaceShip", ["require", "exports", "game/logic/
             }
         };
         SpaceShip.prototype.update = function (deltaTime) {
-            Utils_1.Utils.rotateVector(this.rotation, Utils_1.Utils.AXIS_Y, this.forward);
+            this.forward = Utils_1.Utils.AXIS_Y.clone();
+            this.forward.applyQuaternion(this.rotation);
             Utils_1.Utils.rotateVector(this.rotation, Utils_1.Utils.AXIS_Z, this.up);
             Utils_1.Utils.rotateVector(this.rotation, Utils_1.Utils.AXIS_X, this.right);
+            this.forward.normalize();
+            this.up.normalize();
+            this.right.normalize();
             this.calculateInventory();
             if (this.pilot) {
                 this.pilot.update(deltaTime);
@@ -1573,15 +1585,17 @@ define("game/logic/space/objects/SpaceShip", ["require", "exports", "game/logic/
                 this.velocity.z = this.maxVelocity * this.velocity.z / linVel;
                 linVel = this.maxVelocity;
             }
+            var angVel = Math.sqrt(this.angularVelocity.x * this.angularVelocity.x + this.angularVelocity.y * this.angularVelocity.y + this.angularVelocity.z * this.angularVelocity.z);
+            if (angVel > this.maxAngularVelocity) {
+                this.angularVelocity.x = this.maxAngularVelocity * this.angularVelocity.x / angVel;
+                this.angularVelocity.y = this.maxAngularVelocity * this.angularVelocity.y / angVel;
+                this.angularVelocity.z = this.maxAngularVelocity * this.angularVelocity.z / angVel;
+            }
             this.position.x += this.velocity.x * deltaTime;
             this.position.y += this.velocity.y * deltaTime;
             this.position.z += this.velocity.z * deltaTime;
-            var r = Math.sqrt(this.angularVelocity.x * this.angularVelocity.x + this.angularVelocity.y * this.angularVelocity.y + this.angularVelocity.z * this.angularVelocity.z);
-            if (r == 0)
-                r = 0.0000000001;
-            var sina = Math.sin(r * 0.5) / r;
-            this.dQ.set(this.angularVelocity.x * sina, this.angularVelocity.y * sina, this.angularVelocity.z * sina, Math.cos(r * 0.5));
-            Utils_1.Utils.multiplyRight(this.rotation, this.dQ);
+            Utils_1.Utils.setFromAxisAngle(SpaceShip.dQ, this.angularVelocity);
+            Utils_1.Utils.multiplyRight(this.rotation, SpaceShip.dQ);
             var koeffStop = 5 * deltaTime;
             if (koeffStop > 0.8)
                 koeffStop = 0.8;
@@ -1590,20 +1604,31 @@ define("game/logic/space/objects/SpaceShip", ["require", "exports", "game/logic/
                 koeffAngle = 1;
             _super.prototype.update.call(this, deltaTime);
         };
-        SpaceShip.prototype.stepRotateToPoint = function (point, deltaTime) {
+        SpaceShip.prototype.stepRotateToPoint = function (point, deltaTime, upAlign) {
+            if (upAlign === void 0) { upAlign = false; }
             if (point == null)
                 return;
-            var r = point.clone();
-            r = r.sub(this.position).normalize();
-            var rot = new three_6.Quaternion();
-            Utils_1.Utils.shortestArc(rot, this.forward, r);
-            Utils_1.Utils.multiplyLeft(this.rotation, rot);
+            var step = deltaTime * this.mobility * 0.05;
+            if (step > 1)
+                step = 1;
+            if (step < 0)
+                step = 0;
+            SpaceShip.dV.set(point.x, point.y, point.z);
+            SpaceShip.dV.sub(this.position);
+            SpaceShip.dV.normalize();
+            SpaceShip.dVA.crossVectors(SpaceShip.dV, this.forward);
+            SpaceShip.dVA.multiplyScalar(-step);
+            this.angularVelocity.add(SpaceShip.dVA);
         };
         SpaceShip.prototype.stepMoveToPoint = function (point, deltaTime) {
             if (point == null)
                 return;
             var r = point.sub(this.position);
         };
+        SpaceShip.dQ = new three_6.Quaternion();
+        SpaceShip.dQA = new three_6.Quaternion();
+        SpaceShip.dV = new three_6.Vector3();
+        SpaceShip.dVA = new three_6.Vector3();
         return SpaceShip;
     }(GameObject_1.GameObject));
     exports.SpaceShip = SpaceShip;
@@ -1651,6 +1676,7 @@ define("game/logic/space/objects/SpaceShipPilotPlayer", ["require", "exports", "
                 this.owner.velocity.y -= this.owner.velocity.y * this.owner.mobility * deltaTime * 0.3;
                 this.owner.velocity.z -= this.owner.velocity.z * this.owner.mobility * deltaTime * 0.3;
             }
+            var step = deltaTime * this.owner.mobility * 0.01;
             if ((isRotateRight && isRotateLeft) || (isRotateUp && isRotateDown) || (isRotateRollRight && isRotateRollLeft) || ((!isRotateLeft && !isRotateRight) && (!isRotateUp && !isRotateDown) && (!isRotateRollLeft && !isRotateRollRight))) {
                 this.owner.angularVelocity.x -= this.owner.angularVelocity.x * this.owner.mobility * deltaTime * 0.5;
                 this.owner.angularVelocity.y -= this.owner.angularVelocity.y * this.owner.mobility * deltaTime * 0.5;
@@ -1658,41 +1684,41 @@ define("game/logic/space/objects/SpaceShipPilotPlayer", ["require", "exports", "
             }
             else {
                 if (isRotateLeft) {
-                    this.owner.angularVelocity.x += this.owner.up.x * deltaTime * this.owner.mobility * 0.01;
-                    this.owner.angularVelocity.y += this.owner.up.y * deltaTime * this.owner.mobility * 0.01;
-                    this.owner.angularVelocity.z += this.owner.up.z * deltaTime * this.owner.mobility * 0.01;
+                    this.owner.angularVelocity.x += this.owner.up.x * step;
+                    this.owner.angularVelocity.y += this.owner.up.y * step;
+                    this.owner.angularVelocity.z += this.owner.up.z * step;
                 }
                 else if (isRotateRight) {
-                    this.owner.angularVelocity.x -= this.owner.up.x * deltaTime * this.owner.mobility * 0.01;
-                    this.owner.angularVelocity.y -= this.owner.up.y * deltaTime * this.owner.mobility * 0.01;
-                    this.owner.angularVelocity.z -= this.owner.up.z * deltaTime * this.owner.mobility * 0.01;
+                    this.owner.angularVelocity.x -= this.owner.up.x * step;
+                    this.owner.angularVelocity.y -= this.owner.up.y * step;
+                    this.owner.angularVelocity.z -= this.owner.up.z * step;
                 }
                 if (isRotateRollLeft) {
-                    this.owner.angularVelocity.x -= this.owner.forward.x * deltaTime * this.owner.mobility * 0.01;
-                    this.owner.angularVelocity.y -= this.owner.forward.y * deltaTime * this.owner.mobility * 0.01;
-                    this.owner.angularVelocity.z -= this.owner.forward.z * deltaTime * this.owner.mobility * 0.01;
+                    this.owner.angularVelocity.x -= this.owner.forward.x * step;
+                    this.owner.angularVelocity.y -= this.owner.forward.y * step;
+                    this.owner.angularVelocity.z -= this.owner.forward.z * step;
                 }
                 else if (isRotateRollRight) {
-                    this.owner.angularVelocity.x += this.owner.forward.x * deltaTime * this.owner.mobility * 0.01;
-                    this.owner.angularVelocity.y += this.owner.forward.y * deltaTime * this.owner.mobility * 0.01;
-                    this.owner.angularVelocity.z += this.owner.forward.z * deltaTime * this.owner.mobility * 0.01;
+                    this.owner.angularVelocity.x += this.owner.forward.x * step;
+                    this.owner.angularVelocity.y += this.owner.forward.y * step;
+                    this.owner.angularVelocity.z += this.owner.forward.z * step;
                 }
                 if (isRotateUp) {
-                    this.owner.angularVelocity.x += this.owner.right.x * deltaTime * this.owner.mobility * 0.01;
-                    this.owner.angularVelocity.y += this.owner.right.y * deltaTime * this.owner.mobility * 0.01;
-                    this.owner.angularVelocity.z += this.owner.right.z * deltaTime * this.owner.mobility * 0.01;
+                    this.owner.angularVelocity.x += this.owner.right.x * step;
+                    this.owner.angularVelocity.y += this.owner.right.y * step;
+                    this.owner.angularVelocity.z += this.owner.right.z * step;
                 }
                 else if (isRotateDown) {
-                    this.owner.angularVelocity.x -= this.owner.right.x * deltaTime * this.owner.mobility * 0.01;
-                    this.owner.angularVelocity.y -= this.owner.right.y * deltaTime * this.owner.mobility * 0.01;
-                    this.owner.angularVelocity.z -= this.owner.right.z * deltaTime * this.owner.mobility * 0.01;
+                    this.owner.angularVelocity.x -= this.owner.right.x * step;
+                    this.owner.angularVelocity.y -= this.owner.right.y * step;
+                    this.owner.angularVelocity.z -= this.owner.right.z * step;
                 }
             }
             if (isTarget) {
                 this.owner.targetPoint = Space_1.Space.self.objects[Random_2.Random.irandom(Space_1.Space.self.objects.length)].position;
             }
             if (this.owner.targetPoint) {
-                this.owner.stepRotateToPoint(this.owner.targetPoint, deltaTime);
+                this.owner.stepRotateToPoint(this.owner.targetPoint, deltaTime, true);
             }
         };
         SpaceShipPilotPlayer.prototype.onObjectCollided = function (obj) {

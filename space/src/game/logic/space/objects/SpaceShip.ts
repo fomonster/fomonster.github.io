@@ -26,6 +26,8 @@ export class SpaceShip extends GameObject
 
     public maxVelocity:number = 1;
 
+    public maxAngularVelocity:number = 0.02;
+
     public armor:number = 0;
 
     public shield:number = 0;
@@ -67,11 +69,11 @@ export class SpaceShip extends GameObject
     public targetObjectHash:number = -1; // хеш объекта назначения
 
 
-    //
-
-    public dQ:Quaternion = new Quaternion();
-
-
+    // Временные регистры для расчетов
+    public static dQ:Quaternion = new Quaternion();
+    public static dQA:Quaternion = new Quaternion();
+    public static dV:Vector3 = new Vector3();
+    public static dVA:Vector3 = new Vector3();
 
     public calculateInventory()
     {
@@ -215,10 +217,14 @@ export class SpaceShip extends GameObject
     public update(deltaTime:number)
     {
         //
-        Utils.rotateVector(this.rotation, Utils.AXIS_Y, this.forward);
+        this.forward = Utils.AXIS_Y.clone();
+        this.forward.applyQuaternion(this.rotation);
+        //Utils.rotateVector(this.rotation, Utils.AXIS_Y, this.forward);
         Utils.rotateVector(this.rotation, Utils.AXIS_Z, this.up);
         Utils.rotateVector(this.rotation, Utils.AXIS_X, this.right);
-
+        this.forward.normalize();
+        this.up.normalize();
+        this.right.normalize();
         //
 
         // Расчет инвентаря
@@ -273,6 +279,13 @@ export class SpaceShip extends GameObject
 
             linVel = this.maxVelocity;
         }
+        var angVel:number = Math.sqrt(this.angularVelocity.x * this.angularVelocity.x + this.angularVelocity.y * this.angularVelocity.y + this.angularVelocity.z * this.angularVelocity.z);
+        if  ( angVel > this.maxAngularVelocity) {
+            this.angularVelocity.x = this.maxAngularVelocity * this.angularVelocity.x / angVel;
+            this.angularVelocity.y = this.maxAngularVelocity * this.angularVelocity.y / angVel;
+            this.angularVelocity.z = this.maxAngularVelocity * this.angularVelocity.z / angVel;
+        }
+
 
         // Применяем скорость
         this.position.x += this.velocity.x * deltaTime;
@@ -280,11 +293,8 @@ export class SpaceShip extends GameObject
         this.position.z += this.velocity.z * deltaTime;
 
         // Применяем угловую скорость
-        var r:number = Math.sqrt( this.angularVelocity.x * this.angularVelocity.x + this.angularVelocity.y * this.angularVelocity.y + this.angularVelocity.z * this.angularVelocity.z );
-        if ( r == 0 ) r = 0.0000000001;
-        var sina:number = Math.sin(r*0.5) / r;
-        this.dQ.set(this.angularVelocity.x * sina, this.angularVelocity.y * sina, this.angularVelocity.z * sina,  Math.cos(r*0.5)); //setFromAxisAngle
-        Utils.multiplyRight(this.rotation, this.dQ);
+        Utils.setFromAxisAngle(SpaceShip.dQ,this.angularVelocity);
+        Utils.multiplyRight(this.rotation, SpaceShip.dQ);
 
         // Коэффициенты уменьшений увеличений
         var koeffStop:Number = 5 * deltaTime;
@@ -297,17 +307,45 @@ export class SpaceShip extends GameObject
 
     }
 
-    public stepRotateToPoint(point:Vector3, deltaTime:number)
+    public stepRotateToPoint(point:Vector3, deltaTime:number, upAlign:boolean = false)
     {
-
         if ( point == null ) return;
-        var r:Vector3 = point.clone();
-        r = r.sub(this.position).normalize();
-        var rot:Quaternion = new Quaternion();
-        Utils.shortestArc(rot, this.forward, r);
-        Utils.multiplyLeft(this.rotation, rot);
-        //rot = this.rotation.clone().multiply(rot);
-        //this.rotation.slerp(rot,deltaTime * this.mobility);
+
+        var step:number = deltaTime * this.mobility * 0.05;
+        if ( step > 1 ) step = 1;
+        if ( step < 0 ) step = 0;
+
+        SpaceShip.dV.set(point.x, point.y, point.z);
+        SpaceShip.dV.sub(this.position);
+        SpaceShip.dV.normalize();
+        SpaceShip.dVA.crossVectors(SpaceShip.dV, this.forward);
+
+
+        //var l:number = SpaceShip.dVA.length();
+      //  var v:Vector3 = this.angularVelocity.clone();
+        //v.multiplyScalar(-1);
+      //  var d:number = v.dot(SpaceShip.dVA);
+
+        SpaceShip.dVA.multiplyScalar(-step);
+        this.angularVelocity.add(SpaceShip.dVA);
+
+        // rotation to point
+        /*SpaceShip.dV.set(point.x, point.y, point.z);
+        SpaceShip.dV.sub(this.position);
+        SpaceShip.dV.normalize();
+        Utils.shortestArc(SpaceShip.dQ, this.forward, SpaceShip.dV); //rot.setFromUnitVectors(this.forward, r);
+        Utils.multiplyLeft(SpaceShip.dQ, this.rotation); //this.dQ.multiply(this.rotation);
+        this.rotation.slerp(SpaceShip.dQ,  step);
+
+        // up to angle plane
+        if ( upAlign ) {
+            SpaceShip.dVA.crossVectors(SpaceShip.dV, this.forward);
+            if (SpaceShip.dVA.length() > 0.01) {
+                Utils.shortestArc(SpaceShip.dQA, this.right, SpaceShip.dVA); //rot.setFromUnitVectors(this.forward, r);
+                Utils.multiplyLeft(SpaceShip.dQA, this.rotation); //this.dQ.multiply(this.rotation);
+                this.rotation.slerp(SpaceShip.dQA, step);
+            }
+        }*/
     }
 
     public stepMoveToPoint(point:Vector3, deltaTime:number)

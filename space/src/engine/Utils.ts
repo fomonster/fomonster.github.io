@@ -9,9 +9,18 @@ export class Utils
     public static AXIS_Y:Vector3 = new Vector3(0, 1, 0);
     public static AXIS_Z:Vector3 = new Vector3(0, 0, 1);
 
+    public static setFromAxisAngle(q:Quaternion, vec:Vector3)
+    {
+        var r:number = Math.sqrt( vec.x * vec.x + vec.y * vec.y + vec.z * vec.z );
+        if ( r == 0 ) r = 0.0000000001;
+        var sina:number = Math.sin(r*0.5) / r;
+        q.set(vec.x * sina, vec.y * sina, vec.z * sina,  Math.cos(r*0.5)); //setFromAxisAngle
+    }
+
     public static shortestArc(q:Quaternion, from:Vector3, to:Vector3)
     {
-        var v:Vector3 = from.crossVectors(from, to);
+        var v:Vector3 = new Vector3();
+        v.crossVectors(from, to);
         q.x = v.x; q.y = v.y; q.z = v.z; q.w = from.dot(to);
         q.normalize();
         q.w += 1;
