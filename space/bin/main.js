@@ -1249,9 +1249,11 @@ define("game/logic/space/objects/GameObject", ["require", "exports", "three", "t
     Object.defineProperty(exports, "__esModule", { value: true });
     var GameObject = (function () {
         function GameObject() {
+            this.owner = null;
             this.forward = new three_2.Vector3(0, 0, 1);
             this.up = new three_2.Vector3(0, 1, 0);
             this.right = new three_2.Vector3(1, 0, 0);
+            this.left = new three_2.Vector3(-1, 0, 0);
             this.position = new three_2.Vector3();
             this.rotation = new three_2.Quaternion();
             this.velocity = new three_2.Vector3();
@@ -1336,6 +1338,11 @@ define("game/logic/space/objects/SpaceShipPilot", ["require", "exports"], functi
         };
         SpaceShipPilot.prototype.onShot = function (shot) {
         };
+        SpaceShipPilot.MODE_STAND = 0;
+        SpaceShipPilot.MODE_MOVETOPOINT = 1;
+        SpaceShipPilot.MODE_MOVETOOBJECT = 2;
+        SpaceShipPilot.MODE_ATTACK = 3;
+        SpaceShipPilot.MODE_FALLBACK = 4;
         return SpaceShipPilot;
     }());
     exports.SpaceShipPilot = SpaceShipPilot;
@@ -1429,6 +1436,9 @@ define("engine/Utils", ["require", "exports", "three"], function (require, expor
         Utils.AXIS_X = new three_5.Vector3(1, 0, 0);
         Utils.AXIS_Y = new three_5.Vector3(0, 1, 0);
         Utils.AXIS_Z = new three_5.Vector3(0, 0, 1);
+        Utils.AXIS_NEG_X = new three_5.Vector3(-1, 0, 0);
+        Utils.AXIS_NEG_Y = new three_5.Vector3(0, -1, 0);
+        Utils.AXIS_NEG_Z = new three_5.Vector3(0, 0, -1);
         return Utils;
     }());
     exports.Utils = Utils;
@@ -1445,6 +1455,7 @@ define("game/logic/space/objects/SpaceShip", ["require", "exports", "game/logic/
             _this.cargo = 0;
             _this.isOverload = false;
             _this.maxVelocity = 1;
+            _this.angularAccelerationAdd = 0.01;
             _this.maxAngularVelocity = 0.02;
             _this.armor = 0;
             _this.shield = 0;
@@ -1465,6 +1476,7 @@ define("game/logic/space/objects/SpaceShip", ["require", "exports", "game/logic/
             _this.pilot = null;
             _this.targetPoint = null;
             _this.targetObjectHash = -1;
+            _this.movePhase = 0;
             return _this;
         }
         SpaceShip.prototype.calculateInventory = function () {
@@ -1495,6 +1507,8 @@ define("game/logic/space/objects/SpaceShip", ["require", "exports", "game/logic/
             this.armor = this.base.getParam("armor");
             this.shield = this.base.getParam("shield");
             this.mobility = this.base.getParam("mobility");
+            this.angularAccelerationAdd = this.mobility / 60;
+            this.maxAngularVelocity = this.mobility / 35;
             this.radarRadius = this.base.getParam("radarradius");
             this.conditionReg = this.base.getParam("conditionreg");
             this.protectorReg = this.base.getParam("protectorreg");
@@ -1546,13 +1560,14 @@ define("game/logic/space/objects/SpaceShip", ["require", "exports", "game/logic/
             }
         };
         SpaceShip.prototype.update = function (deltaTime) {
-            this.forward = Utils_1.Utils.AXIS_Y.clone();
-            this.forward.applyQuaternion(this.rotation);
+            Utils_1.Utils.rotateVector(this.rotation, Utils_1.Utils.AXIS_Y, this.forward);
             Utils_1.Utils.rotateVector(this.rotation, Utils_1.Utils.AXIS_Z, this.up);
             Utils_1.Utils.rotateVector(this.rotation, Utils_1.Utils.AXIS_X, this.right);
+            Utils_1.Utils.rotateVector(this.rotation, Utils_1.Utils.AXIS_NEG_X, this.left);
             this.forward.normalize();
             this.up.normalize();
             this.right.normalize();
+            this.left.normalize();
             this.calculateInventory();
             if (this.pilot) {
                 this.pilot.update(deltaTime);
@@ -1608,25 +1623,64 @@ define("game/logic/space/objects/SpaceShip", ["require", "exports", "game/logic/
             if (upAlign === void 0) { upAlign = false; }
             if (point == null)
                 return;
-            var step = deltaTime * this.mobility * 0.05;
+            var step = this.angularAccelerationAdd * deltaTime;
             if (step > 1)
                 step = 1;
             if (step < 0)
                 step = 0;
+            var stopStep = this.mobility * deltaTime;
+            if (stopStep > 0.8)
+                stopStep = 0.8;
+            if (stopStep < 0)
+                stopStep = 0;
             SpaceShip.dV.set(point.x, point.y, point.z);
             SpaceShip.dV.sub(this.position);
             SpaceShip.dV.normalize();
-            SpaceShip.dVA.crossVectors(SpaceShip.dV, this.forward);
-            SpaceShip.dVA.multiplyScalar(-step);
-            this.angularVelocity.add(SpaceShip.dVA);
+            SpaceShip.dVA.crossVectors(this.forward, SpaceShip.dV);
+            var currentSpeed = this.angularVelocity.length();
+            var deltaAngle = SpaceShip.dVA.length();
+            if (currentSpeed > deltaAngle * this.angularAccelerationAdd * 0.5) {
+                var accelKoeff = Math.abs(this.forward.dot(this.angularVelocity));
+                if (accelKoeff > 1)
+                    accelKoeff = 1;
+                if (accelKoeff < 0)
+                    accelKoeff = 0;
+                var angularAccelerationX = (0 - this.angularVelocity.x) * stopStep * accelKoeff;
+                var angularAccelerationY = (0 - this.angularVelocity.y) * stopStep * accelKoeff;
+                var angularAccelerationZ = (0 - this.angularVelocity.z) * stopStep * accelKoeff;
+                this.angularVelocity.x += angularAccelerationX;
+                this.angularVelocity.y += angularAccelerationY;
+                this.angularVelocity.z += angularAccelerationZ;
+            }
+            else {
+                var accelKoeff = 1;
+                if (accelKoeff > 1)
+                    accelKoeff = 1;
+                if (accelKoeff < 0)
+                    accelKoeff = 0;
+                this.angularVelocity.x += SpaceShip.dVA.x * step * accelKoeff;
+                this.angularVelocity.y += SpaceShip.dVA.y * step * accelKoeff;
+                this.angularVelocity.z += SpaceShip.dVA.z * step * accelKoeff;
+            }
         };
         SpaceShip.prototype.stepMoveToPoint = function (point, deltaTime) {
             if (point == null)
                 return;
             var r = point.sub(this.position);
         };
+        SpaceShip.prototype.stepAttackObject = function (object, distance, deltaTime) {
+        };
+        SpaceShip.prototype.stepMoveToObject = function (object, distance, deltaTime) {
+        };
+        SpaceShip.RACE_HUMAN = 0;
+        SpaceShip.RACE_INSECT = 1;
+        SpaceShip.RACE_ALIEN = 2;
+        SpaceShip.MOVEPHASE_ATTACK_MOVETORANDOMPOINT = 0;
+        SpaceShip.MOVEPHASE_ATTACK_MOVETOTARGET = 0;
+        SpaceShip.MOVEPHASE_ATTACK_ROTATETOTARGET = 0;
         SpaceShip.dQ = new three_6.Quaternion();
         SpaceShip.dQA = new three_6.Quaternion();
+        SpaceShip.dQB = new three_6.Quaternion();
         SpaceShip.dV = new three_6.Vector3();
         SpaceShip.dVA = new three_6.Vector3();
         return SpaceShip;
@@ -1773,11 +1827,15 @@ define("game/logic/space/Space", ["require", "exports", "three", "game/Screen", 
             }
             this.objects.splice(0, this.objects.length);
         };
-        Space.prototype.addObject = function (object) {
+        Space.prototype.add = function (object) {
             if (object == null)
                 return;
+            object.owner = this;
             this.objectsHash[object.hash] = object;
             this.objects.push(object);
+        };
+        Space.prototype.get = function (hash) {
+            return this.objectsHash[hash];
         };
         Space.prototype.init = function () {
             this.light = new THREE.DirectionalLight(0xffffff);
@@ -1835,7 +1893,7 @@ define("game/logic/space/Space", ["require", "exports", "three", "game/Screen", 
             spaceship.inventory = GameData_2.GameData.userData.inventory;
             spaceship.base.isChanged = true;
             spaceship.calculateInventory();
-            this.addObject(spaceship);
+            this.add(spaceship);
             this.currentShipHash = spaceship.hash;
         };
         Space.prototype.addAsteroids = function () {
@@ -1843,7 +1901,7 @@ define("game/logic/space/Space", ["require", "exports", "three", "game/Screen", 
             for (var i = 0; i < count; i++) {
                 var asteroid = new Asteroid_1.Asteroid();
                 asteroid.position.set(Random_3.Random.irandomminmax(-500, 500), Random_3.Random.irandomminmax(-500, 500), Random_3.Random.irandomminmax(-500, 500));
-                this.addObject(asteroid);
+                this.add(asteroid);
             }
         };
         Space.self = null;
@@ -2013,6 +2071,57 @@ define("Game", ["require", "exports", "three", "pixi.js", "engine/Widget", "engi
         return Game;
     }());
     exports.Game = Game;
+});
+define("game/logic/space/objects/SpaceShipPilotComputer", ["require", "exports", "game/logic/space/objects/SpaceShipPilot", "three"], function (require, exports, SpaceShipPilot_2, three_9) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var SpaceShipPilotComputer = (function (_super) {
+        __extends(SpaceShipPilotComputer, _super);
+        function SpaceShipPilotComputer() {
+            var _this = _super !== null && _super.apply(this, arguments) || this;
+            _this.mode = SpaceShipPilot_2.SpaceShipPilot.MODE_STAND;
+            return _this;
+        }
+        SpaceShipPilotComputer.prototype.update = function (deltaTime) {
+        };
+        SpaceShipPilotComputer.prototype.onObjectCollided = function (obj) {
+        };
+        SpaceShipPilotComputer.prototype.onShot = function (shot) {
+        };
+        SpaceShipPilotComputer.prototype.stepStand = function (deltaTime) {
+            this.owner.velocity.x -= this.owner.velocity.x * this.owner.mobility * deltaTime * 0.05;
+            this.owner.velocity.y -= this.owner.velocity.y * this.owner.mobility * deltaTime * 0.05;
+            this.owner.velocity.z -= this.owner.velocity.z * this.owner.mobility * deltaTime * 0.05;
+        };
+        SpaceShipPilotComputer.prototype.stepAttack = function (deltaTime) {
+            var obj = this.owner.owner.get(this.owner.targetObjectHash);
+            if (obj != null) {
+                this.owner.stepAttackObject(obj, 15, deltaTime);
+            }
+            else {
+                this.mode = SpaceShipPilot_2.SpaceShipPilot.MODE_STAND;
+            }
+        };
+        SpaceShipPilotComputer.prototype.stepMoveToPoint = function (deltaTime) {
+            this.owner.stepMoveToPoint(this.owner.targetPoint, deltaTime);
+        };
+        SpaceShipPilotComputer.prototype.stepMoveToObject = function (deltaTime) {
+            var obj = this.owner.owner.get(this.owner.targetObjectHash);
+            if (obj != null) {
+                this.owner.stepMoveToObject(obj, 5, deltaTime);
+            }
+        };
+        SpaceShipPilotComputer.prototype.setMoveToPoint = function (_x, _y, _z) {
+            this.owner.targetPoint = new three_9.Vector3(_x, _y, _z);
+            this.mode = SpaceShipPilot_2.SpaceShipPilot.MODE_MOVETOPOINT;
+        };
+        SpaceShipPilotComputer.prototype.setAttackObject = function (object) {
+            this.owner.targetObjectHash = object.hash;
+            this.mode = SpaceShipPilot_2.SpaceShipPilot.MODE_ATTACK;
+        };
+        return SpaceShipPilotComputer;
+    }(SpaceShipPilot_2.SpaceShipPilot));
+    exports.SpaceShipPilotComputer = SpaceShipPilotComputer;
 });
 define("game/logic/space/objects/SpaceStation", ["require", "exports", "game/logic/space/objects/GameObject"], function (require, exports, GameObject_3) {
     "use strict";

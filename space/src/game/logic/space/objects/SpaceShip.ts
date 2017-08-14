@@ -9,13 +9,21 @@ import {Screen} from "../../../Screen";
 import {SpaceShipPilot} from "./SpaceShipPilot";
 import {Utils} from "../../../../engine/Utils";
 import {Quaternion, Vector, Vector3} from "three";
+import {Space} from "../Space";
 
 export class SpaceShip extends GameObject
 {
+
+
+    public static RACE_HUMAN:number = 0;
+    public static RACE_INSECT:number = 1;
+    public static RACE_ALIEN:number = 2;
+
+    public static MOVEPHASE_ATTACK_MOVETORANDOMPOINT:number = 0;
+    public static MOVEPHASE_ATTACK_MOVETOTARGET:number = 0;
+    public static MOVEPHASE_ATTACK_ROTATETOTARGET:number = 0;
+
     public currentHash:number = 0;
-
-
-
     // in game properties
 
     public mass:number = 0;
@@ -25,6 +33,8 @@ export class SpaceShip extends GameObject
     public isOverload:boolean = false;
 
     public maxVelocity:number = 1;
+
+    public angularAccelerationAdd:number = 0.01;
 
     public maxAngularVelocity:number = 0.02;
 
@@ -68,10 +78,13 @@ export class SpaceShip extends GameObject
 
     public targetObjectHash:number = -1; // хеш объекта назначения
 
+    public movePhase:number = 0;
+
 
     // Временные регистры для расчетов
     public static dQ:Quaternion = new Quaternion();
     public static dQA:Quaternion = new Quaternion();
+    public static dQB:Quaternion = new Quaternion();
     public static dV:Vector3 = new Vector3();
     public static dVA:Vector3 = new Vector3();
 
@@ -118,6 +131,9 @@ export class SpaceShip extends GameObject
 
         // Подвижность
         this.mobility = this.base.getParam("mobility");
+
+        this.angularAccelerationAdd = this.mobility / 60;
+        this.maxAngularVelocity = this.mobility / 35;
 
         // Радиус радара
         this.radarRadius = this.base.getParam("radarradius");
@@ -217,14 +233,14 @@ export class SpaceShip extends GameObject
     public update(deltaTime:number)
     {
         //
-        this.forward = Utils.AXIS_Y.clone();
-        this.forward.applyQuaternion(this.rotation);
-        //Utils.rotateVector(this.rotation, Utils.AXIS_Y, this.forward);
+        Utils.rotateVector(this.rotation, Utils.AXIS_Y, this.forward);
         Utils.rotateVector(this.rotation, Utils.AXIS_Z, this.up);
         Utils.rotateVector(this.rotation, Utils.AXIS_X, this.right);
+        Utils.rotateVector(this.rotation, Utils.AXIS_NEG_X, this.left);
         this.forward.normalize();
         this.up.normalize();
         this.right.normalize();
+        this.left.normalize();
         //
 
         // Расчет инвентаря
@@ -311,26 +327,71 @@ export class SpaceShip extends GameObject
     {
         if ( point == null ) return;
 
-        var step:number = deltaTime * this.mobility * 0.05;
+        var step:number = this.angularAccelerationAdd * deltaTime;
         if ( step > 1 ) step = 1;
         if ( step < 0 ) step = 0;
 
+        var stopStep:number = this.mobility * deltaTime;
+        if ( stopStep > 0.8 ) stopStep = 0.8;
+        if ( stopStep < 0 ) stopStep = 0;
+
+        //
         SpaceShip.dV.set(point.x, point.y, point.z);
         SpaceShip.dV.sub(this.position);
         SpaceShip.dV.normalize();
-        SpaceShip.dVA.crossVectors(SpaceShip.dV, this.forward);
+        SpaceShip.dVA.crossVectors(this.forward, SpaceShip.dV);
+
+        //
+        var currentSpeed:number = this.angularVelocity.length();//Math.abs(this.angularVelocity.dot(SpaceShip.dVA));
+        var deltaAngle:number = SpaceShip.dVA.length();
+        if ( currentSpeed > deltaAngle * this.angularAccelerationAdd * 0.5  ) { //
+            var accelKoeff:number = Math.abs(this.forward.dot(this.angularVelocity));// / currentSpeed;// * this.angularAccelerationAdd;
+            if ( accelKoeff > 1 ) accelKoeff = 1;
+            if ( accelKoeff < 0 ) accelKoeff = 0;
+
+            var angularAccelerationX:number = (0 - this.angularVelocity.x) * stopStep * accelKoeff;/// * (1 - accelKoeff) + accelKoeff * SpaceShip.dVA.x * step;
+            var angularAccelerationY:number = (0 - this.angularVelocity.y) * stopStep * accelKoeff;/// * (1 - accelKoeff) + accelKoeff * SpaceShip.dVA.y * step;
+            var angularAccelerationZ:number = (0 - this.angularVelocity.z) * stopStep * accelKoeff;/// * (1 - accelKoeff) + accelKoeff * SpaceShip.dVA.z * step;
+
+            this.angularVelocity.x += angularAccelerationX;
+            this.angularVelocity.y += angularAccelerationY;
+            this.angularVelocity.z += angularAccelerationZ;
+
+        } else {
+            var accelKoeff:number = 1;//Math.abs(deltaAngle) / (Math.PI / 6 );
+            if ( accelKoeff > 1 ) accelKoeff = 1;
+            if ( accelKoeff < 0 ) accelKoeff = 0;
+
+            this.angularVelocity.x += SpaceShip.dVA.x * step * accelKoeff;
+            this.angularVelocity.y += SpaceShip.dVA.y * step * accelKoeff;
+            this.angularVelocity.z += SpaceShip.dVA.z * step * accelKoeff;
+
+        }
+
+        //var deltaAngle:number = Math.acos(this.forward.dot(SpaceShip.dV));
+        //var moveAngle:number = this.angularVelocity.length();
 
 
-        //var l:number = SpaceShip.dVA.length();
-      //  var v:Vector3 = this.angularVelocity.clone();
-        //v.multiplyScalar(-1);
-      //  var d:number = v.dot(SpaceShip.dVA);
 
-        SpaceShip.dVA.multiplyScalar(-step);
-        this.angularVelocity.add(SpaceShip.dVA);
+        // Коэффеициент, определяющий силу поворота в сторону
+        //var accelKoeff:number = Math.abs(deltaAngle) / (Math.PI / 6 );
+        //if ( accelKoeff > 1 ) accelKoeff = 1;
+        //if ( accelKoeff < 0 ) accelKoeff = 0;
+        //if ( moveAngle > deltaAngle ) accelKoeff = 0;
 
+        // Получаем ускорение поворота
+
+        /*
+        SpaceShip.dV.set(point.x, point.y, point.z);
+        SpaceShip.dV.sub(this.position);
+        SpaceShip.dV.normalize();
+        SpaceShip.dVA.crossVectors( this.forward, SpaceShip.dV);
+        SpaceShip.dVA.multiplyScalar(step);
+        this.angularVelocity.add(SpaceShip.dVA);*/
+
+        /*
         // rotation to point
-        /*SpaceShip.dV.set(point.x, point.y, point.z);
+        SpaceShip.dV.set(point.x, point.y, point.z);
         SpaceShip.dV.sub(this.position);
         SpaceShip.dV.normalize();
         Utils.shortestArc(SpaceShip.dQ, this.forward, SpaceShip.dV); //rot.setFromUnitVectors(this.forward, r);
@@ -340,10 +401,18 @@ export class SpaceShip extends GameObject
         // up to angle plane
         if ( upAlign ) {
             SpaceShip.dVA.crossVectors(SpaceShip.dV, this.forward);
-            if (SpaceShip.dVA.length() > 0.01) {
+            if (SpaceShip.dVA.length() > 0.1) {
+
                 Utils.shortestArc(SpaceShip.dQA, this.right, SpaceShip.dVA); //rot.setFromUnitVectors(this.forward, r);
-                Utils.multiplyLeft(SpaceShip.dQA, this.rotation); //this.dQ.multiply(this.rotation);
-                this.rotation.slerp(SpaceShip.dQA, step);
+                Utils.shortestArc(SpaceShip.dQB, this.left, SpaceShip.dVA); //rot.setFromUnitVectors(this.forward, r);
+
+                if ( Math.acos(SpaceShip.dQA.w) < Math.acos(SpaceShip.dQB.w) ) {
+                    Utils.multiplyLeft(SpaceShip.dQA, this.rotation); //this.dQ.multiply(this.rotation);
+                    this.rotation.slerp(SpaceShip.dQA, step);
+                } else {
+                    Utils.multiplyLeft(SpaceShip.dQB, this.rotation); //this.dQ.multiply(this.rotation);
+                    this.rotation.slerp(SpaceShip.dQB, step);
+                }
             }
         }*/
     }
@@ -357,4 +426,13 @@ export class SpaceShip extends GameObject
 
     }
 
+    public stepAttackObject(object:GameObject, distance:number, deltaTime:number)
+    {
+
+    }
+
+    public stepMoveToObject(object:GameObject, distance:number, deltaTime:number)
+    {
+
+    }
 }

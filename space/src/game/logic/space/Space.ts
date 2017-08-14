@@ -80,11 +80,17 @@ export class Space
     /**
      * Добавление объекта в космос
      */
-    public addObject(object:GameObject)
+    public add(object:GameObject)
     {
         if ( object == null ) return;
+        object.owner = this;
         this.objectsHash[object.hash] = object;
         this.objects.push(object);
+    }
+
+    public get(hash:number):GameObject
+    {
+        return this.objectsHash[hash];
     }
 
     /**
@@ -190,7 +196,7 @@ export class Space
         spaceship.inventory = GameData.userData.inventory;
         spaceship.base.isChanged = true;
         spaceship.calculateInventory();
-        this.addObject(spaceship);
+        this.add(spaceship);
         this.currentShipHash = spaceship.hash;
 
     }
@@ -201,7 +207,7 @@ export class Space
         for(var i:number=0;i < count;i++) {
             var asteroid: Asteroid = new Asteroid();
             asteroid.position.set(Random.irandomminmax(-500, 500), Random.irandomminmax(-500, 500), Random.irandomminmax(-500, 500));
-            this.addObject(asteroid);
+            this.add(asteroid);
         }
     }
 

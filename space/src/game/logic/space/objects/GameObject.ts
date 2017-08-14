@@ -4,6 +4,7 @@ import {Quaternion, Vector3} from "three";
 import {Inventory} from "../../../data/game/Inventory";
 import {Assets} from "../../../../engine/Assets";
 import {Screen} from "../../../Screen";
+import {Space} from "../Space";
 
 export class GameObject
 {
@@ -11,9 +12,12 @@ export class GameObject
 
     public hash:number;
 
+    public owner:Space = null;
+
     public forward:Vector3 = new Vector3(0, 0, 1);
     public up:Vector3 = new Vector3(0, 1, 0);
     public right:Vector3 = new Vector3(1, 0, 0);
+    public left:Vector3 = new Vector3(-1, 0, 0);
 
     public position:Vector3 = new Vector3();
     public rotation:Quaternion = new Quaternion();

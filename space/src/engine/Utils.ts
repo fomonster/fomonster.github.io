@@ -8,6 +8,9 @@ export class Utils
     public static AXIS_X:Vector3 = new Vector3(1, 0, 0);
     public static AXIS_Y:Vector3 = new Vector3(0, 1, 0);
     public static AXIS_Z:Vector3 = new Vector3(0, 0, 1);
+    public static AXIS_NEG_X:Vector3 = new Vector3(-1, 0, 0);
+    public static AXIS_NEG_Y:Vector3 = new Vector3(0, -1, 0);
+    public static AXIS_NEG_Z:Vector3 = new Vector3(0, 0, -1);
 
     public static setFromAxisAngle(q:Quaternion, vec:Vector3)
     {
