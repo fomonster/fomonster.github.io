@@ -76,7 +76,7 @@
 			},
 			"params": [
 				{ "name":"level", "min":1, "max":333, "mode":"add", "caption":"mass", "id":1 },
-				{ "name":"maxvelocity", "min":50, "max":150, "mode":"add", "caption":"mass", "id":1 },
+				{ "name":"maxvelocity", "min":300, "max":500, "mode":"add", "caption":"mass", "id":1 },
 
 				{ "name":"mass", "min":90, "max":10, "mode":"add", "caption":"mass", "id":2 },
 				{ "name":"price", "min":50, "max":200000, "mode":"add", "caption":"price", "id":1 },

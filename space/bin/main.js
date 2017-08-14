@@ -1477,6 +1477,8 @@ define("game/logic/space/objects/SpaceShip", ["require", "exports", "game/logic/
             _this.targetPoint = null;
             _this.targetObjectHash = -1;
             _this.movePhase = 0;
+            _this.isFireA = false;
+            _this.isFireB = false;
             return _this;
         }
         SpaceShip.prototype.calculateInventory = function () {
@@ -1640,17 +1642,15 @@ define("game/logic/space/objects/SpaceShip", ["require", "exports", "game/logic/
             var currentSpeed = this.angularVelocity.length();
             var deltaAngle = SpaceShip.dVA.length();
             if (currentSpeed > deltaAngle * this.angularAccelerationAdd * 0.5) {
-                var accelKoeff = Math.abs(this.forward.dot(this.angularVelocity));
+                var accelKoeff = 1 - Math.abs(this.forward.dot(this.angularVelocity)) * 100;
                 if (accelKoeff > 1)
                     accelKoeff = 1;
                 if (accelKoeff < 0)
                     accelKoeff = 0;
-                var angularAccelerationX = (0 - this.angularVelocity.x) * stopStep * accelKoeff;
-                var angularAccelerationY = (0 - this.angularVelocity.y) * stopStep * accelKoeff;
-                var angularAccelerationZ = (0 - this.angularVelocity.z) * stopStep * accelKoeff;
-                this.angularVelocity.x += angularAccelerationX;
-                this.angularVelocity.y += angularAccelerationY;
-                this.angularVelocity.z += angularAccelerationZ;
+                console.log(accelKoeff);
+                this.angularVelocity.x += -this.angularVelocity.x * stopStep * accelKoeff;
+                this.angularVelocity.y += -this.angularVelocity.y * stopStep * accelKoeff;
+                this.angularVelocity.z += -this.angularVelocity.z * stopStep * accelKoeff;
             }
             else {
                 var accelKoeff = 1;
@@ -1662,15 +1662,57 @@ define("game/logic/space/objects/SpaceShip", ["require", "exports", "game/logic/
                 this.angularVelocity.y += SpaceShip.dVA.y * step * accelKoeff;
                 this.angularVelocity.z += SpaceShip.dVA.z * step * accelKoeff;
             }
+            return deltaAngle;
         };
         SpaceShip.prototype.stepMoveToPoint = function (point, deltaTime) {
-            if (point == null)
-                return;
-            var r = point.sub(this.position);
+            var deltaAngle = this.stepRotateToPoint(point, deltaTime);
+            var r = Math.sqrt((point.x - this.position.x) * (point.x - this.position.x) + (point.y - this.position.y) * (point.y - this.position.y) + (point.z - this.position.z) * (point.z - this.position.z));
+            if (r < 0.1)
+                return r;
+            var acceleration = this.maxVelocity * deltaTime * this.mobility * 0.2;
+            var accelKoeff = Math.abs(deltaAngle) / (Math.PI / 2);
+            if (accelKoeff > 1)
+                accelKoeff = 1;
+            if (accelKoeff < 0)
+                accelKoeff = 0;
+            accelKoeff = ((1 - accelKoeff) * 70 * r / this.maxVelocity);
+            if (accelKoeff < 0)
+                accelKoeff = 0;
+            if (accelKoeff > 1)
+                accelKoeff = 1;
+            this.velocity.x += accelKoeff * this.forward.x * acceleration - (1 - accelKoeff) * this.velocity.x * acceleration * 0.07;
+            this.velocity.y += accelKoeff * this.forward.y * acceleration - (1 - accelKoeff) * this.velocity.y * acceleration * 0.07;
+            this.velocity.z += accelKoeff * this.forward.z * acceleration - (1 - accelKoeff) * this.velocity.z * acceleration * 0.07;
+            return r;
         };
         SpaceShip.prototype.stepAttackObject = function (object, distance, deltaTime) {
         };
         SpaceShip.prototype.stepMoveToObject = function (object, distance, deltaTime) {
+            if (object == null)
+                return;
+            var point = object.position;
+            this.isFireA = false;
+            var deltaAngle = this.stepRotateToPoint(point, deltaTime);
+            var r = Math.sqrt((point.x - this.position.x) * (point.x - this.position.x) + (point.y - this.position.y) * (point.y - this.position.y) + (point.z - this.position.z) * (point.z - this.position.z));
+            if (r < 0.1)
+                return r;
+            var acceleration = this.maxVelocity * deltaTime * this.mobility * 0.2;
+            var accelKoeff = Math.abs(deltaAngle) / (Math.PI / 2);
+            if (accelKoeff > 1)
+                accelKoeff = 1;
+            if (accelKoeff < 0)
+                accelKoeff = 0;
+            var distKoeff = r - distance;
+            if (distKoeff < 0)
+                distKoeff = 0;
+            accelKoeff = ((1 - accelKoeff) * distKoeff / (this.maxVelocity / 0.33));
+            if (accelKoeff < 0)
+                accelKoeff = 0;
+            if (accelKoeff > 1)
+                accelKoeff = 1;
+            this.velocity.x += accelKoeff * this.forward.x * acceleration - (1 - accelKoeff) * this.velocity.x * acceleration * 0.07;
+            this.velocity.y += accelKoeff * this.forward.y * acceleration - (1 - accelKoeff) * this.velocity.y * acceleration * 0.07;
+            this.velocity.z += accelKoeff * this.forward.z * acceleration - (1 - accelKoeff) * this.velocity.z * acceleration * 0.07;
         };
         SpaceShip.RACE_HUMAN = 0;
         SpaceShip.RACE_INSECT = 1;
@@ -1769,10 +1811,17 @@ define("game/logic/space/objects/SpaceShipPilotPlayer", ["require", "exports", "
                 }
             }
             if (isTarget) {
-                this.owner.targetPoint = Space_1.Space.self.objects[Random_2.Random.irandom(Space_1.Space.self.objects.length)].position;
+                var i = Random_2.Random.irandom(Space_1.Space.self.objects.length);
+                this.owner.targetObjectHash = Space_1.Space.self.objects[i].hash;
+                this.owner.targetPoint = Space_1.Space.self.objects[i].position;
             }
             if (this.owner.targetPoint) {
-                this.owner.stepRotateToPoint(this.owner.targetPoint, deltaTime, true);
+                var r = this.owner.stepMoveToObject(this.owner.owner.objectsHash[this.owner.targetObjectHash], 1, deltaTime);
+                if (r < 2) {
+                    var i = Random_2.Random.irandom(Space_1.Space.self.objects.length);
+                    this.owner.targetObjectHash = Space_1.Space.self.objects[i].hash;
+                    this.owner.targetPoint = Space_1.Space.self.objects[i].position;
+                }
             }
         };
         SpaceShipPilotPlayer.prototype.onObjectCollided = function (obj) {

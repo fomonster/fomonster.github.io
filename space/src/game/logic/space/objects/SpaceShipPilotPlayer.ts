@@ -89,12 +89,20 @@ export class SpaceShipPilotPlayer extends SpaceShipPilot
 
         if ( isTarget ) {
 
-            this.owner.targetPoint = Space.self.objects[Random.irandom(Space.self.objects.length)].position;
+            var i:number = Random.irandom(Space.self.objects.length);
+            this.owner.targetObjectHash = Space.self.objects[i].hash;
+            this.owner.targetPoint = Space.self.objects[i].position;
 
         }
 
         if ( this.owner.targetPoint ) {
-            this.owner.stepRotateToPoint(this.owner.targetPoint, deltaTime, true);
+            var r = this.owner.stepMoveToObject(this.owner.owner.objectsHash[this.owner.targetObjectHash], 1, deltaTime);
+            //var r = this.owner.stepMoveToPoint(this.owner.targetPoint, deltaTime);
+            if ( r < 2 ) {
+                var i:number = Random.irandom(Space.self.objects.length);
+                this.owner.targetObjectHash = Space.self.objects[i].hash;
+                this.owner.targetPoint = Space.self.objects[i].position;
+            }
         }
     }
 

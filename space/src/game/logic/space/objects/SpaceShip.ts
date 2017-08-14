@@ -80,6 +80,9 @@ export class SpaceShip extends GameObject
 
     public movePhase:number = 0;
 
+    public isFireA:boolean = false;
+
+    public isFireB:boolean = false;
 
     // Временные регистры для расчетов
     public static dQ:Quaternion = new Quaternion();
@@ -323,8 +326,9 @@ export class SpaceShip extends GameObject
 
     }
 
-    public stepRotateToPoint(point:Vector3, deltaTime:number, upAlign:boolean = false)
+    public stepRotateToPoint(point:Vector3, deltaTime:number, upAlign:boolean = false):number
     {
+        // 1 Способ - с угловой скоростью и замедлеием на конечной фазе поворота
         if ( point == null ) return;
 
         var step:number = this.angularAccelerationAdd * deltaTime;
@@ -344,18 +348,14 @@ export class SpaceShip extends GameObject
         //
         var currentSpeed:number = this.angularVelocity.length();//Math.abs(this.angularVelocity.dot(SpaceShip.dVA));
         var deltaAngle:number = SpaceShip.dVA.length();
-        if ( currentSpeed > deltaAngle * this.angularAccelerationAdd * 0.5  ) { //
-            var accelKoeff:number = Math.abs(this.forward.dot(this.angularVelocity));// / currentSpeed;// * this.angularAccelerationAdd;
+        if ( currentSpeed > deltaAngle * this.angularAccelerationAdd * 0.5  ) {
+            var accelKoeff:number = 1-Math.abs(this.forward.dot(this.angularVelocity)) * 100;
             if ( accelKoeff > 1 ) accelKoeff = 1;
             if ( accelKoeff < 0 ) accelKoeff = 0;
-
-            var angularAccelerationX:number = (0 - this.angularVelocity.x) * stopStep * accelKoeff;/// * (1 - accelKoeff) + accelKoeff * SpaceShip.dVA.x * step;
-            var angularAccelerationY:number = (0 - this.angularVelocity.y) * stopStep * accelKoeff;/// * (1 - accelKoeff) + accelKoeff * SpaceShip.dVA.y * step;
-            var angularAccelerationZ:number = (0 - this.angularVelocity.z) * stopStep * accelKoeff;/// * (1 - accelKoeff) + accelKoeff * SpaceShip.dVA.z * step;
-
-            this.angularVelocity.x += angularAccelerationX;
-            this.angularVelocity.y += angularAccelerationY;
-            this.angularVelocity.z += angularAccelerationZ;
+            console.log(accelKoeff);
+            this.angularVelocity.x += -this.angularVelocity.x * stopStep * accelKoeff;
+            this.angularVelocity.y += -this.angularVelocity.y * stopStep * accelKoeff;
+            this.angularVelocity.z += -this.angularVelocity.z * stopStep * accelKoeff;
 
         } else {
             var accelKoeff:number = 1;//Math.abs(deltaAngle) / (Math.PI / 6 );
@@ -367,21 +367,11 @@ export class SpaceShip extends GameObject
             this.angularVelocity.z += SpaceShip.dVA.z * step * accelKoeff;
 
         }
-
-        //var deltaAngle:number = Math.acos(this.forward.dot(SpaceShip.dV));
-        //var moveAngle:number = this.angularVelocity.length();
-
-
-
-        // Коэффеициент, определяющий силу поворота в сторону
-        //var accelKoeff:number = Math.abs(deltaAngle) / (Math.PI / 6 );
-        //if ( accelKoeff > 1 ) accelKoeff = 1;
-        //if ( accelKoeff < 0 ) accelKoeff = 0;
-        //if ( moveAngle > deltaAngle ) accelKoeff = 0;
-
+        return deltaAngle;
         // Получаем ускорение поворота
 
         /*
+        // 2 Способ - без замедлений через угловую скорость
         SpaceShip.dV.set(point.x, point.y, point.z);
         SpaceShip.dV.sub(this.position);
         SpaceShip.dV.normalize();
@@ -390,7 +380,7 @@ export class SpaceShip extends GameObject
         this.angularVelocity.add(SpaceShip.dVA);*/
 
         /*
-        // rotation to point
+        // 3 Способ - без угловой скорости через кватернионы
         SpaceShip.dV.set(point.x, point.y, point.z);
         SpaceShip.dV.sub(this.position);
         SpaceShip.dV.normalize();
@@ -417,13 +407,30 @@ export class SpaceShip extends GameObject
         }*/
     }
 
-    public stepMoveToPoint(point:Vector3, deltaTime:number)
+    public stepMoveToPoint(point:Vector3, deltaTime:number):number
     {
-        if ( point == null ) return;
-        var r:Vector3 = point.sub(this.position);
 
+        // 1. Поворот в точку
+        var deltaAngle:number = this.stepRotateToPoint(point, deltaTime);
 
+        // 2. Линейное движение
+        var r:number = Math.sqrt((point.x - this.position.x)*(point.x - this.position.x) + (point.y - this.position.y)*(point.y - this.position.y) + (point.z - this.position.z)*(point.z - this.position.z));
+        if ( r < 0.1 ) return r;
+        var acceleration:number = this.maxVelocity * deltaTime * this.mobility * 0.2;
 
+        var accelKoeff:number = Math.abs(deltaAngle) / ( Math.PI / 2);
+        if ( accelKoeff > 1 ) accelKoeff = 1;
+        if ( accelKoeff < 0 ) accelKoeff = 0;
+
+        accelKoeff = ( ( 1 - accelKoeff) * 70 * r / this.maxVelocity );
+        if ( accelKoeff < 0 ) accelKoeff = 0;
+        if ( accelKoeff > 1 ) accelKoeff = 1;
+
+        this.velocity.x += accelKoeff * this.forward.x * acceleration - (1 - accelKoeff) * this.velocity.x * acceleration * 0.07;
+        this.velocity.y += accelKoeff * this.forward.y * acceleration - (1 - accelKoeff) * this.velocity.y * acceleration * 0.07;
+        this.velocity.z += accelKoeff * this.forward.z * acceleration - (1 - accelKoeff) * this.velocity.z * acceleration * 0.07;
+
+        return r;
     }
 
     public stepAttackObject(object:GameObject, distance:number, deltaTime:number)
@@ -433,6 +440,31 @@ export class SpaceShip extends GameObject
 
     public stepMoveToObject(object:GameObject, distance:number, deltaTime:number)
     {
+        if ( object == null ) return;
+        var point:THREE.Vector3 = object.position;
+        this.isFireA = false;
 
+        // 1. Поворот в точку
+        var deltaAngle:number = this.stepRotateToPoint(point, deltaTime);
+
+        // 2. Линейное движение
+        var r:number = Math.sqrt((point.x - this.position.x)*(point.x - this.position.x) + (point.y - this.position.y)*(point.y - this.position.y) + (point.z - this.position.z)*(point.z - this.position.z));
+        if ( r < 0.1 ) return r;
+        var acceleration:number = this.maxVelocity * deltaTime * this.mobility * 0.2;
+
+        var accelKoeff:number = Math.abs(deltaAngle) / ( Math.PI / 2);
+        if ( accelKoeff > 1 ) accelKoeff = 1;
+        if ( accelKoeff < 0 ) accelKoeff = 0;
+
+        var distKoeff:number = r - distance;
+        if ( distKoeff < 0 ) distKoeff = 0;
+
+        accelKoeff = ( ( 1 - accelKoeff) * distKoeff / ( this.maxVelocity / 0.33 ) );
+        if ( accelKoeff < 0 ) accelKoeff = 0;
+        if ( accelKoeff > 1 ) accelKoeff = 1;
+
+        this.velocity.x += accelKoeff * this.forward.x * acceleration - (1 - accelKoeff) * this.velocity.x * acceleration * 0.07;
+        this.velocity.y += accelKoeff * this.forward.y * acceleration - (1 - accelKoeff) * this.velocity.y * acceleration * 0.07;
+        this.velocity.z += accelKoeff * this.forward.z * acceleration - (1 - accelKoeff) * this.velocity.z * acceleration * 0.07;
     }
 }
